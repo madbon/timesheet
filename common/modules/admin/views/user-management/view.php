@@ -6,8 +6,8 @@ use yii\widgets\DetailView;
 /** @var yii\web\View $this */
 /** @var common\models\UserData $model */
 
-$this->title = $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'User Datas', 'url' => ['index']];
+$this->title = "Account Details: ".$model->fullName();
+$this->params['breadcrumbs'][] = ['label' => 'User Management', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>

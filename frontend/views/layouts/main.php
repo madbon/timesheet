@@ -49,8 +49,6 @@ AppAsset::register($this);
             border-radius: 0px;
             background:#ffdbdb;
         }
-
-       
         
         @media (max-width: 767px) {
             .navbar .navbar-nav .active
@@ -87,6 +85,11 @@ AppAsset::register($this);
                 background:#f5f6ff;
                 border-radius: 15px 15px 0px 0px;
             }
+        }
+
+        .help-block
+        {
+            color: #ae0505;
         }
         
     </style>

@@ -42,7 +42,7 @@ class UserData extends \yii\db\ActiveRecord
         return [
             // [[ 'status', 'created_at', 'updated_at'], 'integer'],
             // [['bday'], 'safe'],
-            [['fname', 'sname', 'email', 'sex','bday'], 'required'],
+            [['fname', 'sname', 'email', 'sex','bday','username'], 'required'],
             [['mname','password_hash','password_reset_token','verification_token','auth_key'],'safe'],
             [['fname'], 'string', 'max' => 250],
             [['mname'], 'string', 'max' => 150],
@@ -82,5 +82,10 @@ class UserData extends \yii\db\ActiveRecord
             'confirm_password' => 'Confirm Password',
             'password' => 'Password',
         ];
+    }
+
+    public function fullName()
+    {
+        return $this->sname.", ".$this->fname;
     }
 }
