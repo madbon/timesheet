@@ -27,6 +27,68 @@ AppAsset::register($this);
         {
             background:#f5f6ff;
         }
+        .navbar
+        {
+            background:maroon;
+            
+        }
+
+        .navbar
+        {
+            padding-bottom: 0;
+        }
+
+        .navbar .navbar-nav .nav-link
+        {
+            color:white;
+        }
+
+        .navbar .navbar-nav .dropdown-item.active
+        {
+            color:#ae0505;
+            border-radius: 0px;
+            background:#ffdbdb;
+        }
+
+       
+        
+        @media (max-width: 767px) {
+            .navbar .navbar-nav .active
+            {
+                color:#ae0505;
+                background:#f5f6ff;
+                padding-left:5px;
+                border-radius: 5px;
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 991px) {
+            .navbar .navbar-nav .active
+            {
+                color:#ae0505;
+                background:#f5f6ff;
+                border-radius: 15px 15px 0px 0px;
+            }
+        }
+
+        @media (min-width: 992px) and (max-width: 1199px) {
+            .navbar .navbar-nav .active
+            {
+                color:#ae0505;
+                background:#f5f6ff;
+                border-radius: 15px 15px 0px 0px;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .navbar .navbar-nav .active
+            {
+                color:#ae0505;
+                background:#f5f6ff;
+                border-radius: 15px 15px 0px 0px;
+            }
+        }
+        
     </style>
 </head>
 <body class="d-flex flex-column h-100">
@@ -35,11 +97,11 @@ AppAsset::register($this);
 <header>
     <?php
     NavBar::begin([
-        'brandLabel' => Yii::$app->name,
+        'brandLabel' => false,
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
-            'class' => 'navbar navbar-expand-md navbar-dark bg-danger fixed-top navbar-inverse',
-            'style' => 'display:none;',
+            'class' => 'navbar navbar-expand-md fixed-top navbar-inverse',
+            'style' => Yii::$app->user->isGuest ? 'display:none;' : 'background:#ae0505;',
         ],
     ]);
     
@@ -49,14 +111,17 @@ AppAsset::register($this);
     else
     {
         $menuItems = [
-            ['label' => 'User Management', 'url' => ['/admin/user-management']],
+            ['label' => 'User Management', 'url' => ['/admin/user-management'], 'active' => Yii::$app->controller->id == "user-management" ? true : false],
             [
                 'label' => 'Settings',
                 'items' => [
-                    ['label' => 'Role', 'url' => ['/admin/cms-role']],
+                    ['label' => 'Role', 'url' => ['/admin/cms-role'],
+                        'active' => Yii::$app->controller->id == "cms-role" ? true : false,
+                    ],
                     ['label' => 'Role Assignments', 'url' => ['/admin/cms-role-assignment']],
                     ['label' => 'Actions', 'url' => ['/admin/cms-role-actions']],
                 ],
+                'active' => Yii::$app->controller->id == "cms-role" ? true : false
             ],
         ];
 

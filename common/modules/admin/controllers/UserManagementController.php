@@ -7,6 +7,7 @@ use common\models\UserDataSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use Yii;
 
 /**
  * UserManagementController implements the CRUD actions for UserData model.
@@ -70,7 +71,16 @@ class UserManagementController extends Controller
         $model = new UserData();
 
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
+            if ($model->load($this->request->post())) {
+
+                $model->password_hash = Yii::$app->security->generatePasswordHash($this->password);
+                $model->auth_key = Yii::$app->security->generateRandomString();
+                $model->verification_token = Yii::$app->security->generateRandomString() . '_' . time();
+
+                if($model->save())
+                {
+                    \Yii::$app->getSession()->setFlash('success', 'Data has been saved. You can see the created profiles in the list of profiles page. Thank you.');
+                }
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         } else {
@@ -93,7 +103,18 @@ class UserManagementController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
+        if ($this->request->isPost && $model->load($this->request->post())) {
+
+            if($model->password)
+            {
+                $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
+            }
+
+            if($model->save())
+            {
+                \Yii::$app->getSession()->setFlash('success', 'Changes has been saved');
+            }
+
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
