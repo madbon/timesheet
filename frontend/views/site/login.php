@@ -4,38 +4,40 @@
 /** @var yii\bootstrap5\ActiveForm $form */
 /** @var \common\models\LoginForm $model */
 
-use yii\bootstrap5\Html;
+use yii\helpers\Html;
 use yii\bootstrap5\ActiveForm;
 
 $this->title = 'Login';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="site-login">
-    <h1><?= Html::encode($this->title) ?></h1>
+    <div class="container d-flex justify-content-center align-items-center">
+        <div>
+            <!-- <div class="card-body"> -->
+                <div class="d-flex justify-content-center align-items-center" style="margin-bottom: 20px;">
+                    <?php  
+                    $imageUrl = Yii::$app->request->baseUrl . '/ref/images/logo_university.png';
 
-    <p>Please fill out the following fields to login:</p>
-
-    <div class="row">
-        <div class="col-lg-5">
-            <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>
-
-                <?= $form->field($model, 'username')->textInput(['autofocus' => true]) ?>
-
-                <?= $form->field($model, 'password')->passwordInput() ?>
-
-                <?= $form->field($model, 'rememberMe')->checkbox() ?>
-
-                <div class="my-1 mx-0" style="color:#999;">
-                    If you forgot your password you can <?= Html::a('reset it', ['site/request-password-reset']) ?>.
-                    <br>
-                    Need new verification email? <?= Html::a('Resend', ['site/resend-verification-email']) ?>
+                    echo Html::img($imageUrl, ['alt' => 'Example Image']);
+                    ?>
                 </div>
 
-                <div class="form-group">
-                    <?= Html::submitButton('Login', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
-                </div>
+               <h5><?= Yii::$app->name ?></h5>
 
-            <?php ActiveForm::end(); ?>
+                <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>
+
+                    <?= $form->field($model, 'username')->textInput(['autofocus' => true, 'placeholder' => 'Username'])->label(false) ?>
+
+                    <?= $form->field($model, 'password')->passwordInput(['placeholder' => 'Password'])->label(false) ?>
+
+                    <?= $form->field($model, 'rememberMe')->checkbox() ?>
+
+                    <div class="form-group">
+                        <?= Html::submitButton('Login', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
+                    </div>
+
+                <?php ActiveForm::end(); ?>
+            <!-- </div> -->
         </div>
     </div>
 </div>

@@ -6,7 +6,7 @@
 use common\widgets\Alert;
 use frontend\assets\AppAsset;
 use yii\bootstrap5\Breadcrumbs;
-use yii\helpers\Html;
+use yii\bootstrap5\Html;
 use yii\bootstrap5\Nav;
 use yii\bootstrap5\NavBar;
 
@@ -21,13 +21,6 @@ AppAsset::register($this);
     <?php $this->registerCsrfMetaTags() ?>
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
-    
-    <style>
-        body
-        {
-            background:#f5f6ff;
-        }
-    </style>
 </head>
 <body class="d-flex flex-column h-100">
 <?php $this->beginBody() ?>
@@ -38,37 +31,24 @@ AppAsset::register($this);
         'brandLabel' => Yii::$app->name,
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
-            'class' => 'navbar navbar-expand-md navbar-dark bg-danger fixed-top navbar-inverse',
-            'style' => 'display:none;',
+            'class' => 'navbar navbar-expand-md navbar-dark bg-dark fixed-top',
         ],
     ]);
-    
+    $menuItems = [
+        ['label' => 'User Registration', 'url' => ['/site/index']],
+        ['label' => 'About', 'url' => ['/site/about']],
+        ['label' => 'Contact', 'url' => ['/site/contact']],
+    ];
     if (Yii::$app->user->isGuest) {
-        $menuItems[] = ['label' => false];
-    }
-    else
-    {
-        $menuItems = [
-            ['label' => 'User Management', 'url' => ['/admin/user-management']],
-            [
-                'label' => 'Settings',
-                'items' => [
-                    ['label' => 'Role', 'url' => ['/admin/cms-role']],
-                    ['label' => 'Role Assignments', 'url' => ['/admin/cms-role-assignment']],
-                    ['label' => 'Actions', 'url' => ['/admin/cms-role-actions']],
-                ],
-            ],
-        ];
-
-        echo Nav::widget([
-            'options' => ['class' => 'navbar-nav me-auto mb-2 mb-md-0'],
-            'items' => $menuItems,
-        ]);
+        $menuItems[] = ['label' => 'Signup', 'url' => ['/site/signup']];
     }
 
-    
+    echo Nav::widget([
+        'options' => ['class' => 'navbar-nav me-auto mb-2 mb-md-0'],
+        'items' => $menuItems,
+    ]);
     if (Yii::$app->user->isGuest) {
-        // echo Html::tag('div',Html::a('Login',['/site/login'],['class' => ['btn btn-link login text-decoration-none']]),['class' => ['d-flex']]);
+        echo Html::tag('div',Html::a('Login',['/site/login'],['class' => ['btn btn-link login text-decoration-none']]),['class' => ['d-flex']]);
     } else {
         echo Html::beginForm(['/site/logout'], 'post', ['class' => 'd-flex'])
             . Html::submitButton(
@@ -83,17 +63,11 @@ AppAsset::register($this);
 
 <main role="main" class="flex-shrink-0">
     <div class="container">
-        <?php 
-            if (!Yii::$app->user->isGuest) {
-                echo Breadcrumbs::widget([
-                    'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
-                ]);
-            }
-        ?>
+        <?= Breadcrumbs::widget([
+            'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+        ]) ?>
         <?= Alert::widget() ?>
-
         <?= $content ?>
-        
     </div>
 </main>
 

@@ -45,5 +45,6 @@ return [
         ],
         
     ],
+    'defaultRoute' => 'site/login',
     'params' => $params,
 ];
