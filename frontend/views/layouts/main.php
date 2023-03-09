@@ -27,6 +27,10 @@ AppAsset::register($this);
         {
             background:#f5f6ff;
         }
+        h1
+        {
+            font-size:25px;
+        }
         .navbar
         {
             background:maroon;

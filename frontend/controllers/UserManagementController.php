@@ -13,6 +13,7 @@ use yii\web\UploadedFile;
 use common\models\CmsRole;
 use common\models\CmsRoleAssignment;
 use yii\helpers\ArrayHelper;
+use yii\filters\AccessControl;
 use Yii;
 
 /**
@@ -25,17 +26,25 @@ class UserManagementController extends Controller
      */
     public function behaviors()
     {
-        return array_merge(
-            parent::behaviors(),
-            [
-                'verbs' => [
-                    'class' => VerbFilter::className(),
-                    'actions' => [
-                        'delete' => ['POST'],
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                // 'only' => ['logout', 'signup'],
+                'rules' => [
+                    [
+                        'actions' => ['index','upload-file','view','update','create','delete'],
+                        'allow' => true,
+                        'roles' => ['@'],
                     ],
                 ],
-            ]
-        );
+            ],
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'delete' => ['post'],
+                ],
+            ],
+        ];
     }
 
     /**
