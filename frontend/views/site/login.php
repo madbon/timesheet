@@ -28,8 +28,9 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
                     </div>
 
-                    <div class="card">
-                    <p style="border-radius:5px 5px 0px 0px; text-align: center; font-weight:normal; background:#ae0505; font-size:15px; color:white; padding:5px; padding-right:50px; padding-left:50px;">Timesheet Monitoring System for CICT Trainees</p>
+                    <p style="text-align: center; font-weight:normal; font-size:15px; color:#ae0505; padding:5px; padding-right:50px; padding-left:50px; margin-bottom:0; border:1px solid #ddd; border-bottom:none;">Timesheet Monitoring System for CICT Trainees</p>
+                    <div style="border:1px solid #ddd; padding:20px; padding-top:20px;">
+                        
                         <div class="card-body">
                             
                             <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>

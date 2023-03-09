@@ -13,6 +13,7 @@ use yii\grid\GridView;
 $this->title = 'User Management';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+
 <div class="user-data-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
@@ -23,14 +24,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-    <!-- <div class="card">
-        <div class="card-body"> -->
+    <div style="border:2px solid #ddd; padding:5px;">
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
             'filterModel' => $searchModel,
-            'options' => [
-                'class' => 'table table-stripped table-hover', // add your desired CSS class(es) here
-            ],
             'columns' => [
                 ['class' => 'yii\grid\SerialColumn'],
 
@@ -68,10 +65,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
             ],
         ]); ?>
-        <!-- </div>
-    </div> -->
-
-    
-
+    </div>
 
 </div>
+
+<?php
+$this->registerJs('
+    $("table").removeClass("table-bordered").addClass("table-hover");
+');
+?>
