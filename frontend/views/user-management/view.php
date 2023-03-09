@@ -30,21 +30,29 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'id',
+            // 'id',
+            [
+                'label' => 'ROLE',
+                'format' => 'raw',
+                'value' => function($model)
+                {
+                    return !empty($model->roleAssignment->cmsRole->title) ? '<span style="padding-left:10px; padding-right:10px; border-radius:5px; color:white; background:#6262ff;">'.$model->roleAssignment->cmsRole->title.'</span>' : '<span style="color:red;">NO ASSIGNED ROLE</span>';
+                }
+            ],
             'fname',
             'mname',
             'sname',
             'bday',
             'sex',
             'username',
-            'auth_key',
-            'password_hash',
-            'password_reset_token',
+            // 'auth_key',
+            // 'password_hash',
+            // 'password_reset_token',
             'email:email',
-            'status',
-            'created_at',
-            'updated_at',
-            'verification_token',
+            // 'status',
+            // 'created_at',
+            // 'updated_at',
+            // 'verification_token',
         ],
     ]) ?>
 

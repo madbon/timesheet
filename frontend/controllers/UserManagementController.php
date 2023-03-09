@@ -106,10 +106,9 @@ class UserManagementController extends Controller
     {
         $model = new UserData();
         $roleAssignment = new CmsRoleAssignment();
-        
 
         $queryRole = CmsRole::find()->all();
-        $roleArr = ArrayHelper::getColumn($queryRole,'title');
+        $roleArr = ArrayHelper::map($queryRole, 'id', 'title');
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post())) {
@@ -153,6 +152,15 @@ class UserManagementController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $roleAssignment = new CmsRoleAssignment();
+
+        $queryRole = CmsRole::find()->all();
+        $roleArr = ArrayHelper::map($queryRole, 'id', 'title');
+        
+
+        $queryRoleAssignment = CmsRoleAssignment::find()->where(['user_id' => $id])->one();
+        $model->role_id = !empty($queryRoleAssignment->cms_role_id) ? $queryRoleAssignment->cms_role_id : NULL;
+        
 
         if ($this->request->isPost && $model->load($this->request->post())) {
 
@@ -161,16 +169,44 @@ class UserManagementController extends Controller
                 $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
             }
 
+            // print_r($model->role_id); exit;
+
+            // ROLE ASSIGNMENT SAVING
+            if(CmsRoleAssignment::find()->where(['user_id' => $id])->exists())
+            {
+                // Yii::$app->db->createCommand()
+                // ->update(CmsRoleAssignment::tableName(), ['user_id' => $id], 'cms_role_id = :cms_role_id', [':cms_role_id' => $model->role_id])
+                // ->execute();
+
+                $modelUpdate = CmsRoleAssignment::find()->where(['user_id' => $id])->one();
+                $modelUpdate->cms_role_id = $model->role_id;
+                $modelUpdate->save();
+            }
+            else
+            {
+                // ROLE ASSIGNMENT SAVING
+                $model_id = $model->id;
+
+                $roleAssignment->user_id = $model_id;
+                $roleAssignment->cms_role_id = $model->role_id;
+                $roleAssignment->save();
+            }
+
             if($model->save())
             {
                 \Yii::$app->getSession()->setFlash('success', 'Changes has been saved');
             }
 
+            
+
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
+        
+
         return $this->render('update', [
             'model' => $model,
+            'roleArr' => $roleArr,
         ]);
     }
 
