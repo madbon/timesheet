@@ -106,7 +106,7 @@ class UserManagementController extends Controller
         if ($this->request->isPost) {
             if ($model->load($this->request->post())) {
 
-                $model->password_hash = Yii::$app->security->generatePasswordHash($this->password);
+                $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
                 $model->auth_key = Yii::$app->security->generateRandomString();
                 $model->verification_token = Yii::$app->security->generateRandomString() . '_' . time();
 

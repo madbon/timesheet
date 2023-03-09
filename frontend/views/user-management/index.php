@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Creatfe User Account', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' Create User Account', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
