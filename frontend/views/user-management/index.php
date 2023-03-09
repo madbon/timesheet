@@ -36,7 +36,20 @@ $this->params['breadcrumbs'][] = $this->title;
                     'format' => 'raw',
                     'value' => function($model)
                     {
-                        return !empty($model->roleAssignment->cmsRole->title) ? '<span style="padding-left:10px; padding-right:10px; border-radius:5px; color:white; background:#6262ff;">'.$model->roleAssignment->cmsRole->title.'</span>' : '<span style="color:red;">NO ASSIGNED ROLE</span>';
+                        // return !empty($model->roleAssignment->cmsRole->title) ? '<span style="padding-left:10px; padding-right:10px; border-radius:5px; color:white; background:#6262ff;">'.$model->roleAssignment->cmsRole->title.'</span>' : '<span style="color:red;">NO ASSIGNED ROLE</span>';
+
+                        if(!empty($model->roleAssignment->cmsRole->title))
+                        {
+                            return Html::a(($model->roleAssignment->cmsRole->title),['delete-role-assigned','user_id' => $model->id],[
+                                'class' => 'btn btn-sm btn-outline-primary',
+                                'data' => ['confirm' => 'Are you sure you want to remove the assigned role? Click OK to perform action.'],
+                            ]);
+                        }
+                        else
+                        {
+                            return '<span style="color:red;">NO ASSIGNED ROLE</span>';
+                        }
+
                     }
                 ],
                 // 'id',

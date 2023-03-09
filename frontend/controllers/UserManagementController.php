@@ -32,7 +32,7 @@ class UserManagementController extends Controller
                 // 'only' => ['logout', 'signup'],
                 'rules' => [
                     [
-                        'actions' => ['index','upload-file','view','update','create','delete'],
+                        'actions' => ['index','upload-file','view','update','create','delete','delete-role-assigned'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -45,6 +45,16 @@ class UserManagementController extends Controller
                 ],
             ],
         ];
+    }
+
+    public function actionDeleteRoleAssigned($user_id)
+    {
+        if(CmsRoleAssignment::deleteAll(['user_id' => $user_id]))
+        {
+            \Yii::$app->getSession()->setFlash('success', "This User Account's Role has been removed");
+        }
+
+        return $this->redirect(Yii::$app->request->referrer);
     }
 
     /**
