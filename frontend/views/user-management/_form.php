@@ -13,7 +13,7 @@ use kartik\select2\Select2;
 
     <?php $form = ActiveForm::begin(); ?>
     
-    <div class="card" style="margin-bottom: 20px;">
+    <div style="margin-bottom: 5px; border:1px solid #ddd; padding:10px;">
         <div class="card-body">
             <h5 class="card-title">Personal Information</h5>
             <div class="row">
@@ -45,17 +45,17 @@ use kartik\select2\Select2;
 
     
 
-    <div class="card">
+    <div style="border:1px solid #ddd; padding:10px;">
         <div class="card-body">
             <h5 class="card-title">Login Credentials</h5>
             <div class="row">
-            <div class="col-sm-4">
-                <?= $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
-                <?= $form->field($model, 'username')->textInput(['maxlength' => true]) ?>
-                <?= $form->field($model, 'password')->textInput(['maxlength' => true]) ?>
-                <?= $form->field($model, 'confirm_password')->textInput(['maxlength' => true]) ?>
-            </div>
-        </div>   
+                <div class="col-sm-4">
+                    <?= $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'username')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'password')->textInput(['maxlength' => true]) ?>
+                    <?php // $form->field($model, 'confirm_password')->textInput(['maxlength' => true]) ?>
+                </div>
+            </div>   
         </div>
     </div>
 

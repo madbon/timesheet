@@ -53,7 +53,9 @@ class UserData extends \yii\db\ActiveRecord
             [['username'], 'unique'],
             [['email'], 'unique'],
             ['email', 'email'],
-            [['password','confirm_password'],Yii::$app->controller->id == "user-management" && Yii::$app->controller->action->id == "create" ? 'required' : 'safe'],
+            // ['confirm_password', 'compare', 'compareAttribute' => 'password', 'message' => "Passwords don't match"],
+            [['password'],Yii::$app->controller->id == "user-management" && Yii::$app->controller->action->id == "create" ? 'required' : 'safe'],
+            
             // [['password_reset_token'], 'unique'],
         ];
     }
