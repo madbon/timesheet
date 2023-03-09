@@ -114,15 +114,15 @@ AppAsset::register($this);
     else
     {
         $menuItems = [
-            ['label' => 'User Management', 'url' => ['/admin/user-management'], 'active' => Yii::$app->controller->id == "user-management" ? true : false],
+            ['label' => 'User Management', 'url' => ['/user-management'], 'active' => Yii::$app->controller->id == "user-management" ? true : false],
             [
                 'label' => 'Settings',
                 'items' => [
-                    ['label' => 'Role', 'url' => ['/admin/cms-role'],
+                    ['label' => 'Role', 'url' => ['/cms-role'],
                         'active' => Yii::$app->controller->id == "cms-role" ? true : false,
                     ],
-                    ['label' => 'Role Assignments', 'url' => ['/admin/cms-role-assignment']],
-                    ['label' => 'Actions', 'url' => ['/admin/cms-role-actions']],
+                    ['label' => 'Role Assignments', 'url' => ['/cms-role-assignment']],
+                    ['label' => 'Actions', 'url' => ['/cms-role-actions']],
                 ],
                 'active' => Yii::$app->controller->id == "cms-role" ? true : false
             ],
