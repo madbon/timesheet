@@ -49,13 +49,44 @@ class Module extends \yii\base\Module
         return !empty($model->file_name) ? '/uploads/'.$model->file_hash.'.'.$model->extension : 'noimage.png';
     }
 
-    public static function FileExists($file_hash)
+    public static function GetFileNameExt($model_name,$id)
+    {
+        $model = Files::find()->where(['model_name' => $model_name, 'model_id' => $id])->one();
+
+        return !empty($model->file_name) ? $model->file_hash.'.'.$model->extension : 'noimage.png';
+    }
+
+    public static function FileExistsByQuery($model_name,$model_id)
     {
         $isExists = 0;
-        if($file_hash)
+        if(Files::find()->where(['model_name' => $model_name, 'model_id' => $model_id])->exists())
+        {
+            $query = Files::find()->where(['model_name' => $model_name, 'model_id' => $model_id])->one();
+
+            $fileHash = !empty($query->file_hash) ? $query->file_hash : 'nohash';
+            $fileExt = !empty($query->extension) ? $query->extension : 'jpg';
+
+            $file_hash_ext =$fileHash.'.'.$fileExt;
+            
+            if($file_hash_ext)
+            {
+                $file_path = Yii::getAlias('@webroot')."/uploads/".$file_hash_ext;
+                if (file_exists($file_path)) {
+                    $isExists = 1;
+                }
+            }
+        } 
+
+        return $isExists;
+    }
+
+    public static function FileExists($file_hash_ext)
+    {
+        $isExists = 0;
+        if($file_hash_ext)
         {
         
-            $file_path = Yii::getAlias('@webroot')."/uploads/".$file_hash;
+            $file_path = Yii::getAlias('@webroot')."/uploads/".$file_hash_ext;
             if (file_exists($file_path)) {
                 $isExists = 1;
             }
@@ -64,7 +95,7 @@ class Module extends \yii\base\Module
         return $isExists;
     }
 
-    
+
 
 
 }

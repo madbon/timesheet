@@ -23,15 +23,18 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-    <div class="card">
-        <div class="card-body">
+    <!-- <div class="card">
+        <div class="card-body"> -->
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
             'filterModel' => $searchModel,
+            'options' => [
+                'class' => 'table table-stripped table-hover', // add your desired CSS class(es) here
+            ],
             'columns' => [
                 ['class' => 'yii\grid\SerialColumn'],
 
-                'id',
+                // 'id',
                 'fname',
                 'mname',
                 'sname',
@@ -42,7 +45,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 //'password_hash',
                 //'password_reset_token',
                 'email:email',
-                'status',
+                // 'status',
                 //'created_at',
                 //'updated_at',
                 //'verification_token',
@@ -52,7 +55,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     'value' => function($model)
                     {
 
-                        return Html::a((Yii::$app->getModule('admin')->GetIcon('upload-cloud')).' Upload Signature',['upload-file','id' => $model->id],['class' => 'btn btn-sm btn-outline-secondary']);
+                        $findFile = Yii::$app->getModule('admin')->FileExistsByQuery('UserData',$model->id);
+
+                        return $findFile ? Html::a((Yii::$app->getModule('admin')->GetIcon('upload-cloud')).' Update Signature',['upload-file','id' => $model->id,'message' => 'Update Signature'],['class' => 'btn btn-sm btn-outline-primary']) : Html::a((Yii::$app->getModule('admin')->GetIcon('upload-cloud')).' Upload Signature',['upload-file','id' => $model->id],['class' => 'btn btn-sm btn-outline-secondary']);
                     }
                 ],
                 [
@@ -63,8 +68,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
             ],
         ]); ?>
-        </div>
-    </div>
+        <!-- </div>
+    </div> -->
 
     
 

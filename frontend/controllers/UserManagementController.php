@@ -57,7 +57,7 @@ class UserManagementController extends Controller
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUploadFile($id)
+    public function actionUploadFile($id,$message="Upload Signature")
     {
         $modelUpload = new UploadForm();
 
@@ -70,13 +70,14 @@ class UserManagementController extends Controller
             if ($modelUpload->upload()) {
                 // file is uploaded successfully
                 \Yii::$app->getSession()->setFlash('success', 'File has been uploaded');
-                return $this->redirect(['upload-file', 'id' => $id]);
+                return $this->redirect(['upload-file', 'id' => $id, 'message' => $message]);
             }
         }
 
         return $this->render('_upload_file', [
             'model' => $this->findModel($id),
             'modelUpload' => $modelUpload,
+            'message' => $message,
         ]);
     }
 
