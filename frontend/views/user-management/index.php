@@ -31,8 +31,18 @@ $this->params['breadcrumbs'][] = $this->title;
             'columns' => [
                 ['class' => 'yii\grid\SerialColumn'],
 
+                [
+                    'label' => 'ROLE',
+                    'format' => 'raw',
+                    'value' => function($model)
+                    {
+                        return !empty($model->roleAssignment->cmsRole->title) ? '<span style="padding-left:10px; padding-right:10px; border-radius:5px; color:white; background:#6262ff;">'.$model->roleAssignment->cmsRole->title.'</span>' : '<span style="color:red;">NO ASSIGNED ROLE</span>';
+                    }
+                ],
                 // 'id',
                 'fname',
+                // 'roleAssignment.cmsRole.title',
+                
                 'mname',
                 'sname',
                 'bday',

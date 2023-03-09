@@ -10,6 +10,9 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use frontend\models\UploadForm;
 use yii\web\UploadedFile;
+use common\models\CmsRole;
+use common\models\CmsRoleAssignment;
+use yii\helpers\ArrayHelper;
 use Yii;
 
 /**
@@ -102,6 +105,11 @@ class UserManagementController extends Controller
     public function actionCreate()
     {
         $model = new UserData();
+        $roleAssignment = new CmsRoleAssignment();
+        
+
+        $queryRole = CmsRole::find()->all();
+        $roleArr = ArrayHelper::getColumn($queryRole,'title');
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post())) {
@@ -109,12 +117,21 @@ class UserManagementController extends Controller
                 $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
                 $model->auth_key = Yii::$app->security->generateRandomString();
                 $model->verification_token = Yii::$app->security->generateRandomString() . '_' . time();
+                
 
                 if($model->save())
                 {
                     \Yii::$app->getSession()->setFlash('success', 'Data has been saved');
                 }
-                return $this->redirect(['upload-file', 'id' => $model->id]);
+
+                // ROLE ASSIGNMENT SAVING
+                $model_id = $model->id;
+
+                $roleAssignment->user_id = $model_id;
+                $roleAssignment->cms_role_id = $model->role_id;
+                $roleAssignment->save();
+
+                return $this->redirect(['upload-file', 'id' => $model_id]);
             }
         } else {
             $model->loadDefaultValues();
@@ -122,6 +139,7 @@ class UserManagementController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'roleArr' => $roleArr,
         ]);
     }
 
