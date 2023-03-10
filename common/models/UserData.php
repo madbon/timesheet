@@ -37,13 +37,13 @@ class UserData extends \yii\db\ActiveRecord
      * {@inheritdoc}
      */
     public $confirm_password,$password;
-    public $role_id;
+    public $role_name;
     public function rules()
     {
         return [
             // [[ 'status', 'created_at', 'updated_at'], 'integer'],
             // [['bday'], 'safe'],
-            [['fname', 'sname', 'email', 'sex','bday','username','role_id'], 'required'],
+            [['fname', 'sname', 'email', 'sex','bday','username','role_name'], 'required'],
             [['mname','password_hash','password_reset_token','verification_token','auth_key'],'safe'],
             [['fname'], 'string', 'max' => 250],
             [['mname'], 'string', 'max' => 150],
@@ -84,7 +84,7 @@ class UserData extends \yii\db\ActiveRecord
             'verification_token' => 'Verification Token',
             'confirm_password' => 'Confirm Password',
             'password' => 'Password',
-            'role_id' => 'Role',
+            'role_name' => 'Role',
         ];
     }
 
@@ -101,6 +101,16 @@ class UserData extends \yii\db\ActiveRecord
     public function getRoleAssignment()
     {
         return $this->hasOne(CmsRoleAssignment::class, ['user_id' => 'id']);
+    }
+
+    /**
+     * Gets query for [[CmsRole]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAuthAssignment()
+    {
+        return $this->hasOne(AuthAssignment::class, ['user_id' => 'id']);
     }
 
 }

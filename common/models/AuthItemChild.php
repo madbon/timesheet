@@ -34,7 +34,15 @@ class AuthItemChild extends \yii\db\ActiveRecord
             [['parent', 'child'], 'unique', 'targetAttribute' => ['parent', 'child']],
             [['parent'], 'exist', 'skipOnError' => true, 'targetClass' => AuthItem::class, 'targetAttribute' => ['parent' => 'name']],
             [['child'], 'exist', 'skipOnError' => true, 'targetClass' => AuthItem::class, 'targetAttribute' => ['child' => 'name']],
+            [['parent', 'child'], 'compareAttributes'],
         ];
+    }
+
+    public function compareAttributes($attribute, $params)
+    {
+        if ($this->parent == $this->child) {
+            $this->addError($attribute, 'First and Second Fields cannot be the same');
+        }
     }
 
     /**
@@ -43,8 +51,8 @@ class AuthItemChild extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'parent' => 'Role',
-            'child' => 'Permission',
+            'parent' => 'Role/Permission',
+            'child' => 'System Access',
         ];
     }
 

@@ -15,7 +15,7 @@ use kartik\select2\Select2;
 
     <div class="row" style="margin-bottom: 20px;">
         <div class="col-sm-6"">
-        <?= $form->field($model, 'role_id')->dropDownList(
+        <?= $form->field($model, 'role_name')->dropDownList(
             $roleArr,
             ['prompt'=>'Select option']
         ) ?>
@@ -40,7 +40,7 @@ use kartik\select2\Select2;
             
             <div class="row">
                 <div class="col-sm-4">
-                    <?= $form->field($model, 'bday')->textInput(['type' => 'date', 'max' => (date('Y') - 10).date('-m-d')]) ?>
+                    <?= $form->field($model, 'bday')->textInput(['type' => 'date', 'max' => (date('Y') - 18).date('-m-d')]) ?>
                 </div>
                 <div class="col-sm-4">
                     <?= $form->field($model, 'sex')->dropDownList(

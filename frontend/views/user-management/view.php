@@ -36,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'raw',
                 'value' => function($model)
                 {
-                    return !empty($model->roleAssignment->cmsRole->title) ? '<span style="padding-left:10px; padding-right:10px; border-radius:5px; color:white; background:#6262ff;">'.$model->roleAssignment->cmsRole->title.'</span>' : '<span style="color:red;">NO ASSIGNED ROLE</span>';
+                    return !empty($model->authAssignment->itemName->name) ? '<span style="padding-left:10px; padding-right:10px; border-radius:5px; color:white; background:#6262ff;">'.$model->authAssignment->itemName->name.'</span>' : '<span style="color:red;">NO ASSIGNED ROLE</span>';
                 }
             ],
             'fname',

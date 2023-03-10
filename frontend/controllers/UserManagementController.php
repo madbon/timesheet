@@ -12,6 +12,8 @@ use frontend\models\UploadForm;
 use yii\web\UploadedFile;
 use common\models\CmsRole;
 use common\models\CmsRoleAssignment;
+use common\models\AuthAssignment;
+use common\models\AuthItem;
 use yii\helpers\ArrayHelper;
 use yii\filters\AccessControl;
 use yii\web\ForbiddenHttpException;
@@ -33,9 +35,39 @@ class UserManagementController extends Controller
                 // 'only' => ['logout', 'signup'],
                 'rules' => [
                     [
-                        'actions' => ['index','upload-file','view','update','create','delete','delete-role-assigned'],
+                        'actions' => ['index'],
+                        'allow' => true,
+                        'roles' => ['user-management-index'],
+                    ],
+                    [
+                        'actions' => ['upload-file'],
+                        'allow' => true,
+                        'roles' => ['user-management-upload-file'],
+                    ],
+                    [
+                        'actions' => ['view'],
+                        'allow' => true,
+                        'roles' => ['user-management-view'],
+                    ],
+                    [
+                        'actions' => ['update'],
+                        'allow' => true,
+                        'roles' => ['user-management-update'],
+                    ],
+                    [
+                        'actions' => ['create'],
                         'allow' => true,
                         'roles' => ['user-management-create'],
+                    ],
+                    [
+                        'actions' => ['delete'],
+                        'allow' => true,
+                        'roles' => ['user-management-delete'],
+                    ],
+                    [
+                        'actions' => ['delete-role-assigned'],
+                        'allow' => true,
+                        'roles' => ['user-management-delete-role-assigned'],
                     ],
                 ],
             ],
@@ -50,7 +82,7 @@ class UserManagementController extends Controller
 
     public function actionDeleteRoleAssigned($user_id)
     {
-        if(CmsRoleAssignment::deleteAll(['user_id' => $user_id]))
+        if(AuthAssignment::deleteAll(['user_id' => $user_id]))
         {
             \Yii::$app->getSession()->setFlash('success', "This User Account's Role has been removed");
         }
@@ -127,10 +159,10 @@ class UserManagementController extends Controller
         // if(Yii::$app->user->can('user-management-create'))
         // {
             $model = new UserData();
-            $roleAssignment = new CmsRoleAssignment();
+            $roleAssignment = new AuthAssignment();
 
-            $queryRole = CmsRole::find()->all();
-            $roleArr = ArrayHelper::map($queryRole, 'id', 'title');
+            $queryRole = AuthItem::find()->where(['type' => 1])->all();
+            $roleArr = ArrayHelper::map($queryRole, 'name', 'name');
 
             if ($this->request->isPost) {
                 if ($model->load($this->request->post())) {
@@ -148,9 +180,17 @@ class UserManagementController extends Controller
                     // ROLE ASSIGNMENT SAVING
                     $model_id = $model->id;
 
-                    $roleAssignment->user_id = $model_id;
-                    $roleAssignment->cms_role_id = $model->role_id;
-                    $roleAssignment->save();
+                    $roleAssignment->user_id = (string)$model_id;
+                    $roleAssignment->item_name = $model->role_name;
+                    // $roleAssignment->cms_role_id = $model->role_id;
+                    if($roleAssignment->save())
+                    {
+                        
+                    }
+                    else
+                    {
+                        // print_r($roleAssignment->errors); exit;
+                    }
 
                     return $this->redirect(['upload-file', 'id' => $model_id]);
                 }
@@ -180,14 +220,14 @@ class UserManagementController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        $roleAssignment = new CmsRoleAssignment();
+        $roleAssignment = new AuthAssignment();
 
-        $queryRole = CmsRole::find()->all();
-        $roleArr = ArrayHelper::map($queryRole, 'id', 'title');
+        $queryRole = AuthItem::find()->where(['type' => 1])->all();
+        $roleArr = ArrayHelper::map($queryRole, 'name', 'name');
         
 
-        $queryRoleAssignment = CmsRoleAssignment::find()->where(['user_id' => $id])->one();
-        $model->role_id = !empty($queryRoleAssignment->cms_role_id) ? $queryRoleAssignment->cms_role_id : NULL;
+        $queryRoleAssignment = AuthAssignment::find()->where(['user_id' => $id])->one();
+        $model->role_name = !empty($queryRoleAssignment->item_name) ? $queryRoleAssignment->item_name : NULL;
         
 
         if ($this->request->isPost && $model->load($this->request->post())) {
@@ -200,14 +240,14 @@ class UserManagementController extends Controller
             // print_r($model->role_id); exit;
 
             // ROLE ASSIGNMENT SAVING
-            if(CmsRoleAssignment::find()->where(['user_id' => $id])->exists())
+            if(AuthAssignment::find()->where(['user_id' => $id])->exists())
             {
                 // Yii::$app->db->createCommand()
                 // ->update(CmsRoleAssignment::tableName(), ['user_id' => $id], 'cms_role_id = :cms_role_id', [':cms_role_id' => $model->role_id])
                 // ->execute();
 
-                $modelUpdate = CmsRoleAssignment::find()->where(['user_id' => $id])->one();
-                $modelUpdate->cms_role_id = $model->role_id;
+                $modelUpdate = AuthAssignment::find()->where(['user_id' => $id])->one();
+                $modelUpdate->item_name = $model->role_name;
                 $modelUpdate->save();
             }
             else
@@ -215,9 +255,17 @@ class UserManagementController extends Controller
                 // ROLE ASSIGNMENT SAVING
                 $model_id = $model->id;
 
-                $roleAssignment->user_id = $model_id;
-                $roleAssignment->cms_role_id = $model->role_id;
-                $roleAssignment->save();
+                $roleAssignment->user_id = (string)$model_id;
+                $roleAssignment->item_name = $model->role_name;
+                
+                if($roleAssignment->save())
+                {
+
+                }
+                else
+                {
+                    // print_r($roleAssignment->errors); exit;
+                }
             }
 
             if($model->save())

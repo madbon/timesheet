@@ -104,7 +104,7 @@ class AuthItemChildController extends Controller
     public function actionCreate()
     {
         $model = new AuthItemChild();
-        $roles = AuthItem::find()->where(['type' => 1])->all();
+        $roles = AuthItem::find()->all();
         $permissions = AuthItem::find()->where(['type' => 2])->all();
 
         $roleArr = ArrayHelper::map($roles, 'name', 'name');
