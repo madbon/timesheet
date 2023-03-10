@@ -7,7 +7,7 @@ use yii\widgets\DetailView;
 /** @var common\models\AuthItemChild $model */
 
 $this->title = $model->parent;
-$this->params['breadcrumbs'][] = ['label' => 'Auth Item Children', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Role Assignments', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>

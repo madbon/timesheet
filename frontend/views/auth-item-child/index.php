@@ -10,7 +10,7 @@ use yii\grid\GridView;
 /** @var common\models\AuthItemChildSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
-$this->title = 'Auth Item Children';
+$this->title = 'Role Assignments';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="auth-item-child-index">
@@ -18,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Auth Item Child', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a("Assign Permission to Role", ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>

@@ -96,6 +96,10 @@ AppAsset::register($this);
             color: #ae0505;
         }
         
+        div.form-group
+        {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body class="d-flex flex-column h-100">
@@ -132,6 +136,9 @@ AppAsset::register($this);
                     ],
                     ['label' => 'Permissions', 'url' => ['/auth-item/permissions'],
                         'active' => Yii::$app->controller->action->id == "permissions" ? true : false,
+                    ],
+                    ['label' => 'Role Assignments', 'url' => ['/auth-item-child'],
+                        'active' => Yii::$app->controller->id == "auth-item-child" ? true : false,
                     ],
                 ],
                 'active' => in_array(Yii::$app->controller->id,['auth-item','auth-item-child']) ? true : false

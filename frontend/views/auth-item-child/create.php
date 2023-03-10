@@ -5,8 +5,8 @@ use yii\helpers\Html;
 /** @var yii\web\View $this */
 /** @var common\models\AuthItemChild $model */
 
-$this->title = 'Create Auth Item Child';
-$this->params['breadcrumbs'][] = ['label' => 'Auth Item Children', 'url' => ['index']];
+$this->title = 'Assign Permission to Role';
+$this->params['breadcrumbs'][] = ['label' => "Role Assignments", 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="auth-item-child-create">
@@ -15,6 +15,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= $this->render('_form', [
         'model' => $model,
+        'roleArr' => $roleArr,
+        'permissionsArr' => $permissionsArr,
     ]) ?>
 
 </div>

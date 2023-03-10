@@ -32,6 +32,8 @@ class AuthItem extends \yii\db\ActiveRecord
         return 'auth_item';
     }
 
+    public $name_desc;
+
     /**
      * {@inheritdoc}
      */
@@ -44,6 +46,7 @@ class AuthItem extends \yii\db\ActiveRecord
             [['name', 'rule_name'], 'string', 'max' => 64],
             [['name'], 'unique'],
             [['rule_name'], 'exist', 'skipOnError' => true, 'targetClass' => AuthRule::class, 'targetAttribute' => ['rule_name' => 'name']],
+            [['name_desc'],'safe'],
         ];
     }
 

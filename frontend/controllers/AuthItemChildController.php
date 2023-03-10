@@ -2,11 +2,13 @@
 
 namespace frontend\controllers;
 
+use common\models\AuthItem;
 use common\models\AuthItemChild;
 use common\models\AuthItemChildSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 use Yii;
 
 /**
@@ -30,6 +32,38 @@ class AuthItemChildController extends Controller
                 ],
             ]
         );
+    }
+
+    public function actionGetAvailablePermissions($name)
+    {
+        $assignedPermissions = AuthItemChild::find()
+        ->where(['parent' => $name])
+        ->all();
+
+        $arrAssPerms = [];
+        foreach ($assignedPermissions as $key => $assPerm) {
+            $arrAssPerms[] = $assPerm['child'];
+        }
+
+        $permissions = AuthItem::find()
+        ->where(['type' => 2])
+        ->andWhere(['NOT',['name' => $arrAssPerms]])
+        ->all();
+
+        
+        if($permissions)
+        {
+            $options = '<option> -- SELECT PERMISSION -- </option>';
+            foreach ($permissions as $permission) {
+                $options .= "<option value='{$permission->name}'>{$permission->name}</option>";
+            }
+        }
+        else
+        {
+            $options = '<option>You have assigned all permissions to this role</option>';
+        }
+
+        return $options;
     }
 
     /**
@@ -70,12 +104,17 @@ class AuthItemChildController extends Controller
     public function actionCreate()
     {
         $model = new AuthItemChild();
+        $roles = AuthItem::find()->where(['type' => 1])->all();
+        $permissions = AuthItem::find()->where(['type' => 2])->all();
+
+        $roleArr = ArrayHelper::map($roles, 'name', 'name');
+        $permissionsArr = ArrayHelper::map($permissions, 'name', 'name');
 
         if ($this->request->isPost) {
            
             
             if ($model->load($this->request->post()) && $model->save()) {
-                \Yii::$app->getSession()->setFlash('success', "This User Account's Role has been removed");
+                \Yii::$app->getSession()->setFlash('success', "Data has been saved");
                 return $this->redirect(Yii::$app->request->referrer);
             }
         } else {
@@ -84,6 +123,8 @@ class AuthItemChildController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'roleArr' => $roleArr,
+            'permissionsArr' => $permissionsArr,
         ]);
     }
 
@@ -99,12 +140,40 @@ class AuthItemChildController extends Controller
     {
         $model = $this->findModel($parent, $child);
 
+        $roles = AuthItem::find()->where(['type' => 1])->all();
+        // $permissions = AuthItem::find()->where(['type' => 2])->all();
+
+        $roleArr = ArrayHelper::map($roles, 'name', 'name');
+       
+
+        // 
+        $assignedPermissions = AuthItemChild::find()
+        ->where(['parent' => $parent])
+        ->all();
+
+        $arrAssPerms = [];
+        foreach ($assignedPermissions as $key => $assPerm) {
+            $arrAssPerms[] = $assPerm['child'];
+        }
+
+        $permissions = AuthItem::find()
+        ->where(['type' => 2])
+        ->andWhere(['NOT',['name' => $arrAssPerms]])
+
+        ->all();
+        // 
+
+        $permissionsArr = ArrayHelper::map($permissions, 'name', 'name');
+
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'parent' => $model->parent, 'child' => $model->child]);
         }
 
         return $this->render('update', [
             'model' => $model,
+            'roleArr' => $roleArr,
+            'permissionsArr' => $permissionsArr,
+            'child' => $child,
         ]);
     }
 

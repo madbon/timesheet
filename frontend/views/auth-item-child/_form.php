@@ -12,9 +12,39 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'parent')->textInput(['maxlength' => true]) ?>
+    <?php // $form->field($model, 'parent')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'parent')->dropDownList(
+            $roleArr,
+            [
+                'prompt' => '-- SELECT ROLE --',
+                'onchange' => '
+                    $.post("' . Yii::$app->urlManager->createUrl('auth-item-child/get-available-permissions?name=') . '" + $(this).val(), function(data) {
+                        $("#' . Html::getInputId($model, 'child') . '").html(data);
+                    });
+                '
+            ]
+    ) ?>
 
-    <?= $form->field($model, 'child')->textInput(['maxlength' => true]) ?>
+    <?php // $form->field($model, 'child')->textInput(['maxlength' => true]) ?>
+
+    <?php 
+        if(Yii::$app->controller->action->id == "update")
+        {
+            echo $form->field($model, 'child')->dropDownList(
+                $permissionsArr + [$child => $child],
+                ['prompt'=>'-- SELECT PERMISSION --']
+            ); 
+        }
+        else
+        {
+            echo $form->field($model, 'child')->dropDownList(
+                $permissionsArr,
+                ['prompt'=>'-- SELECT PERMISSION --']
+            ); 
+        }
+    
+        
+    ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
