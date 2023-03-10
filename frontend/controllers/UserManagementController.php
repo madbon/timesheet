@@ -14,6 +14,7 @@ use common\models\CmsRole;
 use common\models\CmsRoleAssignment;
 use yii\helpers\ArrayHelper;
 use yii\filters\AccessControl;
+use yii\web\ForbiddenHttpException;
 use Yii;
 
 /**
@@ -34,7 +35,7 @@ class UserManagementController extends Controller
                     [
                         'actions' => ['index','upload-file','view','update','create','delete','delete-role-assigned'],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['user-management-create'],
                     ],
                 ],
             ],
@@ -123,42 +124,50 @@ class UserManagementController extends Controller
      */
     public function actionCreate()
     {
-        $model = new UserData();
-        $roleAssignment = new CmsRoleAssignment();
+        // if(Yii::$app->user->can('user-management-create'))
+        // {
+            $model = new UserData();
+            $roleAssignment = new CmsRoleAssignment();
 
-        $queryRole = CmsRole::find()->all();
-        $roleArr = ArrayHelper::map($queryRole, 'id', 'title');
+            $queryRole = CmsRole::find()->all();
+            $roleArr = ArrayHelper::map($queryRole, 'id', 'title');
 
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post())) {
+            if ($this->request->isPost) {
+                if ($model->load($this->request->post())) {
 
-                $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
-                $model->auth_key = Yii::$app->security->generateRandomString();
-                $model->verification_token = Yii::$app->security->generateRandomString() . '_' . time();
-                
+                    $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
+                    $model->auth_key = Yii::$app->security->generateRandomString();
+                    $model->verification_token = Yii::$app->security->generateRandomString() . '_' . time();
+                    
 
-                if($model->save())
-                {
-                    \Yii::$app->getSession()->setFlash('success', 'Data has been saved');
+                    if($model->save())
+                    {
+                        \Yii::$app->getSession()->setFlash('success', 'Data has been saved');
+                    }
+
+                    // ROLE ASSIGNMENT SAVING
+                    $model_id = $model->id;
+
+                    $roleAssignment->user_id = $model_id;
+                    $roleAssignment->cms_role_id = $model->role_id;
+                    $roleAssignment->save();
+
+                    return $this->redirect(['upload-file', 'id' => $model_id]);
                 }
-
-                // ROLE ASSIGNMENT SAVING
-                $model_id = $model->id;
-
-                $roleAssignment->user_id = $model_id;
-                $roleAssignment->cms_role_id = $model->role_id;
-                $roleAssignment->save();
-
-                return $this->redirect(['upload-file', 'id' => $model_id]);
+            } else {
+                $model->loadDefaultValues();
             }
-        } else {
-            $model->loadDefaultValues();
-        }
 
-        return $this->render('create', [
-            'model' => $model,
-            'roleArr' => $roleArr,
-        ]);
+            return $this->render('create', [
+                'model' => $model,
+                'roleArr' => $roleArr,
+            ]);
+        // }
+        // else
+        // {
+        //     throw new ForbiddenHttpException;
+        // }
+        
     }
 
     /**

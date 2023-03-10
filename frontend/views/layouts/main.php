@@ -122,13 +122,19 @@ AppAsset::register($this);
             [
                 'label' => 'Settings',
                 'items' => [
-                    ['label' => 'Role', 'url' => ['/cms-role'],
-                        'active' => Yii::$app->controller->id == "cms-role" ? true : false,
+                    // ['label' => 'Role', 'url' => ['/cms-role'],
+                    //     'active' => Yii::$app->controller->id == "cms-role" ? true : false,
+                    // ],
+                    // ['label' => 'Role Assignments', 'url' => ['/cms-role-assignment']],
+                    // ['label' => 'Actions', 'url' => ['/cms-role-actions']],
+                    ['label' => 'Roles', 'url' => ['/auth-item/roles'],
+                        'active' => Yii::$app->controller->action->id == "roles" ? true : false,
                     ],
-                    ['label' => 'Role Assignments', 'url' => ['/cms-role-assignment']],
-                    ['label' => 'Actions', 'url' => ['/cms-role-actions']],
+                    ['label' => 'Permissions', 'url' => ['/auth-item/permissions'],
+                        'active' => Yii::$app->controller->action->id == "permissions" ? true : false,
+                    ],
                 ],
-                'active' => Yii::$app->controller->id == "cms-role" ? true : false
+                'active' => in_array(Yii::$app->controller->id,['auth-item','auth-item-child']) ? true : false
             ],
         ];
 
