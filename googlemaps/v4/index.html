@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Google Maps Search Box</title>
+    <style>
+      /* Set the height of the map */
+      #map {
+        height: 400px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Google Maps Search Box</h1>
+    <div>
+      <input id="search" type="text" placeholder="Search...">
+    </div>
+    <div>
+      <label for="lat">Latitude:</label>
+      <input id="lat" type="number" step="any">
+      <label for="lng">Longitude:</label>
+      <input id="lng" type="number" step="any">
+      <button id="go" type="button">Go</button>
+    </div>
+    <div id="map"></div>
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places,geometry&callback=initMap"
+      async
+      defer
+    ></script>
+    <script>
+      let map;
+
+      function initMap() {
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat: 14.6091, lng: 121.0223 }, // Center the map to Manila, Philippines
+          zoom: 10,
+        });
+
+        const input = document.getElementById("search");
+        const searchBox = new google.maps.places.SearchBox(input);
+
+        map.addListener("bounds_changed", () => {
+          searchBox.setBounds(map.getBounds());
+        });
+
+        let markers = [];
+
+        searchBox.addListener("places_changed", () => {
+          const places = searchBox.getPlaces();
+
+          if (places.length == 0) {
+            return;
+          }
+
+          markers.forEach((marker) => {
+            marker.setMap(null);
+          });
+          markers = [];
+
+          const bounds = new google.maps.LatLngBounds();
+          places.forEach((place) => {
+            if (!place.geometry) {
+              console.log("Returned place contains no geometry");
+              return;
+            }
+
+            const marker = new google.maps.Marker({
+              map,
+              title: place.name,
+              position: place.geometry.location,
+            });
+            markers.push(marker);
+
+            if (place.geometry.viewport) {
+              bounds.union(place.geometry.viewport);
+            } else {
+              bounds.extend(place.geometry.location);
+            }
+          });
+
+          // Automatically adjust the zoom level based on the distance between markers
+          if (markers.length > 1) {
+            const distance = google.maps.geometry.spherical.computeDistanceBetween(
+              markers[0].getPosition(),
+              markers[markers.length - 1].getPosition()
+            );
+            map.fitBounds(bounds);
+            map.setZoom(getZoomLevel(distance));
+          } else {
+            map.fitBounds(bounds);
+          }
+
+          console.log(markers[0].getPosition().lat());
+          console.log(markers[0].getPosition().lng());
+        });
+
+        // Search for a location using coordinates
+        const goButton = document.getElementById("go");
+        goButton.addEventListener("click", () => {
+          const lat = parseFloat(document.getElementById("lat").value);
+          const lng = parseFloat(document.getElementById("lng").value);
+
+          if (isNaN(lat) || isNaN(lng)) {
+            console.log("Invalid coordinates");
+            return;
+          }
+
+          const location = new google.maps.LatLng(lat, lng);
+          map.setCenter(location);
+          map.setZoom(14);
+
+          const marker = new google.maps.Marker({
+            map,
+            position: location,
+          });
+          markers.push(marker);
+
+          console.log(marker.getPosition().lat());
+          console.log(marker.getPosition().lng());
+          // Add markers for Quezon City, Makati City, and Caloocan City
+          const quezonCity = new google.maps.Marker({
+            position: { lat: 14.6760, lng: 121.0437 },
+            map,
+            title: "Quezon City",
+          });
+          const makatiCity = new google.maps.Marker({
+            position: { lat: 14.5547, lng: 121.0244 },
+            map,
+            title: "Makati City",
+          });
+          const caloocanCity = new google.maps.Marker({
+            position: { lat: 14.7566, lng: 121.0444 },
+            map,
+            title: "Caloocan City",
+          });
+
+          // Add markers to the markers array
+          markers.push(quezonCity);
+          markers.push(makatiCity);
+          markers.push(caloocanCity);
+        });
+      }
+
+      // Helper function to calculate the zoom level based on the distance between markers
+      function getZoomLevel(distance) {
+        const mapWidth = document.getElementById("map").offsetWidth;
+        const GLOBE_WIDTH = 256;
+        const ZOOM_MAX = 21;
+
+        for (let zoom = 0; zoom < ZOOM_MAX; zoom++) {
+          if (distance <= (GLOBE_WIDTH * mapWidth) / (2 ** (zoom + 8))) {
+            return zoom;
+          }
+        }
+        return ZOOM_MAX;
+      }
+    </script>
+  </body>
+</html>
