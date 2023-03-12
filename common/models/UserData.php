@@ -37,18 +37,20 @@ class UserData extends \yii\db\ActiveRecord
      * {@inheritdoc}
      */
     public $confirm_password,$password;
-    public $role_name;
+    public $program_id;
+    public $major_id;
     public function rules()
     {
         return [
             // [[ 'status', 'created_at', 'updated_at'], 'integer'],
             // [['bday'], 'safe'],
-            [['fname', 'sname', 'email', 'sex','bday','username','role_name'], 'required'],
+            [['fname', 'sname', 'email', 'sex','bday','username'], 'required'],
             [['mname','password_hash','password_reset_token','verification_token','auth_key'],'safe'],
             [['fname'], 'string', 'max' => 250],
             [['mname'], 'string', 'max' => 150],
             [['sname'], 'string', 'max' => 50],
             [['sex'], 'string', 'max' => 1],
+            [['mobile_no','tel_no','suffix'],'safe'],
             // [['username', 'password_hash', 'password_reset_token', 'email', 'verification_token'], 'string', 'max' => 255],
             // [['auth_key'], 'string', 'max' => 32],
             [['username'], 'unique'],
@@ -56,6 +58,10 @@ class UserData extends \yii\db\ActiveRecord
             ['email', 'email'],
             // ['confirm_password', 'compare', 'compareAttribute' => 'password', 'message' => "Passwords don't match"],
             [['password'],Yii::$app->controller->id == "user-management" && Yii::$app->controller->action->id == "create" ? 'required' : 'safe'],
+
+            [['program_id'],Yii::$app->controller->action->id == "create-ojt-coordinator" ? 'required' : 'safe'],
+
+            [['student_idno','mobile_no','program_id','major_id','student_year','student_section'],Yii::$app->controller->action->id == "create-trainee" ? 'required' : 'safe'],
             
             // [['password_reset_token'], 'unique'],
         ];
@@ -84,7 +90,7 @@ class UserData extends \yii\db\ActiveRecord
             'verification_token' => 'Verification Token',
             'confirm_password' => 'Confirm Password',
             'password' => 'Password',
-            'role_name' => 'Role',
+            // 'role_name' => 'Role',
         ];
     }
 

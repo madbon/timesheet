@@ -140,7 +140,7 @@ class AuthItemChildController extends Controller
     {
         $model = $this->findModel($parent, $child);
 
-        $roles = AuthItem::find()->where(['type' => 1])->all();
+        $roles = AuthItem::find()->all();
         // $permissions = AuthItem::find()->where(['type' => 2])->all();
 
         $roleArr = ArrayHelper::map($roles, 'name', 'name');

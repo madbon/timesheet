@@ -12,15 +12,6 @@ use kartik\select2\Select2;
 <div class="user-data-form">
 
     <?php $form = ActiveForm::begin(); ?>
-
-    <div class="row" style="margin-bottom: 20px;">
-        <div class="col-sm-6"">
-        <?= $form->field($model, 'role_name')->dropDownList(
-            $roleArr,
-            ['prompt'=>'Select option']
-        ) ?>
-        </div>
-    </div>
     
     <div style="margin-bottom: 20px; border:1px solid #ddd; padding:10px; background:white;">
         <div class="card-body">

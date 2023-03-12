@@ -69,6 +69,16 @@ class UserManagementController extends Controller
                         'allow' => true,
                         'roles' => ['user-management-delete-role-assigned'],
                     ],
+                    [
+                        'actions' => ['create-ojt-coordinator'],
+                        'allow' => true,
+                        'roles' => ['user-management-create-ojt-coordinator'],
+                    ],
+                    [
+                        'actions' => ['create-trainee'],
+                        'allow' => true,
+                        'roles' => ['user-management-create-trainee'],
+                    ],
                 ],
             ],
             'verbs' => [
@@ -154,60 +164,215 @@ class UserManagementController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
-    public function actionCreate()
+    public function actionCreateAdministrator()
     {
-        // if(Yii::$app->user->can('user-management-create'))
-        // {
-            $model = new UserData();
-            $roleAssignment = new AuthAssignment();
-
-            $queryRole = AuthItem::find()->where(['type' => 1])->all();
-            $roleArr = ArrayHelper::map($queryRole, 'name', 'name');
-
-            if ($this->request->isPost) {
-                if ($model->load($this->request->post())) {
-
-                    $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
-                    $model->auth_key = Yii::$app->security->generateRandomString();
-                    $model->verification_token = Yii::$app->security->generateRandomString() . '_' . time();
-                    
-
-                    if($model->save())
-                    {
-                        \Yii::$app->getSession()->setFlash('success', 'Data has been saved');
-                    }
-
-                    // ROLE ASSIGNMENT SAVING
-                    $model_id = $model->id;
-
-                    $roleAssignment->user_id = (string)$model_id;
-                    $roleAssignment->item_name = $model->role_name;
-                    // $roleAssignment->cms_role_id = $model->role_id;
-                    if($roleAssignment->save())
-                    {
-                        
-                    }
-                    else
-                    {
-                        // print_r($roleAssignment->errors); exit;
-                    }
-
-                    return $this->redirect(['upload-file', 'id' => $model_id]);
-                }
-            } else {
-                $model->loadDefaultValues();
-            }
-
-            return $this->render('create', [
-                'model' => $model,
-                'roleArr' => $roleArr,
-            ]);
-        // }
-        // else
-        // {
-        //     throw new ForbiddenHttpException;
-        // }
         
+        $model = new UserData();
+        $roleAssignment = new AuthAssignment();
+
+        $queryRole = AuthItem::find()->where(['type' => 1])->all();
+        $roleArr = ArrayHelper::map($queryRole, 'name', 'name');
+
+        if ($this->request->isPost) {
+            if ($model->load($this->request->post())) {
+
+                $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
+                $model->auth_key = Yii::$app->security->generateRandomString();
+                $model->verification_token = Yii::$app->security->generateRandomString() . '_' . time();
+                
+
+                if($model->save())
+                {
+                    \Yii::$app->getSession()->setFlash('success', 'Data has been saved');
+                }
+
+                // ROLE ASSIGNMENT SAVING
+                $model_id = $model->id;
+
+                $roleAssignment->user_id = (string)$model_id;
+                $roleAssignment->item_name = "Administrator";
+                // $roleAssignment->cms_role_id = $model->role_id;
+                if($roleAssignment->save())
+                {
+                    
+                }
+                else
+                {
+                    // print_r($roleAssignment->errors); exit;
+                }
+
+                return $this->redirect(['upload-file', 'id' => $model_id]);
+            }
+        } else {
+            $model->loadDefaultValues();
+        }
+
+        return $this->render('create', [
+            'model' => $model,
+            'roleArr' => $roleArr,
+        ]);
+    }
+
+    /**
+     * Creates a new UserData model.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     * @return string|\yii\web\Response
+     */
+    public function actionCreateOjtCoordinator()
+    {
+        
+        $model = new UserData();
+        $roleAssignment = new AuthAssignment();
+
+        $queryRole = AuthItem::find()->where(['type' => 1])->all();
+        $roleArr = ArrayHelper::map($queryRole, 'name', 'name');
+
+        if ($this->request->isPost) {
+            if ($model->load($this->request->post())) {
+
+                $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
+                $model->auth_key = Yii::$app->security->generateRandomString();
+                $model->verification_token = Yii::$app->security->generateRandomString() . '_' . time();
+                
+
+                if($model->save())
+                {
+                    \Yii::$app->getSession()->setFlash('success', 'Data has been saved');
+                }
+
+                // ROLE ASSIGNMENT SAVING
+                $model_id = $model->id;
+
+                $roleAssignment->user_id = (string)$model_id;
+                $roleAssignment->item_name = "OjtCoordinator";
+                // $roleAssignment->cms_role_id = $model->role_id;
+                if($roleAssignment->save())
+                {
+                    
+                }
+                else
+                {
+                    // print_r($roleAssignment->errors); exit;
+                }
+
+                return $this->redirect(['upload-file', 'id' => $model_id]);
+            }
+        } else {
+            $model->loadDefaultValues();
+        }
+
+        return $this->render('create', [
+            'model' => $model,
+            'roleArr' => $roleArr,
+        ]);
+    }
+
+    /**
+     * Creates a new UserData model.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     * @return string|\yii\web\Response
+     */
+    public function actionCreateTrainee()
+    {
+        
+        $model = new UserData();
+        $roleAssignment = new AuthAssignment();
+
+        $queryRole = AuthItem::find()->where(['type' => 1])->all();
+        $roleArr = ArrayHelper::map($queryRole, 'name', 'name');
+
+        if ($this->request->isPost) {
+            if ($model->load($this->request->post())) {
+
+                $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
+                $model->auth_key = Yii::$app->security->generateRandomString();
+                $model->verification_token = Yii::$app->security->generateRandomString() . '_' . time();
+                
+
+                if($model->save())
+                {
+                    \Yii::$app->getSession()->setFlash('success', 'Data has been saved');
+                }
+
+                // ROLE ASSIGNMENT SAVING
+                $model_id = $model->id;
+
+                $roleAssignment->user_id = (string)$model_id;
+                $roleAssignment->item_name = "Trainee";
+                // $roleAssignment->cms_role_id = $model->role_id;
+                if($roleAssignment->save())
+                {
+                    
+                }
+                else
+                {
+                    // print_r($roleAssignment->errors); exit;
+                }
+
+                return $this->redirect(['upload-file', 'id' => $model_id]);
+            }
+        } else {
+            $model->loadDefaultValues();
+        }
+
+        return $this->render('create', [
+            'model' => $model,
+            'roleArr' => $roleArr,
+        ]);
+    }
+
+    /**
+     * Creates a new UserData model.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     * @return string|\yii\web\Response
+     */
+    public function actionCreateCompanySupervisor()
+    {
+        
+        $model = new UserData();
+        $roleAssignment = new AuthAssignment();
+
+        $queryRole = AuthItem::find()->where(['type' => 1])->all();
+        $roleArr = ArrayHelper::map($queryRole, 'name', 'name');
+
+        if ($this->request->isPost) {
+            if ($model->load($this->request->post())) {
+
+                $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
+                $model->auth_key = Yii::$app->security->generateRandomString();
+                $model->verification_token = Yii::$app->security->generateRandomString() . '_' . time();
+                
+
+                if($model->save())
+                {
+                    \Yii::$app->getSession()->setFlash('success', 'Data has been saved');
+                }
+
+                // ROLE ASSIGNMENT SAVING
+                $model_id = $model->id;
+
+                $roleAssignment->user_id = (string)$model_id;
+                $roleAssignment->item_name = "CompanySupervisor";
+                // $roleAssignment->cms_role_id = $model->role_id;
+                if($roleAssignment->save())
+                {
+                    
+                }
+                else
+                {
+                    // print_r($roleAssignment->errors); exit;
+                }
+
+                return $this->redirect(['upload-file', 'id' => $model_id]);
+            }
+        } else {
+            $model->loadDefaultValues();
+        }
+
+        return $this->render('create', [
+            'model' => $model,
+            'roleArr' => $roleArr,
+        ]);
     }
 
     /**

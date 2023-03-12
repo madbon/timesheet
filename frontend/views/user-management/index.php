@@ -19,7 +19,10 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' Create User Account', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' OJT Coordinator', ['create-ojt-coordinator'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' Company Supervisor', ['create-company-supervisor'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' Trainee', ['create-trainee'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' Administrator', ['create-administrator'], ['class' => 'btn btn-outline-primary']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
