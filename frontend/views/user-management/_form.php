@@ -13,6 +13,17 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
     
+    <?php if(Yii::$app->controller->action->id == "update"){ ?>
+        <div class="row" style="margin-bottom: 20px;">
+            <div class="col-sm-3">
+            <?= $form->field($model, 'item_name')->dropDownList(
+                $roleArr,
+                ['prompt'=>'Select option']
+            ) ?>
+            </div>
+        </div>
+    <?php } ?>
+
     <div class="card" style="margin-bottom:10px;">
         <div class="card-body">
         
@@ -50,7 +61,7 @@ use yii\widgets\ActiveForm;
 
             <div class="row">
                 <div class="col-sm-12">
-                    <?= $form->field($model, 'address')->textInput(['maxlength' => true])->label("Complete Address <i>(House Block/Lot No, Street Name, Subdivision/Village, Barangay, City/Municipality, Zip Code)</i>"); ?>
+                    <?= $form->field($model, 'address')->textInput(['maxlength' => true])->label("Complete Address <i>(House Block/Lot No, Street Name, Subdivision/Village, Barangay, City/Municipality, Province, Zip Code)</i>"); ?>
                 </div>
             </div>  
         </div>
@@ -58,45 +69,88 @@ use yii\widgets\ActiveForm;
 
     <div class="card" style="margin-bottom: 10px;">
         <div class="card-body">
-            <h5 class="card-title">Student Information</h5>
+            <h5 class="card-title">
+                <?php
+                    switch ($account_type) {
+                        case 'trainee':
+                            echo "Student Information";
+                        break;
+                        case 'ojtcoordinator':
+                            echo "Assigned Program/Course";
+                        break;
+                        case 'companysupervisor':
+                            echo "Company and Assigned Department/Position";
+                        break;
+                        
+                        default:
+                            # code...
+                        break;
+                    }
+                ?>
+            </h5>
             <div class="row">
                 <div class="col-sm-4">
-                    <?= $form->field($model, 'student_idno')->textInput(['maxlength' => true]) ?>
+                    <?php 
+                        if($account_type == "trainee")
+                        {
+                            echo $form->field($model, 'student_idno')->textInput(['maxlength' => true]);
+                        }
+                    ?>
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm-4">
-                    <?= $form->field($model, 'ref_program_id')->dropDownList(
-                            $program,
-                            [
-                                'prompt' => '-- PROGRAM/COURSE --',
-                                'onchange' => '
-                                    $.post("' . Yii::$app->urlManager->createUrl('/admin/default/get-major?program_id=') . '" + $(this).val(), function(data) {
-                                        $("#' . Html::getInputId($model, 'ref_program_major_id') . '").html(data);
-                                    });
-                                '
-                            ]
-                    ) ?>
+                    <?php 
+                        if(in_array($account_type,['trainee','ojtcoordinator']))
+                        {
+                            echo $form->field($model, 'ref_program_id')->dropDownList(
+                                $program,
+                                [
+                                    'prompt' => '-- PROGRAM/COURSE --',
+                                    'onchange' => '
+                                        $.post("' . Yii::$app->urlManager->createUrl('/admin/default/get-major?program_id=') . '" + $(this).val(), function(data) {
+                                            $("#' . Html::getInputId($model, 'ref_program_major_id') . '").html(data);
+                                        });
+                                    '
+                                ]
+                                    );
+                        }
+                    ?>
                 </div>
                 <div class="col-sm-4">
-                    <?= $form->field($model, 'ref_program_major_id')->dropDownList(
-                        !empty($major) ? $major : [],
-                        ['prompt'=>'Select Program/Course First']
-                    ) ?>
+                    <?php     
+                        if(in_array($account_type,['trainee']))
+                        {
+                            echo $form->field($model, 'ref_program_major_id')->dropDownList(
+                                !empty($major) ? $major : [],
+                                ['prompt'=>'Select Program/Course First']
+                            );
+                        }
+                    ?>
                 </div>
             </div>   
             <div class="row">
                 <div class="col-sm-4">
-                    <?= $form->field($model, 'student_year')->dropDownList(
-                        $student_year,
-                        ['prompt'=>'Select option']
-                    ) ?>
+                    <?php 
+                        if(in_array($account_type,['trainee']))
+                        {
+                            echo $form->field($model, 'student_year')->dropDownList(
+                                $student_year,
+                                ['prompt'=>'Select option']
+                            );
+                        }
+                    ?>
                 </div>
                 <div class="col-sm-4">
-                    <?= $form->field($model, 'student_section')->dropDownList(
-                        $student_section,
-                        ['prompt'=>'Select option']
-                    ) ?>
+                    <?php 
+                        if(in_array($account_type,['trainee']))
+                        {
+                            echo $form->field($model, 'student_section')->dropDownList(
+                                $student_section,
+                                ['prompt'=>'Select option']
+                            ); 
+                        }
+                    ?>
                 </div>
             </div>
         </div>

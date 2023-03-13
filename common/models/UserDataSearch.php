@@ -18,8 +18,8 @@ class UserDataSearch extends UserData
     public function rules()
     {
         return [
-            [['id', 'sname', 'status', 'created_at', 'updated_at'], 'integer'],
-            [['fname', 'mname', 'bday', 'sex', 'username', 'auth_key', 'password_hash', 'password_reset_token', 'email', 'verification_token','ref_program_id','ref_program_major_id','student_idno','student_year','student_section','item_name'], 'safe'],
+            [['id', 'status', 'created_at', 'updated_at'], 'integer'],
+            [['fname','sname', 'mname', 'bday', 'sex', 'username', 'auth_key', 'password_hash', 'password_reset_token', 'email', 'verification_token','ref_program_id','ref_program_major_id','student_idno','student_year','student_section','item_name','suffix','mobile_no','tel_no','address'], 'safe'],
         ];
     }
 
@@ -69,10 +69,14 @@ class UserDataSearch extends UserData
             'status' => $this->status,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'mobile_no' => $this->mobile_no,
+            'tel_no' => $this->tel_no,
         ]);
 
         $query->andFilterWhere(['like', 'fname', $this->fname])
             ->andFilterWhere(['like', 'mname', $this->mname])
+            ->andFilterWhere(['like', 'address', $this->address])
+            ->andFilterWhere(['like', 'suffix', $this->suffix])
             ->andFilterWhere(['like', 'sex', $this->sex])
             ->andFilterWhere(['like','bday',$this->bday])
             ->andFilterWhere(['like', 'username', $this->username])
@@ -87,7 +91,15 @@ class UserDataSearch extends UserData
             ->andFilterWhere(['=', 'student_idno', $this->student_idno])
             ->andFilterWhere(['like', 'verification_token', $this->verification_token]);
 
-            $query->andFilterWhere(['like', 'auth_item.name', $this->item_name]);
+            if($this->item_name)
+            {
+                $query->andFilterWhere(['like', 'auth_item.name', $this->item_name]);
+            }
+            else
+            {
+                $query->andFilterWhere(['like', 'auth_item.name', "Trainee"]);
+            }
+            
 
         return $dataProvider;
     }

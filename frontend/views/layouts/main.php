@@ -147,7 +147,7 @@ AppAsset::register($this);
     else
     {
         $menuItems = [
-            ['label' => 'User Management', 'url' => ['/user-management'], 'active' => Yii::$app->controller->id == "user-management" ? true : false],
+            ['label' => 'User Management', 'url' => ['/user-management','UserDataSearch[item_name]' => 'Trainee'], 'active' => Yii::$app->controller->id == "user-management" ? true : false],
             ['label' => 'Settings', 'url' => ['/settings'], 'active' => in_array(Yii::$app->controller->id,[
                 'settings',
                 'auth-item',

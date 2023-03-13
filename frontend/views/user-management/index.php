@@ -21,7 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' Trainee', ['create', 'account_type' => 'trainee'], ['class' => 'btn btn-success']) ?>
-        <?= Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' OJT Coordinator', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' OJT Coordinator', ['create','account_type' => 'ojtcoordinator'], ['class' => 'btn btn-success']) ?>
         <?= Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' Company Supervisor', ['create'], ['class' => 'btn btn-success']) ?>
         <?= Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' Administrator', ['create'], ['class' => 'btn btn-outline-primary']) ?>
     </p>
@@ -34,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div style="margin-top:50px;">
 
         <div style="margin-bottom: 8px; margin-top:20px;">
-        <?= Html::a('Trainees',['index', 'UserDataSearch[item_name]' => 'Trainee'],['class' => $searchModel->item_name == 'Trainee' ? 'active-tab' : 'custom-tab']) ?>
+        <?= Html::a('Trainees',['index', 'UserDataSearch[item_name]' => 'Trainee'],['class' => $searchModel->item_name == 'Trainee' || $searchModel->item_name == "" ? 'active-tab' : 'custom-tab']) ?>
         <?= Html::a('OJT Coordinators',['index', 'UserDataSearch[item_name]' => 'OjtCoordinator'],['class' => $searchModel->item_name == 'OjtCoordinator' ? 'active-tab' : 'custom-tab']) ?>
         <?= Html::a('Company Supervisors',['index', 'UserDataSearch[item_name]' => 'CompanySupervisor'],['class' => $searchModel->item_name == 'CompanySupervisor' ? 'active-tab' : 'custom-tab']) ?>
         <?= Html::a('Administrators',['index', 'UserDataSearch[item_name]' => 'Administrator'],['class' => $searchModel->item_name == 'Administrator' ? 'active-tab' : 'custom-tab']) ?>
@@ -55,7 +55,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         'format' => 'raw',
                         'value' => function($model)
                         {
-                            // return !empty($model->roleAssignment->cmsRole->title) ? '<span style="padding-left:10px; padding-right:10px; border-radius:5px; color:white; background:#6262ff;">'.$model->roleAssignment->cmsRole->title.'</span>' : '<span style="color:red;">NO ASSIGNED ROLE</span>';
 
                             if(!empty($model->authAssignment->itemName->name))
                             {
@@ -83,11 +82,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         },
                         'filter' => \yii\helpers\ArrayHelper::map(\common\models\AuthItem::find()->where(['type' => 1])->asArray()->all(), 'name', 'name'),
                     ],
-                    // [
-                    //     'label' => 'Program/Course',
-                    //     'attribute' => 'program.title',
-                    // ],
                     [
+                        'label' => $searchModel->item_name == 'OjtCoordinator' ? 'Assigned Program/Course' : 'Program/Course',
                         'attribute' => 'ref_program_id',
                         'value' => function ($model) {
                             return !empty($model->program->title) ? $model->program->title : "";
@@ -100,14 +96,16 @@ $this->params['breadcrumbs'][] = $this->title;
                             return !empty($model->programMajor->title) ? $model->programMajor->title : "";
                         },
                         'filter' => \yii\helpers\ArrayHelper::map(\common\models\ProgramMajor::find()->asArray()->all(), 'id', 'title'),
+                        'visible' => in_array($searchModel->item_name,['Trainee']) ? true : false,
                     ],
-                    'student_idno',
                     [
                         'attribute' => 'student_year',
                         'value' => function ($model) {
                             return !empty($model->student_year) ? $model->student_year : "";
                         },
                         'filter' => \yii\helpers\ArrayHelper::map(\common\models\StudentYear::find()->asArray()->all(), 'year', 'title'),
+                        'visible' => in_array($searchModel->item_name,['Trainee']) ? true : false,
+                        
                     ],
                     [
                         'attribute' => 'student_section',
@@ -115,12 +113,13 @@ $this->params['breadcrumbs'][] = $this->title;
                             return !empty($model->student_section) ? $model->student_section : "";
                         },
                         'filter' => \yii\helpers\ArrayHelper::map(\common\models\StudentSection::find()->asArray()->all(), 'section', 'section'),
+                        'visible' => in_array($searchModel->item_name,['Trainee']) ? true : false,
                     ],
-                    // 'student_year',
-                    // 'student_section',
-                    // 'id',
+                    [
+                        'attribute' => 'student_idno',
+                        'visible' => in_array($searchModel->item_name,['Trainee']) ? true : false,
+                    ],
                     'fname',
-                    // 'roleAssignment.cmsRole.title',
                     
                     'mname',
                     'sname',
@@ -142,16 +141,25 @@ $this->params['breadcrumbs'][] = $this->title;
                             'F' => 'Female',
                         ],
                     ],
-                    'suffix',
+                    [
+                        'attribute' => 'suffix',
+                        'value' => function ($model) {
+                            return !empty($model->suffix) ? $model->suffix : "";
+                        },
+                        'filter' => \yii\helpers\ArrayHelper::map(\common\models\Suffix::find()->asArray()->all(), 'title', 'title'),
+                    ],
                     'username',
                     //'auth_key',
                     //'password_hash',
                     //'password_reset_token',
                     'email:email',
+                    'mobile_no',
+                    'tel_no',
                     // 'status',
                     //'created_at',
                     //'updated_at',
                     //'verification_token',
+                    'address',
                     [
                         'format' => 'raw',
                         'label' => 'Upload',

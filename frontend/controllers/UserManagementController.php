@@ -117,7 +117,7 @@ class UserManagementController extends Controller
 
         $program = ArrayHelper::map(RefProgram::find()->all(), 'id', 'title');
        
-        
+        $itemName = NULL;
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post())) {
@@ -140,15 +140,19 @@ class UserManagementController extends Controller
                 switch ($account_type) {
                     case 'trainee':
                         $roleAssignment->item_name = "Trainee";
+                        $itemName = "Trainee";
                     break;
                     case 'ojtcoordinator':
                         $roleAssignment->item_name = "OjtCoordinator";
+                        $itemName = "OjtCoordinator";
                     break;
                     case 'companysupervisor':
                         $roleAssignment->item_name = "CompanySupervisor";
+                        $itemName = "CompanySupervisor";
                     break;
                     case 'administrator':
                         $roleAssignment->item_name = "Administrator";
+                        $itemName = "Administrator";
                     break;
                     
                     default:
@@ -161,7 +165,12 @@ class UserManagementController extends Controller
                     print_r($roleAssignment->errors); exit;
                 }
 
-                return $this->redirect(['upload-file', 'id' => $model_id]);
+                // return $this->redirect(['upload-file', 'id' => $model_id]);
+                return $this->redirect(['index', 
+                'UserDataSearch[item_name]' => $itemName,
+                'UserDataSearch[fname]' => $model->fname, 
+                'UserDataSearch[sname]' => $model->sname, 
+             ]);
             }
         } else {
             $model->loadDefaultValues();
@@ -193,7 +202,7 @@ class UserManagementController extends Controller
      *
      * @return string
      */
-    public function actionIndex($account_type = "Trainee")
+    public function actionIndex()
     {
         $searchModel = new UserDataSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
@@ -270,7 +279,7 @@ class UserManagementController extends Controller
         $program = ArrayHelper::map(RefProgram::find()->all(), 'id', 'title');
         $major =  ArrayHelper::map(ProgramMajor::find()->where(['ref_program_id' => $model->ref_program_id])->all(), 'id', 'title');
 
-        
+        $model->item_name = !empty($model->authAssignment->item_name) ? $model->authAssignment->item_name : null;
 
         if ($this->request->isPost && $model->load($this->request->post())) {
 
@@ -284,9 +293,15 @@ class UserManagementController extends Controller
                 \Yii::$app->getSession()->setFlash('success', 'Changes has been saved');
             }
 
-            
+            $authAssigned = AuthAssignment::find()->where(['user_id' => $model->id])->one();
+            $authAssigned->item_name = $model->item_name;
+            $authAssigned->save();
 
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(['index', 
+            'UserDataSearch[item_name]' => $model->item_name,
+            'UserDataSearch[fname]' => $model->fname,
+            'UserDataSearch[sname]' => $model->sname,
+        ]);
         }
 
         
