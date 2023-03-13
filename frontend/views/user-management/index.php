@@ -165,10 +165,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         'label' => 'Upload',
                         'value' => function($model)
                         {
+                            if(in_array($model->authAssignment->item_name,['CompanySupervisor','Trainee']))
+                            {
+                                $findFile = Yii::$app->getModule('admin')->FileExistsByQuery('UserData',$model->id);
 
-                            $findFile = Yii::$app->getModule('admin')->FileExistsByQuery('UserData',$model->id);
-
-                            return $findFile ? Html::a((Yii::$app->getModule('admin')->GetIcon('upload-cloud')).' Update Signature',['upload-file','id' => $model->id,'message' => 'Update Signature'],['class' => 'btn btn-sm btn-outline-primary']) : Html::a((Yii::$app->getModule('admin')->GetIcon('upload-cloud')).' Upload Signature',['upload-file','id' => $model->id],['class' => 'btn btn-sm btn-outline-secondary']);
+                                return $findFile ? Html::a((Yii::$app->getModule('admin')->GetIcon('upload-cloud')).' Update Signature',['upload-file','id' => $model->id,'message' => 'Update Signature'],['class' => 'btn btn-sm btn-outline-primary']) : Html::a((Yii::$app->getModule('admin')->GetIcon('upload-cloud')).' Upload Signature',['upload-file','id' => $model->id],['class' => 'btn btn-sm btn-outline-secondary']);
+                            }
+                            
                         }
                     ],
                     [
