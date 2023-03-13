@@ -39,8 +39,10 @@ class UserData extends \yii\db\ActiveRecord
     public $confirm_password,$password;
     public $program_id;
     public $major_id;
+    public $item_name;
+
     public function rules()
-    {
+    {   
         return [
             // [[ 'status', 'created_at', 'updated_at'], 'integer'],
             // [['bday'], 'safe'],
@@ -50,6 +52,7 @@ class UserData extends \yii\db\ActiveRecord
             [['mname'], 'string', 'max' => 150],
             [['sname'], 'string', 'max' => 50],
             [['sex'], 'string', 'max' => 1],
+            [['mobile_no'],'string','max' => 10],
             [['mobile_no','tel_no','suffix'],'safe'],
             // [['username', 'password_hash', 'password_reset_token', 'email', 'verification_token'], 'string', 'max' => 255],
             // [['auth_key'], 'string', 'max' => 32],
@@ -59,9 +62,8 @@ class UserData extends \yii\db\ActiveRecord
             // ['confirm_password', 'compare', 'compareAttribute' => 'password', 'message' => "Passwords don't match"],
             [['password'],Yii::$app->controller->id == "user-management" && Yii::$app->controller->action->id == "create" ? 'required' : 'safe'],
 
-            [['program_id'],Yii::$app->controller->action->id == "create-ojt-coordinator" ? 'required' : 'safe'],
-
-            [['student_idno','mobile_no','program_id','major_id','student_year','student_section'],Yii::$app->controller->action->id == "create-trainee" ? 'required' : 'safe'],
+            // Create Trainee other required indicators
+            [['student_idno','mobile_no','ref_program_id','ref_program_major_id','student_year','student_section','address'], in_array(Yii::$app->request->get('account_type'),['trainee']) ? 'required' : 'safe'],
             
             // [['password_reset_token'], 'unique'],
         ];
@@ -90,6 +92,11 @@ class UserData extends \yii\db\ActiveRecord
             'verification_token' => 'Verification Token',
             'confirm_password' => 'Confirm Password',
             'password' => 'Password',
+            'student_idno' => 'Student ID',
+            'ref_program_id' => 'Program/Course',
+            'ref_program_major_id' => 'Course Major',
+            'student_year' => 'Year',
+            'student_section' => 'Section',
             // 'role_name' => 'Role',
         ];
     }
@@ -97,6 +104,26 @@ class UserData extends \yii\db\ActiveRecord
     public function fullName()
     {
         return $this->sname.", ".$this->fname;
+    }
+
+     /**
+     * Gets query for [[CmsRole]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getProgramMajor()
+    {
+        return $this->hasOne(ProgramMajor::class, ['id' => 'ref_program_major_id']);
+    }
+
+    /**
+     * Gets query for [[CmsRole]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getProgram()
+    {
+        return $this->hasOne(RefProgram::class, ['id' => 'ref_program_id']);
     }
 
     /**

@@ -3,6 +3,11 @@
 namespace frontend\controllers;
 
 use common\models\Files;
+use common\models\ProgramMajor;
+use common\models\RefProgram;
+use common\models\StudentSection;
+use common\models\StudentYear;
+use common\models\Suffix;
 use common\models\UserData;
 use common\models\UserDataSearch;
 use yii\web\Controller;
@@ -17,6 +22,8 @@ use common\models\AuthItem;
 use yii\helpers\ArrayHelper;
 use yii\filters\AccessControl;
 use yii\web\ForbiddenHttpException;
+use common\components\PdfWidget;
+use yii\data\ActiveDataProvider;
 use Yii;
 
 /**
@@ -70,14 +77,9 @@ class UserManagementController extends Controller
                         'roles' => ['user-management-delete-role-assigned'],
                     ],
                     [
-                        'actions' => ['create-ojt-coordinator'],
+                        'actions' => ['create'],
                         'allow' => true,
-                        'roles' => ['user-management-create-ojt-coordinator'],
-                    ],
-                    [
-                        'actions' => ['create-trainee'],
-                        'allow' => true,
-                        'roles' => ['user-management-create-trainee'],
+                        'roles' => ['user-management-create-trainee','user-management-create-ojt-coordinator','user-management-create-company-supervisor','user-management-create-administrator'],
                     ],
                 ],
             ],
@@ -88,6 +90,92 @@ class UserManagementController extends Controller
                 ],
             ],
         ];
+    }
+
+    /**
+     * Creates a new UserData model.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     * @return string|\yii\web\Response
+     */
+    public function actionCreate($account_type)
+    {
+
+        if(!in_array($account_type,['trainee','ojtcoordinator','companysupervisor','administrator']))
+        {
+            throw new \yii\web\NotFoundHttpException('The requested page does not exist.');
+        }
+        
+        $model = new UserData();
+        $roleAssignment = new AuthAssignment();
+
+        $queryRole = AuthItem::find()->where(['type' => 1])->all();
+        $roleArr = ArrayHelper::map($queryRole, 'name', 'name');
+
+        $suffix = ArrayHelper::map(Suffix::find()->all(), 'title', 'title');
+        $student_year = ArrayHelper::map(StudentYear::find()->all(), 'year', 'title');
+        $student_section = ArrayHelper::map(StudentSection::find()->all(), 'section', 'section');
+
+        $program = ArrayHelper::map(RefProgram::find()->all(), 'id', 'title');
+       
+        
+
+        if ($this->request->isPost) {
+            if ($model->load($this->request->post())) {
+
+                $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
+                $model->auth_key = Yii::$app->security->generateRandomString();
+                $model->verification_token = Yii::$app->security->generateRandomString() . '_' . time();
+
+            
+                if($model->save())
+                {
+                    \Yii::$app->getSession()->setFlash('success', 'Data has been saved');
+                }
+
+                // ROLE ASSIGNMENT SAVING
+                $model_id = $model->id;
+
+                $roleAssignment->user_id = (string)$model_id;
+
+                switch ($account_type) {
+                    case 'trainee':
+                        $roleAssignment->item_name = "Trainee";
+                    break;
+                    case 'ojtcoordinator':
+                        $roleAssignment->item_name = "OjtCoordinator";
+                    break;
+                    case 'companysupervisor':
+                        $roleAssignment->item_name = "CompanySupervisor";
+                    break;
+                    case 'administrator':
+                        $roleAssignment->item_name = "Administrator";
+                    break;
+                    
+                    default:
+                        # code...
+                    break;
+                }
+                
+                if(!$roleAssignment->save())
+                {
+                    print_r($roleAssignment->errors); exit;
+                }
+
+                return $this->redirect(['upload-file', 'id' => $model_id]);
+            }
+        } else {
+            $model->loadDefaultValues();
+        }
+
+        return $this->render('create', [
+            'model' => $model,
+            'roleArr' => $roleArr,
+            'suffix' => $suffix,
+            'account_type' => $account_type,
+            'student_section' => $student_section,
+            'student_year' => $student_year,
+            'program' => $program,
+        ]);
     }
 
     public function actionDeleteRoleAssigned($user_id)
@@ -105,7 +193,7 @@ class UserManagementController extends Controller
      *
      * @return string
      */
-    public function actionIndex()
+    public function actionIndex($account_type = "Trainee")
     {
         $searchModel = new UserDataSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
@@ -159,221 +247,6 @@ class UserManagementController extends Controller
         ]);
     }
 
-    /**
-     * Creates a new UserData model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return string|\yii\web\Response
-     */
-    public function actionCreateAdministrator()
-    {
-        
-        $model = new UserData();
-        $roleAssignment = new AuthAssignment();
-
-        $queryRole = AuthItem::find()->where(['type' => 1])->all();
-        $roleArr = ArrayHelper::map($queryRole, 'name', 'name');
-
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post())) {
-
-                $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
-                $model->auth_key = Yii::$app->security->generateRandomString();
-                $model->verification_token = Yii::$app->security->generateRandomString() . '_' . time();
-                
-
-                if($model->save())
-                {
-                    \Yii::$app->getSession()->setFlash('success', 'Data has been saved');
-                }
-
-                // ROLE ASSIGNMENT SAVING
-                $model_id = $model->id;
-
-                $roleAssignment->user_id = (string)$model_id;
-                $roleAssignment->item_name = "Administrator";
-                // $roleAssignment->cms_role_id = $model->role_id;
-                if($roleAssignment->save())
-                {
-                    
-                }
-                else
-                {
-                    // print_r($roleAssignment->errors); exit;
-                }
-
-                return $this->redirect(['upload-file', 'id' => $model_id]);
-            }
-        } else {
-            $model->loadDefaultValues();
-        }
-
-        return $this->render('create', [
-            'model' => $model,
-            'roleArr' => $roleArr,
-        ]);
-    }
-
-    /**
-     * Creates a new UserData model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return string|\yii\web\Response
-     */
-    public function actionCreateOjtCoordinator()
-    {
-        
-        $model = new UserData();
-        $roleAssignment = new AuthAssignment();
-
-        $queryRole = AuthItem::find()->where(['type' => 1])->all();
-        $roleArr = ArrayHelper::map($queryRole, 'name', 'name');
-
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post())) {
-
-                $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
-                $model->auth_key = Yii::$app->security->generateRandomString();
-                $model->verification_token = Yii::$app->security->generateRandomString() . '_' . time();
-                
-
-                if($model->save())
-                {
-                    \Yii::$app->getSession()->setFlash('success', 'Data has been saved');
-                }
-
-                // ROLE ASSIGNMENT SAVING
-                $model_id = $model->id;
-
-                $roleAssignment->user_id = (string)$model_id;
-                $roleAssignment->item_name = "OjtCoordinator";
-                // $roleAssignment->cms_role_id = $model->role_id;
-                if($roleAssignment->save())
-                {
-                    
-                }
-                else
-                {
-                    // print_r($roleAssignment->errors); exit;
-                }
-
-                return $this->redirect(['upload-file', 'id' => $model_id]);
-            }
-        } else {
-            $model->loadDefaultValues();
-        }
-
-        return $this->render('create', [
-            'model' => $model,
-            'roleArr' => $roleArr,
-        ]);
-    }
-
-    /**
-     * Creates a new UserData model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return string|\yii\web\Response
-     */
-    public function actionCreateTrainee()
-    {
-        
-        $model = new UserData();
-        $roleAssignment = new AuthAssignment();
-
-        $queryRole = AuthItem::find()->where(['type' => 1])->all();
-        $roleArr = ArrayHelper::map($queryRole, 'name', 'name');
-
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post())) {
-
-                $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
-                $model->auth_key = Yii::$app->security->generateRandomString();
-                $model->verification_token = Yii::$app->security->generateRandomString() . '_' . time();
-                
-
-                if($model->save())
-                {
-                    \Yii::$app->getSession()->setFlash('success', 'Data has been saved');
-                }
-
-                // ROLE ASSIGNMENT SAVING
-                $model_id = $model->id;
-
-                $roleAssignment->user_id = (string)$model_id;
-                $roleAssignment->item_name = "Trainee";
-                // $roleAssignment->cms_role_id = $model->role_id;
-                if($roleAssignment->save())
-                {
-                    
-                }
-                else
-                {
-                    // print_r($roleAssignment->errors); exit;
-                }
-
-                return $this->redirect(['upload-file', 'id' => $model_id]);
-            }
-        } else {
-            $model->loadDefaultValues();
-        }
-
-        return $this->render('create', [
-            'model' => $model,
-            'roleArr' => $roleArr,
-        ]);
-    }
-
-    /**
-     * Creates a new UserData model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return string|\yii\web\Response
-     */
-    public function actionCreateCompanySupervisor()
-    {
-        
-        $model = new UserData();
-        $roleAssignment = new AuthAssignment();
-
-        $queryRole = AuthItem::find()->where(['type' => 1])->all();
-        $roleArr = ArrayHelper::map($queryRole, 'name', 'name');
-
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post())) {
-
-                $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
-                $model->auth_key = Yii::$app->security->generateRandomString();
-                $model->verification_token = Yii::$app->security->generateRandomString() . '_' . time();
-                
-
-                if($model->save())
-                {
-                    \Yii::$app->getSession()->setFlash('success', 'Data has been saved');
-                }
-
-                // ROLE ASSIGNMENT SAVING
-                $model_id = $model->id;
-
-                $roleAssignment->user_id = (string)$model_id;
-                $roleAssignment->item_name = "CompanySupervisor";
-                // $roleAssignment->cms_role_id = $model->role_id;
-                if($roleAssignment->save())
-                {
-                    
-                }
-                else
-                {
-                    // print_r($roleAssignment->errors); exit;
-                }
-
-                return $this->redirect(['upload-file', 'id' => $model_id]);
-            }
-        } else {
-            $model->loadDefaultValues();
-        }
-
-        return $this->render('create', [
-            'model' => $model,
-            'roleArr' => $roleArr,
-        ]);
-    }
 
     /**
      * Updates an existing UserData model.
@@ -389,10 +262,14 @@ class UserManagementController extends Controller
 
         $queryRole = AuthItem::find()->where(['type' => 1])->all();
         $roleArr = ArrayHelper::map($queryRole, 'name', 'name');
-        
 
-        $queryRoleAssignment = AuthAssignment::find()->where(['user_id' => $id])->one();
-        $model->role_name = !empty($queryRoleAssignment->item_name) ? $queryRoleAssignment->item_name : NULL;
+        $suffix = ArrayHelper::map(Suffix::find()->all(), 'title', 'title');
+        $student_year = ArrayHelper::map(StudentYear::find()->all(), 'year', 'title');
+        $student_section = ArrayHelper::map(StudentSection::find()->all(), 'section', 'section');
+
+        $program = ArrayHelper::map(RefProgram::find()->all(), 'id', 'title');
+        $major =  ArrayHelper::map(ProgramMajor::find()->where(['ref_program_id' => $model->ref_program_id])->all(), 'id', 'title');
+
         
 
         if ($this->request->isPost && $model->load($this->request->post())) {
@@ -400,37 +277,6 @@ class UserManagementController extends Controller
             if($model->password)
             {
                 $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
-            }
-
-            // print_r($model->role_id); exit;
-
-            // ROLE ASSIGNMENT SAVING
-            if(AuthAssignment::find()->where(['user_id' => $id])->exists())
-            {
-                // Yii::$app->db->createCommand()
-                // ->update(CmsRoleAssignment::tableName(), ['user_id' => $id], 'cms_role_id = :cms_role_id', [':cms_role_id' => $model->role_id])
-                // ->execute();
-
-                $modelUpdate = AuthAssignment::find()->where(['user_id' => $id])->one();
-                $modelUpdate->item_name = $model->role_name;
-                $modelUpdate->save();
-            }
-            else
-            {
-                // ROLE ASSIGNMENT SAVING
-                $model_id = $model->id;
-
-                $roleAssignment->user_id = (string)$model_id;
-                $roleAssignment->item_name = $model->role_name;
-                
-                if($roleAssignment->save())
-                {
-
-                }
-                else
-                {
-                    // print_r($roleAssignment->errors); exit;
-                }
             }
 
             if($model->save())
@@ -448,6 +294,11 @@ class UserManagementController extends Controller
         return $this->render('update', [
             'model' => $model,
             'roleArr' => $roleArr,
+            'suffix' => $suffix,
+            'student_section' => $student_section,
+            'student_year' => $student_year,
+            'program' => $program,
+            'major' => $major,
         ]);
     }
 

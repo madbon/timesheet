@@ -100,6 +100,31 @@ AppAsset::register($this);
         {
             margin-top: 10px;
         }
+
+        ul li.page-item.disabled
+        {
+            display: none;
+        }
+
+        a.custom-tab
+        {
+            padding:10px;
+            text-decoration: none;
+            border:1px solid #ddd;
+            border-bottom: none;
+            color:gray;
+        }
+
+        a.active-tab
+        {
+            padding:10px;
+            text-decoration: none;
+            border:3px solid #ddd;
+            border-bottom: none;
+            background-color: #ddd;
+            color:gray;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body class="d-flex flex-column h-100">
@@ -123,26 +148,16 @@ AppAsset::register($this);
     {
         $menuItems = [
             ['label' => 'User Management', 'url' => ['/user-management'], 'active' => Yii::$app->controller->id == "user-management" ? true : false],
-            [
-                'label' => 'Settings',
-                'items' => [
-                    // ['label' => 'Role', 'url' => ['/cms-role'],
-                    //     'active' => Yii::$app->controller->id == "cms-role" ? true : false,
-                    // ],
-                    // ['label' => 'Role Assignments', 'url' => ['/cms-role-assignment']],
-                    // ['label' => 'Actions', 'url' => ['/cms-role-actions']],
-                    ['label' => 'Roles', 'url' => ['/auth-item/roles'],
-                        'active' => Yii::$app->controller->action->id == "roles" ? true : false,
-                    ],
-                    ['label' => 'Permissions', 'url' => ['/auth-item/permissions'],
-                        'active' => Yii::$app->controller->action->id == "permissions" ? true : false,
-                    ],
-                    ['label' => 'Role Assignments', 'url' => ['/auth-item-child'],
-                        'active' => Yii::$app->controller->id == "auth-item-child" ? true : false,
-                    ],
-                ],
-                'active' => in_array(Yii::$app->controller->id,['auth-item','auth-item-child']) ? true : false
-            ],
+            ['label' => 'Settings', 'url' => ['/settings'], 'active' => in_array(Yii::$app->controller->id,[
+                'settings',
+                'auth-item',
+                'auth-item-child',
+                'suffix',
+                'student-year',
+                'student-section',
+                'ref-program',
+                'program-major',
+                ]) ? true : false],
         ];
 
         echo Nav::widget([
@@ -167,7 +182,7 @@ AppAsset::register($this);
 </header>
 
 <main role="main" class="flex-shrink-0">
-    <div class="container">
+    <div class="container-fluid">
         <?php 
             if (!Yii::$app->user->isGuest) {
                 echo Breadcrumbs::widget([
