@@ -18,7 +18,7 @@
       </div>
     </div>
 
-    <div style="display:none;">
+    <div>
       <label for="lat">Latitude:</label>
       <input id="lat" type="number" step="any">
       <label for="lng">Longitude:</label>
@@ -52,14 +52,6 @@
         <input class="form-control" id="contact_info">
       </div>
     </div>
-
-
-    
-    
-
-
-    
-    
     
     <script
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAAyrQuYB1xJl7YohDMqATsOJWDI5vXprI&libraries=places,geometry&callback=initMap"
@@ -210,7 +202,7 @@ title: company.name,
 });
 
 const infoWindow = new google.maps.InfoWindow({
-      content: `<h3>${company.name}</h3><p>${company.address}</p>`,
+      content: `<h3>${company.name}</h3><p>Address: ${company.address}</p><p>Contact Details: ${company.contact_info}</p>`,
     });
 
     marker.addListener("click", () => {
