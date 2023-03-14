@@ -11,10 +11,35 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="user-company-create">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <!-- <h1><?php // Html::encode($this->title) ?></h1> -->
+
+    <?= $this->render('google-map', [
+            'content' => $googleMap,
+        ]);
+    ?>
 
     <?= $this->render('_form', [
         'model' => $model,
     ]) ?>
+
+    <?php
+        $this->registerJs('
+            $(".container-fluid").mousemove(function(){
+                var companyName = $("#company_name").val();
+                var companyAddress = $("#address").val();
+                var companyLat = $("#latitude").val();
+                var companyLong = $("#longitude").val();
+                var companyContact = $("#contact_info").val();
+
+                $("input#usercompany-name").val(companyName);
+                $("input#usercompany-address").val(companyAddress);
+                $("input#usercompany-latitude").val(companyLat);
+                $("input#usercompany-longitude").val(companyLong);
+                $("input#usercompany-contact_info").val(companyContact);
+                
+            });
+        ')
+    ?>
+
 
 </div>

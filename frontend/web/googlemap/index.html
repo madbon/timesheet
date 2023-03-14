@@ -11,10 +11,13 @@
   </head>
   <body>
     
-    <div style="margin-bottom: 20px;">
-      <label>Type the Name/Address of the Company</label>
-      <input id="search" type="text" placeholder="Search..." class="form-control">
+    <div class="row" style="margin-bottom: 20px;">
+      <div class="col-sm-8">
+        <label>Type the Name/Address of the Company</label>
+        <input id="search" type="text" placeholder="Search..." class="form-control">
+      </div>
     </div>
+
     <div style="display:none;">
       <label for="lat">Latitude:</label>
       <input id="lat" type="number" step="any">
@@ -24,204 +27,204 @@
     </div>
 
     <div class="row">
-      <div class="col-sm-4">
-        <label>Company Name</label>
-        <input class="form-control" id="company_name" type="text" disabled>
-      </div>
       <div class="col-sm-8">
+        <div id="map"></div>
+      </div>
+      <div class="col-sm-4">
+        <h5>Company Information</h5>
+        <label>Company Name</label>
+        <input class="form-control" id="company_name" type="text">
         <label>Address</label>
-        <input class="form-control" id="address" type="text" disabled>
+        <textarea class="form-control" id="address" type="text" rows="3"></textarea>
+
+        <div class="row">
+          <div class="col-sm-6">
+            <label>Latitude</label>
+            <input class="form-control" id="latitude" type="text" disabled>
+          </div>
+          <div class="col-sm-6">
+            <label>Longitude</label>
+            <input class="form-control" id="longitude" type="text" disabled>
+          </div>
+        </div>
+
+        <label>Contact Details</label>
+        <input class="form-control" id="contact_info">
       </div>
     </div>
+
+
+    
     
 
 
-    <div class="row" style="margin-bottom: 20px;">
-      <div class="col-sm-2">
-        <label>Latitude</label>
-        <input class="form-control" id="latitude" type="text" disabled>
-      </div>
-      <div class="col-sm-2">
-        <label>Longitude</label>
-        <input class="form-control" id="longitude" type="text" disabled>
-      </div>
-    </div>
     
-    <div id="map"></div>
+    
+    
     <script
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAAyrQuYB1xJl7YohDMqATsOJWDI5vXprI&libraries=places,geometry&callback=initMap"
       async
       defer
     ></script>
+    
     <script>
       let map;
-      let marker;
-      const cities = [
-      {
-        name: "Google Philippines",
-        address: "11th Avenue, BGC, Taguig, Metro Manila",
-        position: { lat: 14.5491, lng: 121.0496 },
-      },
-      {
-        name: "Microsoft Philippines",
-        address: "11th Floor 6750, Ayala Avenue, Makati, Metro Manila",
-        position: { lat: 14.5562, lng: 121.0193 },
-      },
-      {
-        name: "Amazon Philippines",
-        address: "32nd Street, Taguig, Metro Manila",
-        position: { lat: 14.5485, lng: 121.0462 },
-      },
-    ];
-      const cityMarkers = [];
+let marker;
+const cityMarkers = [];
 
-      function initMap() {
-        map = new google.maps.Map(document.getElementById("map"), {
-          center: { lat: 14.6091, lng: 121.0223 }, // Center the map to Manila, Philippines
-          zoom: 10,
-        });
+function initMap() {
+  map = new google.maps.Map(document.getElementById("map"), {
+    center: { lat: 14.6091, lng: 121.0223 }, // Center the map to Manila, Philippines
+    zoom: 10,
+  });
 
-        const input = document.getElementById("search");
-        const searchBox = new google.maps.places.SearchBox(input);
+  const input = document.getElementById("search");
+  const searchBox = new google.maps.places.SearchBox(input);
 
-        map.addListener("bounds_changed", () => {
-          searchBox.setBounds(map.getBounds());
-        });
+  map.addListener("bounds_changed", () => {
+    searchBox.setBounds(map.getBounds());
+  });
 
-        searchBox.addListener("places_changed", () => {
-          const places = searchBox.getPlaces();
+  searchBox.addListener("places_changed", () => {
+    const places = searchBox.getPlaces();
 
-          if (places.length == 0) {
-            return;
-          }
+    if (places.length == 0) {
+      return;
+    }
 
-          const bounds = new google.maps.LatLngBounds();
-          places.forEach((place) => {
-            if (!place.geometry) {
-              console.log("Returned place contains no geometry");
-              return;
-            }
-
-            if (!marker) {
-              marker = new google.maps.Marker({
-                map,
-                position: place.geometry.location,
-              });
-            } else {
-              marker.setPosition(place.geometry.location);
-            }
-
-            if (place.geometry.viewport) {
-              bounds.union(place.geometry.viewport);
-            } else {
-              bounds.extend(place.geometry.location);
-            }
-
-            // Fill the input fields with the selected company's information
-            document.getElementById("company_name").value = place.name;
-            document.getElementById("address").value = place.formatted_address;
-            document.getElementById("latitude").value = place.geometry.location.lat();
-            document.getElementById("longitude").value = place.geometry.location.lng();
-          });
-
-          map.fitBounds(bounds);
-          map.setZoom(14);
-        });
-
-        searchBox.addListener("places_changed", () => {
-          const places = searchBox.getPlaces();
-
-          if (places.length == 0) {
-            return;
-          }
-
-          const bounds = new google.maps.LatLngBounds();
-          places.forEach((place) => {
-            if (!place.geometry) {
-              console.log("Returned place contains no geometry");
-              return;
-            }
-
-            if (!marker) {
-              marker = new google.maps.Marker({
-                map,
-                position: place.geometry.location,
-              });
-            } else {
-              marker.setPosition(place.geometry.location);
-            }
-
-            if (place.geometry.viewport) {
-              bounds.union(place.geometry.viewport);
-            } else {
-              bounds.extend(place.geometry.location);
-            }
-
-            // Fill the input fields with the selected company's information
-            document.getElementById("company_name").value = place.name;
-            document.getElementById("address").value = place.formatted_address;
-            document.getElementById("latitude").value = place.geometry.location.lat();
-            document.getElementById("longitude").value = place.geometry.location.lng();
-          });
-
-          map.fitBounds(bounds);
-          map.setZoom(14);
-
-          // Fill the address input field with the selected search value
-          const searchValue = document.getElementById("search").value;
-          document.getElementById("address").value = searchValue;
-        });
-
-
-        const goButton = document.getElementById("go");
-        goButton.addEventListener("click", () => {
-          const lat = parseFloat(document.getElementById("lat").value);
-          const lng = parseFloat(document.getElementById("lng").value);
-
-          if (isNaN(lat) || isNaN(lng)) {
-            console.log("Invalid coordinates");
-            return;
-          }
-
-          const location = new google.maps.LatLng(lat, lng);
-
-          if (!marker) {
-            marker = new google.maps.Marker({
-              map,
-              position: location,
-            });
-          } else {
-            marker.setPosition(location);
-          }
-
-          map.setCenter(location);
-          map.setZoom(14);
-
-          console.log(marker.getPosition().lat());
-          console.log(marker.getPosition().lng());
-        });
-
-        // Add markers for the cities
-        // Add markers for the cities
-      cities.forEach((city) => {
-        const cityMarker = new google.maps.Marker({
-          position: city.position,
-          map,
-          title: city.name,
-        });
-
-        const infoWindow = new google.maps.InfoWindow({
-          content: `<h3>${city.name}</h3><p>${city.address}</p>`,
-        });
-
-        cityMarker.addListener("click", () => {
-          infoWindow.open(map, cityMarker);
-        });
-
-        cityMarkers.push(cityMarker);
-      });
-
+    const bounds = new google.maps.LatLngBounds();
+    places.forEach((place) => {
+      if (!place.geometry) {
+        console.log("Returned place contains no geometry");
+        return;
       }
+
+      if (!marker) {
+        marker = new google.maps.Marker({
+          map,
+          position: place.geometry.location,
+        });
+      } else {
+        marker.setPosition(place.geometry.location);
+      }
+
+      if (place.geometry.viewport) {
+        bounds.union(place.geometry.viewport);
+      } else {
+        bounds.extend(place.geometry.location);
+      }
+
+      // Fill the input fields with the selected company's information
+      document.getElementById("company_name").value = place.name;
+      document.getElementById("address").value = place.formatted_address;
+      document.getElementById("latitude").value = place.geometry.location.lat();
+      document.getElementById("longitude").value = place.geometry.location.lng();
+    });
+
+    map.fitBounds(bounds);
+    map.setZoom(14);
+  });
+
+  searchBox.addListener("places_changed", () => {
+    const places = searchBox.getPlaces();
+
+    if (places.length == 0) {
+      return;
+    }
+
+    const bounds = new google.maps.LatLngBounds();
+    places.forEach((place) => {
+      if (!place.geometry) {
+        console.log("Returned place contains no geometry");
+        return;
+      }
+
+      if (!marker) {
+        marker = new google.maps.Marker({
+          map,
+          position: place.geometry.location,
+        });
+      } else {
+        marker.setPosition(place.geometry.location);
+      }
+
+      if (place.geometry.viewport) {
+        bounds.union(place.geometry.viewport);
+      } else {
+        bounds.extend(place.geometry.location);
+      }
+
+      // Fill the input fields with the selected company's information
+      document.getElementById("company_name").value = place.name;
+      document.getElementById("address").value = place.formatted_address;
+      document.getElementById("latitude").value = place.geometry.location.lat();
+      document.getElementById("longitude").value = place.geometry.location.lng();
+    });
+
+    map.fitBounds(bounds);
+    map.setZoom(14);
+
+    // Fill the address input field with the selected search value
+    const searchValue = document.getElementById("search").value;
+    document.getElementById("address").value = searchValue;
+  });
+
+  const goButton = document.getElementById("go");
+  goButton.addEventListener("click", () => {
+    const lat = parseFloat(document.getElementById("lat").value);
+    const lng = parseFloat(document.getElementById("lng").value);
+
+    if (isNaN(lat) || isNaN(lng)) {
+  console.log("Invalid coordinates");
+  return;
+}
+
+const location = new google.maps.LatLng(lat, lng);
+
+if (!marker) {
+  marker = new google.maps.Marker({
+    map,
+    position: location,
+  });
+} else {
+  marker.setPosition(location);
+}
+
+map.setCenter(location);
+map.setZoom(14);
+
+console.log(marker.getPosition().lat());
+console.log(marker.getPosition().lng());
+});
+
+// Load company data from server and create markers
+fetch('map-data')
+.then(response => response.json())
+.then(data => {
+data.forEach(company => {
+const position = { lat: parseFloat(company.latitude), lng: parseFloat(company.longitude) };
+const marker = new google.maps.Marker({
+position,
+map,
+title: company.name,
+});
+
+const infoWindow = new google.maps.InfoWindow({
+      content: `<h3>${company.name}</h3><p>${company.address}</p>`,
+    });
+
+    marker.addListener("click", () => {
+      infoWindow.open(map, marker);
+    });
+
+    cityMarkers.push(marker);
+  });
+})
+.catch(error => {
+  console.error('Error loading company data', error);
+});
+}
+
     </script>
   </body>
 </html>

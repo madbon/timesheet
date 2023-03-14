@@ -7,6 +7,7 @@ use common\models\UserCompanySearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Json;
 use Yii;
 
 /**
@@ -79,8 +80,11 @@ class UserCompanyController extends Controller
             $model->loadDefaultValues();
         }
 
+        $googleMap = $this->renderFile(Yii::getAlias('@app/web/googlemap/index.html'));
+
         return $this->render('create', [
             'model' => $model,
+            'googleMap' => $googleMap,
         ]);
     }
 
@@ -93,6 +97,19 @@ class UserCompanyController extends Controller
         ]);
     }
 
+    public function actionMapData()
+    {
+        $data = UserCompany::find()->select(['name', 'longitude', 'latitude', 'address','contact_info'])->asArray()->all();
+
+        // Encode the data to JSON format
+        $json = Json::encode($data);
+
+        // Set the content type header to JSON
+        // Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        // Return the JSON data
+        return $json;
+    }
 
 
     /**
