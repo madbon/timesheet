@@ -23,21 +23,28 @@
       <button id="go" type="button">Go</button>
     </div>
 
-    <div>
-      <label>Company Name:</label>
-      <input id="company_name" type="text" disabled>
+    <div class="row">
+      <div class="col-sm-4">
+        <label>Company Name</label>
+        <input class="form-control" id="company_name" type="text" disabled>
+      </div>
+      <div class="col-sm-8">
+        <label>Address</label>
+        <input class="form-control" id="address" type="text" disabled>
+      </div>
     </div>
-    <div>
-      <label>Address:</label>
-      <input id="address" type="text" disabled>
-    </div>
-    <div>
-      <label>Latitude:</label>
-      <input id="latitude" type="text" disabled>
-    </div>
-    <div>
-      <label>Longitude:</label>
-      <input id="longitude" type="text" disabled>
+    
+
+
+    <div class="row" style="margin-bottom: 20px;">
+      <div class="col-sm-2">
+        <label>Latitude</label>
+        <input class="form-control" id="latitude" type="text" disabled>
+      </div>
+      <div class="col-sm-2">
+        <label>Longitude</label>
+        <input class="form-control" id="longitude" type="text" disabled>
+      </div>
     </div>
     
     <div id="map"></div>

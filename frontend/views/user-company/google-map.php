@@ -1,7 +1,7 @@
 <?php
 use yii\helpers\Html;
 
-$this->title = 'MAP THE COMPANY';
+$this->title = 'COMPANIES MAP MARKERS';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="site-google-map">
