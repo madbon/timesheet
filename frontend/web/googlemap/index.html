@@ -121,6 +121,50 @@
           map.setZoom(14);
         });
 
+        searchBox.addListener("places_changed", () => {
+          const places = searchBox.getPlaces();
+
+          if (places.length == 0) {
+            return;
+          }
+
+          const bounds = new google.maps.LatLngBounds();
+          places.forEach((place) => {
+            if (!place.geometry) {
+              console.log("Returned place contains no geometry");
+              return;
+            }
+
+            if (!marker) {
+              marker = new google.maps.Marker({
+                map,
+                position: place.geometry.location,
+              });
+            } else {
+              marker.setPosition(place.geometry.location);
+            }
+
+            if (place.geometry.viewport) {
+              bounds.union(place.geometry.viewport);
+            } else {
+              bounds.extend(place.geometry.location);
+            }
+
+            // Fill the input fields with the selected company's information
+            document.getElementById("company_name").value = place.name;
+            document.getElementById("address").value = place.formatted_address;
+            document.getElementById("latitude").value = place.geometry.location.lat();
+            document.getElementById("longitude").value = place.geometry.location.lng();
+          });
+
+          map.fitBounds(bounds);
+          map.setZoom(14);
+
+          // Fill the address input field with the selected search value
+          const searchValue = document.getElementById("search").value;
+          document.getElementById("address").value = searchValue;
+        });
+
 
         const goButton = document.getElementById("go");
         goButton.addEventListener("click", () => {
