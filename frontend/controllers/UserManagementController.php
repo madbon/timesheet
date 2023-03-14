@@ -166,11 +166,19 @@ class UserManagementController extends Controller
                 }
 
                 // return $this->redirect(['upload-file', 'id' => $model_id]);
-                return $this->redirect(['index', 
-                'UserDataSearch[item_name]' => $itemName,
-                'UserDataSearch[fname]' => $model->fname, 
-                'UserDataSearch[sname]' => $model->sname, 
-             ]);
+
+                if(in_array($itemName,['Trainee','CompanySupervisor']))
+                {
+                    return $this->redirect(['/user-company/create','user_id' => $model_id]);
+                }
+                else{
+                    return $this->redirect(['index', 
+                        'UserDataSearch[item_name]' => $itemName,
+                        'UserDataSearch[fname]' => $model->fname, 
+                        'UserDataSearch[sname]' => $model->sname, 
+                    ]);
+                }
+                
             }
         } else {
             $model->loadDefaultValues();

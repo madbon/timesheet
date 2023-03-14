@@ -22,8 +22,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>
         <?= Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' Trainee', ['create', 'account_type' => 'trainee'], ['class' => 'btn btn-success']) ?>
         <?= Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' OJT Coordinator', ['create','account_type' => 'ojtcoordinator'], ['class' => 'btn btn-success']) ?>
-        <?= Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' Company Supervisor', ['create'], ['class' => 'btn btn-success']) ?>
-        <?= Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' Administrator', ['create'], ['class' => 'btn btn-outline-primary']) ?>
+        <?= Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' Company Supervisor', ['create','account_type' => 'companysupervisor'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' Administrator', ['create','account_type' => 'administrator'], ['class' => 'btn btn-outline-primary']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
@@ -162,15 +162,36 @@ $this->params['breadcrumbs'][] = $this->title;
                     'address',
                     [
                         'format' => 'raw',
-                        'label' => 'Upload',
+                        'label' => 'Actions',
                         'value' => function($model)
                         {
+                            $buttons = "";
                             if(in_array($model->authAssignment->item_name,['CompanySupervisor','Trainee']))
                             {
                                 $findFile = Yii::$app->getModule('admin')->FileExistsByQuery('UserData',$model->id);
 
-                                return $findFile ? Html::a((Yii::$app->getModule('admin')->GetIcon('upload-cloud')).' Update Signature',['upload-file','id' => $model->id,'message' => 'Update Signature'],['class' => 'btn btn-sm btn-outline-primary']) : Html::a((Yii::$app->getModule('admin')->GetIcon('upload-cloud')).' Upload Signature',['upload-file','id' => $model->id],['class' => 'btn btn-sm btn-outline-secondary']);
+                                if($findFile)
+                                {
+                                    $buttons .= Html::a((Yii::$app->getModule('admin')->GetIcon('upload-cloud')),['upload-file','id' => $model->id,'message' => 'Signature'],['class' => 'btn btn-sm btn-outline-primary']);
+                                }
+                                else
+                                {
+                                    $buttons .= Html::a((Yii::$app->getModule('admin')->GetIcon('upload-cloud')),['upload-file','id' => $model->id],['class' => 'btn btn-sm btn-outline-secondary']);
+                                }
+
+                                if(!empty($model->userCompany->name))
+                                {
+                                    $buttons .= Html::a((Yii::$app->getModule('admin')->GetIcon('geo-alt-fill')),['/user-company/create','user_id' => $model->id],['class' => 'btn btn-sm btn-outline-primary']);
+                                }
+                                else
+                                {
+                                    $buttons .= Html::a((Yii::$app->getModule('admin')->GetIcon('geo-alt-fill')),['/user-company/create','user_id' => $model->id],['class' => 'btn btn-sm btn-outline-secondary']);
+                                }
+
+                                
                             }
+
+                            return $buttons;
                             
                         }
                     ],

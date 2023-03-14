@@ -114,6 +114,12 @@ class UserData extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
+
+    public function getUserCompany()
+    {
+        return $this->hasOne(UserCompany::class, ['user_id' => 'id']); 
+    }
+
     public function getProgramMajor()
     {
         return $this->hasOne(ProgramMajor::class, ['id' => 'ref_program_major_id']);
