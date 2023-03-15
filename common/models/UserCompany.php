@@ -33,7 +33,7 @@ class UserCompany extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_id'], 'integer'],
+            [['user_id','ref_company_id'], 'integer'],
             [['latitude', 'longitude'], 'number'],
             [['name', 'contact_info'], 'string', 'max' => 150],
             [['address'], 'string', 'max' => 255],
@@ -54,6 +54,7 @@ class UserCompany extends \yii\db\ActiveRecord
             'name' => 'Name',
             'address' => 'Address',
             'contact_info' => 'Contact Info',
+            'ref_company_id' => 'Company',
         ];
     }
 
@@ -65,5 +66,15 @@ class UserCompany extends \yii\db\ActiveRecord
     public function getUser()
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);
+    }
+
+     /**
+     * Gets query for [[User]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCompany()
+    {
+        return $this->hasOne(Company::class, ['id' => 'ref_company_id']);
     }
 }

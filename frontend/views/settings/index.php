@@ -36,4 +36,17 @@ use yii\helpers\Html;
             </div>
         </div>
     </div>
+    <div class="col-sm-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Mapping/Tagging</h5>
+                <p class="card-text">
+                    <ul>
+                        <li><?=  Html::a('Create Company',['/company/create']); ?></li>
+                        <li><?=  Html::a('List of Companies',['/company/index']); ?></li>
+                    </ul>
+                </p>
+            </div>
+        </div>
+    </div>
 </div>

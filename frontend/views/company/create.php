@@ -11,7 +11,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="company-create">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <!-- <h1><?php // Html::encode($this->title) ?></h1> -->
 
     <?= $this->render('google-map', [
             'content' => $googleMap,

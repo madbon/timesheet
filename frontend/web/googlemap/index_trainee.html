@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Google Maps Search Box</title>
+    <style>
+      /* Set the height of the map */
+      #map {
+        height: 400px;
+      }
+    </style>
+  </head>
+  <body>
+    
+    <div class="row" style="margin-bottom: 20px; display: none;">
+      <div class="col-sm-8">
+        <label>Type the Name/Address of the Company</label>
+        <input id="search" type="text" placeholder="Search..." class="form-control">
+      </div>
+    </div>
+
+    <div>
+      <label for="lat">Latitude:</label>
+      <input id="lat" type="number" step="any">
+      <label for="lng">Longitude:</label>
+      <input id="lng" type="number" step="any">
+      <button id="go" type="button">Go</button>
+    </div>
+
+    <input id="selected_company_name">
+    <input id="selected_company_address">
+    <input id="selected_contact_info">
+    <input id="selected_no_of_students">
+
+    <div class="row">
+      <div class="col-sm-8">
+        <div id="map"></div>
+      </div>
+      <div class="col-sm-4"  style="display: none;">
+        <!-- <h5>Company Information</h5> -->
+        <label>Company Name</label>
+        <input class="form-control" id="company_name" type="text">
+        <label>Address</label>
+        <textarea class="form-control" id="address" type="text" rows="3"></textarea>
+
+        <div class="row">
+          <div class="col-sm-6">
+            <label>Latitude</label>
+            <input class="form-control" id="latitude" type="text" disabled>
+          </div>
+          <div class="col-sm-6">
+            <label>Longitude</label>
+            <input class="form-control" id="longitude" type="text" disabled>
+          </div>
+        </div>
+
+        <label>Contact Details</label>
+        <input class="form-control" id="contact_info">
+      </div>
+    </div>
+    
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAAyrQuYB1xJl7YohDMqATsOJWDI5vXprI&libraries=places,geometry&callback=initMap"
+      async
+      defer
+    ></script>
+    
+    <script>
+      let map;
+      let marker;
+      let infowindow;
+      const cityMarkers = [];
+
+      function initMap() {
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat: 14.6091, lng: 121.0223 }, // Center the map to Manila, Philippines
+          zoom: 10,
+        });
+
+        const input = document.getElementById("search");
+        const searchBox = new google.maps.places.SearchBox(input);
+
+        map.addListener("bounds_changed", () => {
+          searchBox.setBounds(map.getBounds());
+        });
+
+        searchBox.addListener("places_changed", () => {
+          const places = searchBox.getPlaces();
+
+          if (places.length == 0) {
+            return;
+          }
+
+          const bounds = new google.maps.LatLngBounds();
+          places.forEach((place) => {
+            if (!place.geometry) {
+              console.log("Returned place contains no geometry");
+              return;
+            }
+
+            if (!marker) {
+              marker = new google.maps.Marker({
+                map,
+                position: place.geometry.location,
+              });
+            } else {
+              marker.setPosition(place.geometry.location);
+            }
+
+            if (place.geometry.viewport) {
+              bounds.union(place.geometry.viewport);
+            } else {
+                bounds.extend(place.geometry.location);
+            }
+
+            // Fill the input fields with the selected company's information
+            document.getElementById("company_name").value = place.name;
+            document.getElementById("address").value = place.formatted_address;
+            document.getElementById("latitude").value = place.geometry.location.lat();
+            document.getElementById("longitude").value = place.geometry.location.lng();
+          });
+
+          map.fitBounds(bounds);
+          map.setZoom(14);
+        });
+
+        const goButton = document.getElementById("go");
+goButton.addEventListener("click", () => {
+  const lat = parseFloat(document.getElementById("lat").value);
+  const lng = parseFloat(document.getElementById("lng").value);
+
+  if (isNaN(lat) || isNaN(lng)) {
+    console.log("Invalid coordinates");
+    return;
+  }
+
+  const location = new google.maps.LatLng(lat, lng);
+
+  if (!marker) {
+    marker = new google.maps.Marker({
+      map,
+      position: location,
+    });
+  } else {
+    marker.setPosition(location);
+  }
+
+  if (!infowindow) {
+    infowindow = new google.maps.InfoWindow();
+  }
+
+  let infoContent = `
+    <h5>Coordinates</h5>
+    <p>Latitude: ${location.lat()}</p>
+    <p>Longitude: ${location.lng()}</p>
+  `;
+
+  // Add the input field values to the info window
+  infoContent += `
+    <h5>Selected Company Information</h5>
+    <p>Name: ${document.getElementById("selected_company_name").value}</p>
+    <p>Address: ${document.getElementById("selected_company_address").value}</p>
+    <p>Contact Info: ${document.getElementById("selected_contact_info").value}</p>
+    <p>No. of Students: ${document.getElementById("selected_no_of_students").value}</p>
+  `;
+
+  infowindow.setContent(infoContent);
+  infowindow.open(map, marker);
+
+  map.setCenter(location);
+  map.setZoom(14);
+});
+
+
+        // Load company data from server and create markers
+        fetch('map-data')
+        .then(response => response.json())
+        .then(data => {
+          data.forEach(company => {
+            const position = { lat: parseFloat(company.latitude), lng: parseFloat(company.longitude) };
+            const marker = new google.maps.Marker({
+              position,
+              map,
+              title: company.name,
+            });
+            const infoWindow = new google.maps.InfoWindow({
+              content: `<h5>${company.name}</h5><p>Address: ${company.address}</p><p>Contact Details: ${company.contact_info}</p> <p>No. of Trainees: ${company.count_students}</p>`,
+            });
+
+            marker.addListener("click", () => {
+              infoWindow.open(map, marker);
+            });
+
+            cityMarkers.push(marker);
+          });
+        })
+        .catch(error => {
+          console.error('Error loading company data', error);
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -158,6 +158,68 @@ use yii\widgets\ActiveForm;
 
     <div class="card" style="margin-bottom: 10px;">
         <div class="card-body">
+            <?php 
+                if(Yii::$app->controller->action->id == "update")
+                {
+                    echo !empty($model->userCompany->company->name) ? $model->userCompany->company->name : "NO COMPANY";
+                }
+            ?>
+            <h5 class="card-title">Tag the Company</h5>
+            <?= $form->field($model, 'company')->dropDownList([], ['prompt' => 'Select a company', 'id' => 'company-dropdown','class' => 'form-control'])->label(false) ?>
+
+            <?php
+            // JavaScript
+            $script = <<< JS
+            $(function() {
+                var timer;
+                var delay = 500; // 500 milliseconds delay after last input
+
+                function fetchCompanies(query, callback) {
+                    $.ajax({
+                        url: "company-json",
+                        dataType: "json",
+                        data: {
+                            q: query.term
+                        },
+                        success: function(data) {
+                            var results = [];
+                            $.each(data, function(index, item) {
+                                results.push({
+                                    id: item.id,
+                                    text: item.name + ' (ADDRESS: ' +item.address+')'
+                                });
+                            });
+
+                            callback({
+                                results: results
+                            });
+                        }
+                    });
+                }
+
+                $('#company-dropdown').select2({
+                    placeholder: 'Search for a company',
+                    minimumInputLength: 3,
+                    ajax: {
+                        delay: delay,
+                        transport: function(params, success, failure) {
+                            clearTimeout(timer);
+                            timer = setTimeout(function() {
+                                fetchCompanies(params.data, success);
+                            }, delay);
+                        }
+                    }
+                });
+            });
+            JS;
+
+            $this->registerJs($script);
+            ?>
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom: 10px;">
+        <div class="card-body">
             <h5 class="card-title">Contact Information</h5>
                 <div class="row">
                     <div class="col-sm-4">

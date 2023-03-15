@@ -2,6 +2,8 @@
 
 namespace frontend\controllers;
 
+use common\models\Company;
+use common\models\UserData;
 use common\models\UserCompany;
 use common\models\UserCompanySearch;
 use yii\web\Controller;
@@ -49,6 +51,42 @@ class UserCompanyController extends Controller
         ]);
     }
 
+    // public function actionCompanyJson()
+    // {
+    //     $data = Company::find()->select(['name', 'longitude', 'latitude', 'address','contact_info'])->asArray()->all();
+
+    //     // Encode the data to JSON format
+    //     $json = Json::encode($data);
+
+    //     // Set the content type header to JSON
+    //     // Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+    //     // Return the JSON data
+    //     return $json;
+    // }
+
+    public function actionCompanyJson($q = null)
+    {
+        $query = Company::find()->select(['id','name', 'longitude', 'latitude', 'address', 'contact_info'])
+        ->orderBy(['name' => SORT_ASC]);
+
+        if (!is_null($q)) {
+            $query->andFilterWhere(['like', 'name', $q]);
+        }
+
+        $data = $query->asArray()->all();
+
+        // Encode the data to JSON format
+        $json = Json::encode($data);
+
+        // Set the content type header to JSON
+        // Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        // Return the JSON data
+        return $json;
+    }
+
+
     /**
      * Displays a single UserCompany model.
      * @param int $id ID
@@ -90,24 +128,48 @@ class UserCompanyController extends Controller
 
     public function actionGoogleMap()
     {
-        $content = $this->renderFile(Yii::getAlias('@app/web/googlemap/index.html'));
+        $content = $this->renderFile(Yii::getAlias('@app/web/googlemap/index_trainee.html'));
         // $content = file_get_contents('C:\xampp7\htdocs\timesheet\googlemap\index.html');
         return $this->render('google-map', [
             'content' => $content,
         ]);
     }
 
-    public function actionMapData()
+    public function actionMapData($search=null,$latitude=null,$longitude=null)
     {
-        $data = UserCompany::find()->select(['name', 'longitude', 'latitude', 'address','contact_info'])->asArray()->all();
 
-        // Encode the data to JSON format
+        $query = UserData::find()
+            ->select([
+                'ref_company.latitude',
+                'ref_company.longitude',
+                'ref_company.id',
+                'ref_company.address',
+                'ref_company.name',
+                'ref_company.contact_info',
+                'COUNT(user.id) as count_students'
+            ])
+            ->joinWith('userCompany.company')
+            ->joinWith('authAssignment')
+            ->where(['NOT', ['user.id' => null]])
+            ->andWhere(['auth_assignment.item_name' => 'Trainee'])
+            ->groupBy(['ref_company.id']);
+
+        if ($search !== null) {
+            $query->andWhere(['like', 'ref_company.name', $search]);
+        }
+
+        if ($longitude !== null) {
+            $query->andWhere(['like', 'ref_company.longitude', $search]);
+        }
+
+        if ($latitude !== null) {
+            $query->andWhere(['like', 'ref_company.latitude', $search]);
+        }
+
+        $data = $query->asArray()->all();
+
         $json = Json::encode($data);
 
-        // Set the content type header to JSON
-        // Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-
-        // Return the JSON data
         return $json;
     }
 

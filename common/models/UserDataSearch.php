@@ -41,7 +41,7 @@ class UserDataSearch extends UserData
      */
     public function search($params)
     {
-        $query = UserData::find()->joinWith('authAssignment.itemName');;
+        $query = UserData::find()->joinWith('authAssignment.itemName');
 
        // add left join with AuthItem model
 

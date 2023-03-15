@@ -18,7 +18,7 @@
       </div>
     </div>
 
-    <div>
+    <div style="display:none;">
       <label for="lat">Latitude:</label>
       <input id="lat" type="number" step="any">
       <label for="lng">Longitude:</label>
@@ -31,7 +31,7 @@
         <div id="map"></div>
       </div>
       <div class="col-sm-4">
-        <h5>Company Information</h5>
+        <!-- <h5>Company Information</h5> -->
         <label>Company Name</label>
         <input class="form-control" id="company_name" type="text">
         <label>Address</label>
@@ -202,7 +202,7 @@ title: company.name,
 });
 
 const infoWindow = new google.maps.InfoWindow({
-      content: `<h3>${company.name}</h3><p>Address: ${company.address}</p><p>Contact Details: ${company.contact_info}</p>`,
+      content: `<h5>${company.name}</h5><p>Address: ${company.address}</p><p>Contact Details: ${company.contact_info}</p> <p>No. of Trainees: ${company.count_students}</p>`,
     });
 
     marker.addListener("click", () => {

@@ -3,6 +3,8 @@
 namespace frontend\controllers;
 
 use common\models\Files;
+use common\models\UserCompany;
+use common\models\Company;
 use common\models\ProgramMajor;
 use common\models\RefProgram;
 use common\models\StudentSection;
@@ -24,6 +26,7 @@ use yii\filters\AccessControl;
 use yii\web\ForbiddenHttpException;
 use common\components\PdfWidget;
 use yii\data\ActiveDataProvider;
+use yii\helpers\Json;
 use Yii;
 
 /**
@@ -81,6 +84,11 @@ class UserManagementController extends Controller
                         'allow' => true,
                         'roles' => ['user-management-create-trainee','user-management-create-ojt-coordinator','user-management-create-company-supervisor','user-management-create-administrator'],
                     ],
+                    [
+                        'actions' => ['company-json'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
                 ],
             ],
             'verbs' => [
@@ -90,6 +98,27 @@ class UserManagementController extends Controller
                 ],
             ],
         ];
+    }
+
+    public function actionCompanyJson($q = null)
+    {
+        $query = Company::find()->select(['id','name', 'longitude', 'latitude', 'address', 'contact_info'])
+        ->orderBy(['name' => SORT_ASC]);
+
+        if (!is_null($q)) {
+            $query->andFilterWhere(['like', 'name', $q]);
+        }
+
+        $data = $query->asArray()->all();
+
+        // Encode the data to JSON format
+        $json = Json::encode($data);
+
+        // Set the content type header to JSON
+        // Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        // Return the JSON data
+        return $json;
     }
 
     /**
@@ -107,6 +136,7 @@ class UserManagementController extends Controller
         
         $model = new UserData();
         $roleAssignment = new AuthAssignment();
+        $userCompany = new UserCompany();
 
         $queryRole = AuthItem::find()->where(['type' => 1])->all();
         $roleArr = ArrayHelper::map($queryRole, 'name', 'name');
@@ -163,6 +193,14 @@ class UserManagementController extends Controller
                 if(!$roleAssignment->save())
                 {
                     print_r($roleAssignment->errors); exit;
+                }
+
+                $userCompany->user_id = $model_id;
+                $userCompany->ref_company_id = $model->company;
+
+                if(!$userCompany->save())
+                {
+                    print_r($userCompany->errors); exit;
                 }
 
                 // return $this->redirect(['upload-file', 'id' => $model_id]);
@@ -289,6 +327,8 @@ class UserManagementController extends Controller
 
         $model->item_name = !empty($model->authAssignment->item_name) ? $model->authAssignment->item_name : null;
 
+        $userCompany = UserCompany::find()->where(['user_id' =>  $model->id])->one();
+
         if ($this->request->isPost && $model->load($this->request->post())) {
 
             if($model->password)
@@ -299,6 +339,13 @@ class UserManagementController extends Controller
             if($model->save())
             {
                 \Yii::$app->getSession()->setFlash('success', 'Changes has been saved');
+            }
+            
+            $userCompany->ref_company_id = $model->company;
+
+            if(!$userCompany->save())
+            {
+                print_r($userCompany->errors); exit;
             }
 
             $authAssigned = AuthAssignment::find()->where(['user_id' => $model->id])->one();

@@ -90,7 +90,23 @@ class CompanyController extends Controller
 
     public function actionMapData()
     {
-        $data = UserCompany::find()->select(['name', 'longitude', 'latitude', 'address','contact_info'])->asArray()->all();
+        // $data = UserCompany::find()->select(['name', 'longitude', 'latitude', 'address','contact_info'])->asArray()->all();
+
+        $data = Company::find()->asArray()->all();
+
+        // Encode the data to JSON format
+        $json = Json::encode($data);
+
+        // Set the content type header to JSON
+        // Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        // Return the JSON data
+        return $json;
+    }
+
+    public function actionCompanyJson()
+    {
+        $data = Company::find()->select(['name', 'longitude', 'latitude', 'address','contact_info'])->asArray()->all();
 
         // Encode the data to JSON format
         $json = Json::encode($data);
