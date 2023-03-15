@@ -12,15 +12,51 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+    <div class="row">
+        <div class="col-sm-6">
+            <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+        </div>
+    </div>
 
-    <?= $form->field($model, 'address')->textInput(['maxlength' => true]) ?>
+    <div class="row">
+        <div class="col-sm-6">
+        <?= $form->field($model, 'address')->textarea(['maxlength' => true, 'rows' => 2]) ?>
+        </div>
+        <div class="col-sm-3">
+        <?= $form->field($model, 'contact_info')->textarea(['maxlength' => true, 'rows' => 2]) ?>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-sm-3">
+            <label>Latitude: <code id="label-latitude">
+                <?php
+                    if(Yii::$app->controller->action->id == "update")
+                    {
+                        echo !empty($model->latitude) ? $model->latitude : "-";
+                    }
+                ?>
+            </code></label>
+            <?= $form->field($model, 'latitude')->hiddenInput(['maxlength' => true])->label(false) ?>
+        </div>
+        <div class="col-sm-3">
+            <label>Longitude: <code id="label-longitude">
+                <?php
+                    if(Yii::$app->controller->action->id == "update")
+                    {
+                        echo !empty($model->longitude) ? $model->longitude : "-";
+                    }
+                ?>
+            </code></label>
+            <?= $form->field($model, 'longitude')->hiddenInput(['maxlength' => true])->label(false) ?>
+        </div>
+    </div>
+    
 
-    <?= $form->field($model, 'latitude')->textInput(['maxlength' => true]) ?>
+    
 
-    <?= $form->field($model, 'longitude')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'contact_info')->textInput(['maxlength' => true]) ?>
+    
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

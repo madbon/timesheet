@@ -27,10 +27,10 @@
     </div>
 
     <div class="row">
-      <div class="col-sm-8">
+      <div class="col-sm-12">
         <div id="map"></div>
       </div>
-      <div class="col-sm-4">
+      <div class="col-sm-4" style="display:none;">
         <!-- <h5>Company Information</h5> -->
         <label>Company Name</label>
         <input class="form-control" id="company_name" type="text">
@@ -47,9 +47,6 @@
             <input class="form-control" id="longitude" type="text" disabled>
           </div>
         </div>
-
-        <label>Contact Details</label>
-        <input class="form-control" id="contact_info">
       </div>
     </div>
     
@@ -202,7 +199,7 @@ title: company.name,
 });
 
 const infoWindow = new google.maps.InfoWindow({
-      content: `<h5>${company.name}</h5><p>Address: ${company.address}</p><p>Contact Details: ${company.contact_info}</p> <p>No. of Trainees: ${company.count_students}</p>`,
+      content: `<h5>${company.name}</h5><p>Address: ${company.address}</p>`,
     });
 
     marker.addListener("click", () => {

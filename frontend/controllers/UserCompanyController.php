@@ -135,7 +135,7 @@ class UserCompanyController extends Controller
         ]);
     }
 
-    public function actionMapData($search=null,$latitude=null,$longitude=null)
+    public function actionMapData($search=null)
     {
 
         $query = UserData::find()
@@ -156,14 +156,6 @@ class UserCompanyController extends Controller
 
         if ($search !== null) {
             $query->andWhere(['like', 'ref_company.name', $search]);
-        }
-
-        if ($longitude !== null) {
-            $query->andWhere(['like', 'ref_company.longitude', $search]);
-        }
-
-        if ($latitude !== null) {
-            $query->andWhere(['like', 'ref_company.latitude', $search]);
         }
 
         $data = $query->asArray()->all();

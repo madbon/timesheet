@@ -34,7 +34,7 @@ class UserCompany extends \yii\db\ActiveRecord
     {
         return [
             [['user_id','ref_company_id'], 'integer'],
-            [['latitude', 'longitude'], 'number'],
+            [['latitude','longitude','address'],'safe'],
             [['name', 'contact_info'], 'string', 'max' => 150],
             [['address'], 'string', 'max' => 255],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],

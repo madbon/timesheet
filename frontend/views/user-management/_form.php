@@ -88,6 +88,84 @@ use yii\widgets\ActiveForm;
                     }
                 ?>
             </h5>
+            <!-- LINK THE COMPANY -->
+            <?php if(in_array($account_type,['trainee','companysupervisor'])){ ?>
+    <!-- <div class="card" style="margin-bottom: 10px;">
+        <div class="card-body"> -->
+            <?php 
+                if(Yii::$app->controller->action->id == "update")
+                {
+                    if(!empty($model->userCompany->company->name))
+                    {
+                        echo "This User is in this Company: 
+                        <p><code><strong>Name: </strong>".$model->userCompany->company->name."</code><br/>
+                        <code><strong>Address: </strong>".$model->userCompany->company->address."</code><br/>
+                        <code><strong>Contact Info: </strong>".$model->userCompany->company->contact_info."</code>
+                        </p>
+                        ";
+                    }
+                }
+            ?>
+            
+            <p>
+                <code><strong>Note #1: </strong> If the company is not found in the search box, encode the company details in the list. <?= Html::a('CLICK HERE',['/company/create'],['target' => '_blank']) ?> to add the company.</code> <br/>
+                <code><strong>Note #2: </strong> If you have already encoded the company in the list, try again to search for it in the search box. </code>
+            </p>
+            <h6 class="card-title"><?= Yii::$app->controller->action->id == "update" ? "Change Company" : "Link the Company" ?></h6>
+            <?= $form->field($model, 'company')->dropDownList([], ['prompt' => 'Select a company', 'id' => 'company-dropdown','class' => 'form-control'])->label(false) ?>
+
+            <?php
+            // JavaScript
+            $script = <<< JS
+            $(function() {
+                var timer;
+                var delay = 500; // 500 milliseconds delay after last input
+
+                function fetchCompanies(query, callback) {
+                    $.ajax({
+                        url: "company-json",
+                        dataType: "json",
+                        data: {
+                            q: query.term
+                        },
+                        success: function(data) {
+                            var results = [];
+                            $.each(data, function(index, item) {
+                                results.push({
+                                    id: item.id,
+                                    text: item.name + ' (ADDRESS: ' +item.address+')'
+                                });
+                            });
+
+                            callback({
+                                results: results
+                            });
+                        }
+                    });
+                }
+
+                $('#company-dropdown').select2({
+                    placeholder: 'Search company',
+                    minimumInputLength: 3,
+                    ajax: {
+                        delay: delay,
+                        transport: function(params, success, failure) {
+                            clearTimeout(timer);
+                            timer = setTimeout(function() {
+                                fetchCompanies(params.data, success);
+                            }, delay);
+                        }
+                    }
+                });
+            });
+            JS;
+
+            $this->registerJs($script);
+            ?>
+        <!-- </div>
+    </div> -->
+    <?php } ?>
+            <!-- LINK THE COMPANY END-->
             <div class="row">
                 <div class="col-sm-4">
                     <?php 
@@ -156,67 +234,7 @@ use yii\widgets\ActiveForm;
         </div>
     </div>
 
-    <div class="card" style="margin-bottom: 10px;">
-        <div class="card-body">
-            <?php 
-                if(Yii::$app->controller->action->id == "update")
-                {
-                    echo !empty($model->userCompany->company->name) ? $model->userCompany->company->name : "NO COMPANY";
-                }
-            ?>
-            <h5 class="card-title">Tag the Company</h5>
-            <?= $form->field($model, 'company')->dropDownList([], ['prompt' => 'Select a company', 'id' => 'company-dropdown','class' => 'form-control'])->label(false) ?>
-
-            <?php
-            // JavaScript
-            $script = <<< JS
-            $(function() {
-                var timer;
-                var delay = 500; // 500 milliseconds delay after last input
-
-                function fetchCompanies(query, callback) {
-                    $.ajax({
-                        url: "company-json",
-                        dataType: "json",
-                        data: {
-                            q: query.term
-                        },
-                        success: function(data) {
-                            var results = [];
-                            $.each(data, function(index, item) {
-                                results.push({
-                                    id: item.id,
-                                    text: item.name + ' (ADDRESS: ' +item.address+')'
-                                });
-                            });
-
-                            callback({
-                                results: results
-                            });
-                        }
-                    });
-                }
-
-                $('#company-dropdown').select2({
-                    placeholder: 'Search for a company',
-                    minimumInputLength: 3,
-                    ajax: {
-                        delay: delay,
-                        transport: function(params, success, failure) {
-                            clearTimeout(timer);
-                            timer = setTimeout(function() {
-                                fetchCompanies(params.data, success);
-                            }, delay);
-                        }
-                    }
-                });
-            });
-            JS;
-
-            $this->registerJs($script);
-            ?>
-        </div>
-    </div>
+    
 
     <div class="card" style="margin-bottom: 10px;">
         <div class="card-body">

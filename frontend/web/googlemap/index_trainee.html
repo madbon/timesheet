@@ -18,18 +18,20 @@
       </div>
     </div>
 
-    <div>
-      <label for="lat">Latitude:</label>
-      <input id="lat" type="number" step="any">
-      <label for="lng">Longitude:</label>
-      <input id="lng" type="number" step="any">
-      <button id="go" type="button">Go</button>
+    <div style="display:none;">
+        <label for="lat">Latitude:</label>
+        <input id="lat" type="number" step="any">
+        <label for="lng">Longitude:</label>
+        <input id="lng" type="number" step="any">
+        <button id="go" type="button">Go</button>
+
+        <input id="selected_company_name">
+        <input id="selected_company_address">
+        <input id="selected_contact_info">
+        <input id="selected_no_of_students">
     </div>
 
-    <input id="selected_company_name">
-    <input id="selected_company_address">
-    <input id="selected_contact_info">
-    <input id="selected_no_of_students">
+    
 
     <div class="row">
       <div class="col-sm-8">
@@ -149,18 +151,19 @@ goButton.addEventListener("click", () => {
   }
 
   let infoContent = `
-    <h5>Coordinates</h5>
-    <p>Latitude: ${location.lat()}</p>
-    <p>Longitude: ${location.lng()}</p>
-  `;
-
-  // Add the input field values to the info window
-  infoContent += `
     <h5>Selected Company Information</h5>
     <p>Name: ${document.getElementById("selected_company_name").value}</p>
     <p>Address: ${document.getElementById("selected_company_address").value}</p>
     <p>Contact Info: ${document.getElementById("selected_contact_info").value}</p>
     <p>No. of Students: ${document.getElementById("selected_no_of_students").value}</p>
+    
+  `;
+
+  // Add the input field values to the info window
+  infoContent += `
+    <h5>Coordinates</h5>
+    <p>Latitude: ${location.lat()}</p>
+    <p>Longitude: ${location.lng()}</p>
   `;
 
   infowindow.setContent(infoContent);

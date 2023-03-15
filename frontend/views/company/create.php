@@ -11,7 +11,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="company-create">
 
-    <!-- <h1><?php // Html::encode($this->title) ?></h1> -->
+    <h1><?= Html::encode($this->title) ?></h1>
 
     <?= $this->render('google-map', [
             'content' => $googleMap,
@@ -29,13 +29,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 var companyAddress = $("#address").val();
                 var companyLat = $("#latitude").val();
                 var companyLong = $("#longitude").val();
-                var companyContact = $("#contact_info").val();
 
-                $("input#company-name").val(companyName);
-                $("input#company-address").val(companyAddress);
-                $("input#company-latitude").val(companyLat);
-                $("input#company-longitude").val(companyLong);
-                $("input#company-contact_info").val(companyContact);
+                $("#company-name").val(companyName);
+                $("#company-address").val(companyAddress);
+                $("#company-latitude").val(companyLat);
+                $("#company-longitude").val(companyLong);
+
+                $("#label-latitude").text(companyLat);
+                $("#label-longitude").text(companyLong);
                 
             });
         ')

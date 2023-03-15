@@ -33,6 +33,10 @@ class Company extends \yii\db\ActiveRecord
             [['latitude', 'longitude'], 'number'],
             [['name', 'address'], 'string', 'max' => 255],
             [['contact_info'], 'string', 'max' => 150],
+            ['latitude', 'unique'],
+            ['longitude', 'unique'],
+            ['address', 'unique'],
+            [['latitude','longitude','address','name'],'required'],
         ];
     }
 
@@ -43,8 +47,8 @@ class Company extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
-            'address' => 'Address',
+            'name' => 'Company Name',
+            'address' => 'Company Address',
             'latitude' => 'Latitude',
             'longitude' => 'Longitude',
             'contact_info' => 'Contact Info',

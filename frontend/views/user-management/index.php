@@ -179,14 +179,14 @@ $this->params['breadcrumbs'][] = $this->title;
                                     $buttons .= Html::a((Yii::$app->getModule('admin')->GetIcon('upload-cloud')),['upload-file','id' => $model->id],['class' => 'btn btn-sm btn-outline-secondary']);
                                 }
 
-                                if(!empty($model->userCompany->name))
-                                {
-                                    $buttons .= Html::a((Yii::$app->getModule('admin')->GetIcon('geo-alt-fill')),['/user-company/create','user_id' => $model->id],['class' => 'btn btn-sm btn-outline-primary']);
-                                }
-                                else
-                                {
-                                    $buttons .= Html::a((Yii::$app->getModule('admin')->GetIcon('geo-alt-fill')),['/user-company/create','user_id' => $model->id],['class' => 'btn btn-sm btn-outline-secondary']);
-                                }
+                                // if(!empty($model->userCompany->user_id))
+                                // {
+                                //     $buttons .= Html::a((Yii::$app->getModule('admin')->GetIcon('geo-alt-fill')),['/user-company/create','user_id' => $model->id],['class' => 'btn btn-sm btn-outline-primary']);
+                                // }
+                                // else
+                                // {
+                                //     $buttons .= Html::a((Yii::$app->getModule('admin')->GetIcon('geo-alt-fill')),['/user-company/create','user_id' => $model->id],['class' => 'btn btn-sm btn-outline-secondary']);
+                                // }
 
                                 
                             }

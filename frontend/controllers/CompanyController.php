@@ -133,8 +133,11 @@ class CompanyController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
+        $googleMap = $this->renderFile(Yii::getAlias('@app/web/googlemap/index.html'));
+
         return $this->render('update', [
             'model' => $model,
+            'googleMap' => $googleMap,
         ]);
     }
 
