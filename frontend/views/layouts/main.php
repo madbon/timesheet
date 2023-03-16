@@ -125,6 +125,19 @@ AppAsset::register($this);
             color:gray;
             font-weight: bold;
         }
+
+        button.link-logout
+        {
+            color:white !important;
+            border-radius: 25px;
+        }
+
+        button.link-logout:hover
+        {
+            color: #ddd !important;
+            border:1px solid #ddd !important;
+            border-radius: 25px;
+        }
     </style>
 </head>
 <body class="d-flex flex-column h-100">
@@ -148,8 +161,14 @@ AppAsset::register($this);
     {
         $menuItems = [
             
-            ['label' => 'User Management', 'url' => ['/user-management','UserDataSearch[item_name]' => 'Trainee'], 'active' => Yii::$app->controller->id == "user-management" ? true : false],
-            ['label' => 'Map Markers', 'url' => ['/user-company/google-map'], 'active' => Yii::$app->controller->action->id == "google-map" ? true : false],
+            [
+                'label' => 'User Management', 'url' => ['/user-management','UserDataSearch[item_name]' => 'Trainee'], 'active' => Yii::$app->controller->id == "user-management" ? true : false,
+                'visible' => Yii::$app->user->can('menu-user-management'),
+            ],
+            [
+                'label' => 'Map Markers', 'url' => ['/user-company/google-map'], 'active' => Yii::$app->controller->action->id == "google-map" ? true : false,
+                'visible' => Yii::$app->user->can('menu-map-markers'),
+            ],
             ['label' => 'Settings', 'url' => ['/settings'], 'active' => in_array(Yii::$app->controller->id,[
                 'settings',
                 'auth-item',
@@ -159,7 +178,12 @@ AppAsset::register($this);
                 'student-section',
                 'ref-program',
                 'program-major',
-                ]) ? true : false],
+                'position',
+                'department',
+                'company',
+                ]) ? true : false,
+                'visible' => Yii::$app->user->can('menu-settings'),
+            ],
         ];
 
         echo Nav::widget([
@@ -172,10 +196,29 @@ AppAsset::register($this);
     if (Yii::$app->user->isGuest) {
         // echo Html::tag('div',Html::a('Login',['/site/login'],['class' => ['btn btn-link login text-decoration-none']]),['class' => ['d-flex']]);
     } else {
+
+        $roleName = "";
+        if(Yii::$app->user->can("Administrator"))
+        {
+            $roleName = "Administrator";
+        }
+        else if(Yii::$app->user->can("OjtCoordinator"))
+        {
+            $roleName = "OjtCoordinator";
+        }
+        else if(Yii::$app->user->can("CompanySupervisor"))
+        {
+            $roleName = "CompanySupervisor";
+        }
+        else if(Yii::$app->user->can("Trainee"))
+        {
+            $roleName = "Trainee";
+        }
+
         echo Html::beginForm(['/site/logout'], 'post', ['class' => 'd-flex'])
             . Html::submitButton(
-                'Logout (' . Yii::$app->user->identity->username . ')',
-                ['class' => 'btn btn-link logout text-decoration-none']
+                'Logout ('.$roleName.')',
+                ['class' => 'btn btn-link logout text-decoration-none link-logout']
             )
             . Html::endForm();
     }

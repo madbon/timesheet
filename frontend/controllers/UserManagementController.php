@@ -6,6 +6,8 @@ use common\models\Files;
 use common\models\UserCompany;
 use common\models\Company;
 use common\models\ProgramMajor;
+use common\models\Department;
+use common\models\Position;
 use common\models\RefProgram;
 use common\models\StudentSection;
 use common\models\StudentYear;
@@ -146,6 +148,11 @@ class UserManagementController extends Controller
         $student_section = ArrayHelper::map(StudentSection::find()->all(), 'section', 'section');
 
         $program = ArrayHelper::map(RefProgram::find()->all(), 'id', 'title');
+
+        $position = ArrayHelper::map(Position::find()->all(), 'id', 'position');
+        $department = ArrayHelper::map(Department::find()->all(), 'id', 'title');
+
+        $company = ArrayHelper::map(Company::find()->select(['id','CONCAT(name," (", address, ")") as name'])->all(), 'id', 'name');
        
         $itemName = NULL;
 
@@ -205,17 +212,11 @@ class UserManagementController extends Controller
 
                 // return $this->redirect(['upload-file', 'id' => $model_id]);
 
-                if(in_array($itemName,['Trainee','CompanySupervisor']))
-                {
-                    return $this->redirect(['/user-company/create','user_id' => $model_id]);
-                }
-                else{
-                    return $this->redirect(['index', 
-                        'UserDataSearch[item_name]' => $itemName,
-                        'UserDataSearch[fname]' => $model->fname, 
-                        'UserDataSearch[sname]' => $model->sname, 
-                    ]);
-                }
+                return $this->redirect(['index', 
+                    'UserDataSearch[item_name]' => $itemName,
+                    'UserDataSearch[fname]' => $model->fname, 
+                    'UserDataSearch[sname]' => $model->sname, 
+                ]);
                 
             }
         } else {
@@ -230,6 +231,9 @@ class UserManagementController extends Controller
             'student_section' => $student_section,
             'student_year' => $student_year,
             'program' => $program,
+            'position' => $position,
+            'department' => $department,
+            'company' => $company,
         ]);
     }
 
@@ -325,9 +329,16 @@ class UserManagementController extends Controller
         $program = ArrayHelper::map(RefProgram::find()->all(), 'id', 'title');
         $major =  ArrayHelper::map(ProgramMajor::find()->where(['ref_program_id' => $model->ref_program_id])->all(), 'id', 'title');
 
+        $position = ArrayHelper::map(Position::find()->all(), 'id', 'position');
+        $department = ArrayHelper::map(Department::find()->all(), 'id', 'title');
+
+        $model->company = !empty($model->userCompany->ref_company_id) ? $model->userCompany->ref_company_id : NULL;
+
+        $company = ArrayHelper::map(Company::find()->select(['id','CONCAT(name," (", address, ")") as name'])->all(), 'id', 'name');
+
         $model->item_name = !empty($model->authAssignment->item_name) ? $model->authAssignment->item_name : null;
 
-        $userCompany = UserCompany::find()->where(['user_id' =>  $model->id])->one();
+       
 
         if ($this->request->isPost && $model->load($this->request->post())) {
 
@@ -340,17 +351,34 @@ class UserManagementController extends Controller
             {
                 \Yii::$app->getSession()->setFlash('success', 'Changes has been saved');
             }
-            
-            $userCompany->ref_company_id = $model->company;
 
-            if(!$userCompany->save())
+            // print_r($model->company); exit;
+
+            if(UserCompany::find()->where(['user_id' => $model->id])->exists())
             {
-                print_r($userCompany->errors); exit;
+                $userCompany = UserCompany::find()->where(['user_id' => $model->id])->one();
+                $userCompany->ref_company_id = $model->company;
+            
+                if(!$userCompany->save())
+                {
+                    print_r($userCompany->errors); exit;
+                }
             }
+            else
+            {
+                $newUserCompany = new UserCompany();
+                $newUserCompany->user_id = $model->id;
+                $newUserCompany->ref_company_id = $model->company;
+                $newUserCompany->save();
+            }
+            
+
+           
 
             $authAssigned = AuthAssignment::find()->where(['user_id' => $model->id])->one();
             $authAssigned->item_name = $model->item_name;
             $authAssigned->save();
+
 
             return $this->redirect(['index', 
             'UserDataSearch[item_name]' => $model->item_name,
@@ -369,6 +397,9 @@ class UserManagementController extends Controller
             'student_year' => $student_year,
             'program' => $program,
             'major' => $major,
+            'position' => $position,
+            'department' => $department,
+            'company' => $company,
         ]);
     }
 

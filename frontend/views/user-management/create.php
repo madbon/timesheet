@@ -6,7 +6,7 @@ use yii\helpers\Html;
 /** @var common\models\UserData $model */
 
 $this->title = 'Create User Account';
-$this->params['breadcrumbs'][] = ['label' => 'User Management', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'User Management', 'url' => ['index','UserDataSearch[item_name]' => 'Trainee']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="user-data-create">
@@ -42,6 +42,9 @@ $this->params['breadcrumbs'][] = $this->title;
         'student_section' => $student_section,
         'student_year' => $student_year,
         'program' => $program,
+        'position' => $position,
+        'department' => $department,
+        'company' => $company,
     ]) ?>
 
 </div>

@@ -34,10 +34,7 @@ class UserCompany extends \yii\db\ActiveRecord
     {
         return [
             [['user_id','ref_company_id'], 'integer'],
-            [['latitude','longitude','address'],'safe'],
-            [['name', 'contact_info'], 'string', 'max' => 150],
-            [['address'], 'string', 'max' => 255],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
+            // [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
 
@@ -49,11 +46,11 @@ class UserCompany extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'user_id' => 'User ID',
-            'latitude' => 'Latitude',
-            'longitude' => 'Longitude',
-            'name' => 'Name',
-            'address' => 'Address',
-            'contact_info' => 'Contact Info',
+            // 'latitude' => 'Latitude',
+            // 'longitude' => 'Longitude',
+            // 'name' => 'Name',
+            // 'address' => 'Address',
+            // 'contact_info' => 'Contact Info',
             'ref_company_id' => 'Company',
         ];
     }

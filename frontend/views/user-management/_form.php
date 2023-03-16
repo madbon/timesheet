@@ -11,7 +11,10 @@ use yii\widgets\ActiveForm;
 
 <div class="user-data-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin([
+        'id' => 'user-management-form',
+        // ... other options ...
+    ]); ?>
     
     <?php if(Yii::$app->controller->action->id == "update"){ ?>
         <div class="row" style="margin-bottom: 20px;">
@@ -23,49 +26,6 @@ use yii\widgets\ActiveForm;
             </div>
         </div>
     <?php } ?>
-
-    <div class="card" style="margin-bottom:10px;">
-        <div class="card-body">
-        
-            <h5 class="card-title">Personal Information</h5>
-            <div class="row">
-                <div class="col-sm-3">
-                    <?= $form->field($model, 'fname')->textInput(['maxlength' => true]) ?>
-                </div>
-                <div class="col-sm-3">
-                    <?= $form->field($model, 'mname')->textInput(['maxlength' => true]) ?>
-                </div>
-                <div class="col-sm-3">
-                    <?= $form->field($model, 'sname')->textInput() ?>
-                </div>
-                <div class="col-sm-3">
-                    <?= $form->field($model, 'suffix')->dropDownList(
-                        $suffix,
-                        ['prompt'=>'Select option']
-                    ) ?>
-                </div>
-            </div>
-            
-            <div class="row">
-                <div class="col-sm-3">
-                    <?= $form->field($model, 'bday')->textInput(['type' => 'date', 'max' => (date('Y') - 18).date('-m-d')]) ?>
-                </div>
-                <div class="col-sm-3">
-                    <?= $form->field($model, 'sex')->dropDownList(
-                        ['M' => 'Male', 'F' => 'Female'],
-                        ['prompt'=>'Select option']
-                    ) ?>
-                </div>
-                
-            </div>
-
-            <div class="row">
-                <div class="col-sm-12">
-                    <?= $form->field($model, 'address')->textInput(['maxlength' => true])->label("Complete Address <i>(House Block/Lot No, Street Name, Subdivision/Village, Barangay, City/Municipality, Province, Zip Code)</i>"); ?>
-                </div>
-            </div>  
-        </div>
-    </div>
 
     <div class="card" style="margin-bottom: 10px;">
         <div class="card-body">
@@ -93,26 +53,42 @@ use yii\widgets\ActiveForm;
     <!-- <div class="card" style="margin-bottom: 10px;">
         <div class="card-body"> -->
             <?php 
-                if(Yii::$app->controller->action->id == "update")
-                {
-                    if(!empty($model->userCompany->company->name))
-                    {
-                        echo "This User is in this Company: 
-                        <p><code><strong>Name: </strong>".$model->userCompany->company->name."</code><br/>
-                        <code><strong>Address: </strong>".$model->userCompany->company->address."</code><br/>
-                        <code><strong>Contact Info: </strong>".$model->userCompany->company->contact_info."</code>
-                        </p>
-                        ";
-                    }
-                }
+                // if(Yii::$app->controller->action->id == "update")
+                // {
+                //     if(!empty($model->userCompany->company->name))
+                //     {
+                //         echo "This User is in this Company: 
+                //         <p><code><strong>Name: </strong>".$model->userCompany->company->name."</code><br/>
+                //         <code><strong>Address: </strong>".$model->userCompany->company->address."</code><br/>
+                //         <code><strong>Contact Info: </strong>".$model->userCompany->company->contact_info."</code>
+                //         </p>
+                //         ";
+                //     }
+                // }
             ?>
             
-            <p>
+            <p style="display:none;">
                 <code><strong>Note #1: </strong> If the company is not found in the search box, encode the company details in the list. <?= Html::a('CLICK HERE',['/company/create'],['target' => '_blank']) ?> to add the company.</code> <br/>
                 <code><strong>Note #2: </strong> If you have already encoded the company in the list, try again to search for it in the search box. </code>
             </p>
-            <h6 class="card-title"><?= Yii::$app->controller->action->id == "update" ? "Change Company" : "Link the Company" ?></h6>
-            <?= $form->field($model, 'company')->dropDownList([], ['prompt' => 'Select a company', 'id' => 'company-dropdown','class' => 'form-control'])->label(false) ?>
+            <h6 class="card-title">
+                COMPANY
+            </h6>
+
+            <?= $form->field($model, 'company')->dropDownList($company, ['prompt' => 'Select a company','class' => 'form-control'])->label(false) ?>
+
+            <?php if(in_array($account_type,['companysupervisor'])){ ?>
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col-sm-6">
+                        <label>Department</label>
+                        <?= $form->field($model, 'ref_department_id')->dropDownList($department, ['prompt' => 'Select Department', 'class' => 'form-control'])->label(false) ?>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Position</label>
+                        <?= $form->field($model, 'ref_position_id')->dropDownList($position, ['prompt' => 'Select Position', 'class' => 'form-control'])->label(false) ?>
+                    </div>
+                </div>
+            <?php } ?>
 
             <?php
             // JavaScript
@@ -234,7 +210,48 @@ use yii\widgets\ActiveForm;
         </div>
     </div>
 
-    
+    <div class="card" style="margin-bottom:10px;">
+        <div class="card-body">
+        
+            <h5 class="card-title">Personal Information</h5>
+            <div class="row">
+                <div class="col-sm-3">
+                    <?= $form->field($model, 'fname')->textInput(['maxlength' => true]) ?>
+                </div>
+                <div class="col-sm-3">
+                    <?= $form->field($model, 'mname')->textInput(['maxlength' => true]) ?>
+                </div>
+                <div class="col-sm-3">
+                    <?= $form->field($model, 'sname')->textInput() ?>
+                </div>
+                <div class="col-sm-3">
+                    <?= $form->field($model, 'suffix')->dropDownList(
+                        $suffix,
+                        ['prompt'=>'Select option']
+                    ) ?>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-sm-3">
+                    <?= $form->field($model, 'bday')->textInput(['type' => 'date', 'max' => (date('Y') - 18).date('-m-d')]) ?>
+                </div>
+                <div class="col-sm-3">
+                    <?= $form->field($model, 'sex')->dropDownList(
+                        ['M' => 'Male', 'F' => 'Female'],
+                        ['prompt'=>'Select option']
+                    ) ?>
+                </div>
+                
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <?= $form->field($model, 'address')->textInput(['maxlength' => true])->label("Complete Address <i>(House Block/Lot No, Street Name, Subdivision/Village, Barangay, City/Municipality, Province, Zip Code)</i>"); ?>
+                </div>
+            </div>  
+        </div>
+    </div>
 
     <div class="card" style="margin-bottom: 10px;">
         <div class="card-body">

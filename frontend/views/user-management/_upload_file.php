@@ -7,7 +7,7 @@ use yii\widgets\ActiveForm;
 /** @var common\models\UserData $model */
 
 $this->title = $message.': '.$model->fullName();
-$this->params['breadcrumbs'][] = ['label' => 'User Management', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'User Management', 'url' => ['index','UserDataSearch[item_name]' => 'Trainee']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>

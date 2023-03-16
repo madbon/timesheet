@@ -47,7 +47,7 @@ class UserData extends \yii\db\ActiveRecord
         return [
             // [[ 'status', 'created_at', 'updated_at'], 'integer'],
             // [['bday'], 'safe'],
-            [['fname', 'sname', 'email', 'sex','bday','username','company'], 'required'],
+            [['fname', 'sname', 'email', 'sex','bday','username'], 'required'],
             [['mname','password_hash','password_reset_token','verification_token','auth_key'],'safe'],
             [['fname'], 'string', 'max' => 250],
             [['mname'], 'string', 'max' => 150],
@@ -67,6 +67,18 @@ class UserData extends \yii\db\ActiveRecord
             [['student_idno','mobile_no','ref_program_id','ref_program_major_id','student_year','student_section','address'], in_array(Yii::$app->request->get('account_type'),['trainee']) ? 'required' : 'safe'],
 
             [['mobile_no','ref_program_id'], in_array(Yii::$app->request->get('account_type'),['ojtcoordinator']) ? 'required' : 'safe'],
+
+            [['ref_department_id','ref_position_id'], in_array(Yii::$app->request->get('account_type'),['ojtcoordinator']) ? 'required' : 'safe'],
+
+            [['company'], in_array(Yii::$app->request->get('account_type'),['companysupervisor','trainee']) ? 'required' : 'safe'],
+
+            [['company'], in_array(Yii::$app->request->get('account_type'),['companysupervisor','trainee']) ? 'required' : 'safe'],
+
+            [['company'], 'required', 'when' => function ($model) { return $model->item_name == 'CompanySupervisor'; }, 'whenClient' => "function (attribute, value) { return $('#userdata-item_name').val() == 'CompanySupervisor'; }"],
+
+            [['company'], 'required', 'when' => function ($model) { return $model->item_name == 'Trainee'; }, 'whenClient' => "function (attribute, value) { return $('#userdata-item_name').val() == 'Trainee'; }"],
+
+            // [['company'], 'required'],
             
             // [['password_reset_token'], 'unique'],
         ];
@@ -101,6 +113,8 @@ class UserData extends \yii\db\ActiveRecord
             'student_year' => 'Year',
             'student_section' => 'Section',
             'item_name' => 'Role',
+            'ref_department_id' => 'Department',
+            'ref_position_id' => 'Position',
             // 'role_name' => 'Role',
         ];
     }
@@ -120,6 +134,17 @@ class UserData extends \yii\db\ActiveRecord
     {
         return $this->hasOne(UserCompany::class, ['user_id' => 'id']); 
     }
+
+    public function getPosition()
+    {
+        return $this->hasOne(Position::class, ['id' => 'ref_position_id']); 
+    }
+
+    public function getDepartment()
+    {
+        return $this->hasOne(Department::class, ['id' => 'ref_department_id']); 
+    }
+
 
     public function getProgramMajor()
     {

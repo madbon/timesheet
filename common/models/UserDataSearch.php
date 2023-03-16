@@ -15,11 +15,12 @@ class UserDataSearch extends UserData
      * {@inheritdoc}
      */
     public $item_name;
+    public $company;
     public function rules()
     {
         return [
             [['id', 'status', 'created_at', 'updated_at'], 'integer'],
-            [['fname','sname', 'mname', 'bday', 'sex', 'username', 'auth_key', 'password_hash', 'password_reset_token', 'email', 'verification_token','ref_program_id','ref_program_major_id','student_idno','student_year','student_section','item_name','suffix','mobile_no','tel_no','address'], 'safe'],
+            [['fname','sname', 'mname', 'bday', 'sex', 'username', 'auth_key', 'password_hash', 'password_reset_token', 'email', 'verification_token','ref_program_id','ref_program_major_id','student_idno','student_year','student_section','item_name','suffix','mobile_no','tel_no','address','company','ref_department_id','ref_position_id'], 'safe'],
         ];
     }
 
@@ -41,7 +42,9 @@ class UserDataSearch extends UserData
      */
     public function search($params)
     {
-        $query = UserData::find()->joinWith('authAssignment.itemName');
+        $query = UserData::find()
+        ->joinWith('authAssignment.itemName')
+        ->joinWith('userCompany.company');
 
        // add left join with AuthItem model
 
@@ -89,7 +92,9 @@ class UserDataSearch extends UserData
             ->andFilterWhere(['=', 'student_year', $this->student_year])
             ->andFilterWhere(['=', 'student_section', $this->student_section])
             ->andFilterWhere(['=', 'student_idno', $this->student_idno])
-            ->andFilterWhere(['like', 'verification_token', $this->verification_token]);
+            ->andFilterWhere(['like', 'verification_token', $this->verification_token])
+            ->andFilterWhere(['=', 'ref_position_id', $this->ref_position_id])
+            ->andFilterWhere(['=', 'ref_department_id', $this->ref_department_id]);
 
             if($this->item_name)
             {
@@ -99,6 +104,8 @@ class UserDataSearch extends UserData
             {
                 $query->andFilterWhere(['like', 'auth_item.name', "Trainee"]);
             }
+
+            $query->andFilterWhere(['like','ref_company.name',$this->company]);
             
 
         return $dataProvider;
