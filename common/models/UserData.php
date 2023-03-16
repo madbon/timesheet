@@ -70,6 +70,8 @@ class UserData extends \yii\db\ActiveRecord
 
             [['ref_department_id','ref_position_id'], in_array(Yii::$app->request->get('account_type'),['ojtcoordinator']) ? 'required' : 'safe'],
 
+            [['ref_department_id'], in_array(Yii::$app->request->get('account_type'),['trainee']) ? 'required' : 'safe'],
+
             [['company'], in_array(Yii::$app->request->get('account_type'),['companysupervisor','trainee']) ? 'required' : 'safe'],
 
             [['company'], in_array(Yii::$app->request->get('account_type'),['companysupervisor','trainee']) ? 'required' : 'safe'],

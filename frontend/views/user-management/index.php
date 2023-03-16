@@ -114,10 +114,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             return !empty($model->program->title) ? $model->program->title : "";
                         },
                         'filter' => \yii\helpers\ArrayHelper::map(\common\models\RefProgram::find()->asArray()->all(), 'id', 'title'),
-                        'visible' => function($model)
-                        {
-                            return in_array($model->authAssignment->item_name,['Trainee','OjtCoordinator']) ? true : false;
-                        },
+                        'visible' => in_array($searchModel->item_name,['Trainee','OjtCoordinator',NULL,'']) ? true : false,
                     ],
                     [
                         'attribute' => 'ref_program_major_id',
@@ -125,10 +122,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             return !empty($model->programMajor->title) ? $model->programMajor->title : "";
                         },
                         'filter' => \yii\helpers\ArrayHelper::map(\common\models\ProgramMajor::find()->asArray()->all(), 'id', 'title'),
-                        'visible' => function($model)
-                        {
-                            return in_array($model->authAssignment->item_name,['Trainee']) ? true : false;
-                        },
+                        'visible' => in_array($searchModel->item_name,['Trainee',NULL,'']) ? true : false,
                     ],
                     [
                         'attribute' => 'student_year',
@@ -136,10 +130,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             return !empty($model->student_year) ? $model->student_year : "";
                         },
                         'filter' => \yii\helpers\ArrayHelper::map(\common\models\StudentYear::find()->asArray()->all(), 'year', 'title'),
-                        'visible' => function($model)
-                        {
-                            return in_array($model->authAssignment->item_name,['Trainee']) ? true : false;
-                        },
+                        'visible' => in_array($searchModel->item_name,['Trainee',NULL,'']) ? true : false,
                         
                     ],
                     [
@@ -148,17 +139,11 @@ $this->params['breadcrumbs'][] = $this->title;
                             return !empty($model->student_section) ? $model->student_section : "";
                         },
                         'filter' => \yii\helpers\ArrayHelper::map(\common\models\StudentSection::find()->asArray()->all(), 'section', 'section'),
-                        'visible' => function($model)
-                        {
-                            return in_array($model->authAssignment->item_name,['Trainee']) ? true : false;
-                        },
+                        'visible' => in_array($searchModel->item_name,['Trainee',NULL,'']) ? true : false,
                     ],
                     [
                         'attribute' => 'student_idno',
-                        'visible' => function($model)
-                        {
-                            return in_array($model->authAssignment->item_name,['Trainee']) ? true : false;
-                        },
+                        'visible' => in_array($searchModel->item_name,['Trainee',NULL,'']) ? true : false,
                     ],
                     'fname',
                     
@@ -192,10 +177,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'attribute' => 'company',
                         'format' => 'raw',
-                        'visible' => function($model)
-                        {
-                            return in_array($model->authAssignment->item_name,['Trainee','CompanySupervisor']) ? true : false;
-                        },
+                        'visible' => in_array($searchModel->item_name,['Trainee','CompanySupervisor',NULL,'']) ? true : false,
                         'value' => function ($model) {
                             return !empty($model->userCompany->company->name) ? "<i style='color:blue;'>".$model->userCompany->company->name."</i>" : "<i style='color:red; font-weight:bold;'>---</i>";
                         },
@@ -206,10 +188,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             return !empty($model->department->title) ? $model->department->title : "";
                         },
                         'filter' => \yii\helpers\ArrayHelper::map(\common\models\Department::find()->asArray()->all(), 'id', 'title'),
-                        'visible' => function($model)
-                        {
-                            return in_array($model->authAssignment->item_name,['CompanySupervisor']) ? true : false;
-                        },
+                        'visible' => in_array($searchModel->item_name,['Trainee','CompanySupervisor',NULL,'']) ? true : false,
                     ],
                     [
                         'attribute' => 'ref_position_id',
@@ -217,10 +196,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             return !empty($model->position->position) ? $model->position->position : "";
                         },
                         'filter' => \yii\helpers\ArrayHelper::map(\common\models\Position::find()->asArray()->all(), 'id', 'position'),
-                        'visible' => function($model)
-                        {
-                            return in_array($model->authAssignment->item_name,['CompanySupervisor']) ? true : false;
-                        },
+                        'visible' => in_array($searchModel->item_name,['CompanySupervisor']) ? true : false,
                     ],
                     'username',
                     //'auth_key',
@@ -252,16 +228,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                 {
                                     $buttons .= Html::a((Yii::$app->getModule('admin')->GetIcon('upload-cloud')),['upload-file','id' => $model->id],['class' => 'btn btn-sm btn-outline-secondary']);
                                 }
-
-                                // if(!empty($model->userCompany->user_id))
-                                // {
-                                //     $buttons .= Html::a((Yii::$app->getModule('admin')->GetIcon('geo-alt-fill')),['/user-company/create','user_id' => $model->id],['class' => 'btn btn-sm btn-outline-primary']);
-                                // }
-                                // else
-                                // {
-                                //     $buttons .= Html::a((Yii::$app->getModule('admin')->GetIcon('geo-alt-fill')),['/user-company/create','user_id' => $model->id],['class' => 'btn btn-sm btn-outline-secondary']);
-                                // }
-
                                 
                             }
 

@@ -87,7 +87,7 @@ class UserManagementController extends Controller
                         'roles' => ['user-management-create-trainee','user-management-create-ojt-coordinator','user-management-create-company-supervisor','user-management-create-administrator'],
                     ],
                     [
-                        'actions' => ['company-json'],
+                        'actions' => ['company-json','update-my-account','upload-my-signature'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -281,12 +281,42 @@ class UserManagementController extends Controller
             $modelUpload->imageFile = UploadedFile::getInstance($modelUpload, 'imageFile');
             if ($modelUpload->upload()) {
                 // file is uploaded successfully
-                \Yii::$app->getSession()->setFlash('success', 'File has been uploaded');
+                \Yii::$app->getSession()->setFlash('success', 'e-Signature has been uploaded');
                 return $this->redirect(['upload-file', 'id' => $id, 'message' => $message]);
             }
         }
 
         return $this->render('_upload_file', [
+            'model' => $this->findModel($id),
+            'modelUpload' => $modelUpload,
+            'message' => $message,
+        ]);
+    }
+
+     /**
+     * Displays a single UserData model.
+     * @param int $id ID
+     * @return string
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionUploadMySignature($id,$message="Upload Signature")
+    {
+        $modelUpload = new UploadForm();
+
+        if (Yii::$app->request->isPost) {
+
+            $modelUpload->model_name = basename(get_class($this->findModel($id)));
+            $modelUpload->model_id = $id;
+
+            $modelUpload->imageFile = UploadedFile::getInstance($modelUpload, 'imageFile');
+            if ($modelUpload->upload()) {
+                // file is uploaded successfully
+                \Yii::$app->getSession()->setFlash('success', 'e-Signature has been uploaded');
+                return $this->redirect(['upload-my-signature', 'id' => $id, 'message' => $message]);
+            }
+        }
+
+        return $this->render('_upload_my_signature', [
             'model' => $this->findModel($id),
             'modelUpload' => $modelUpload,
             'message' => $message,
@@ -390,6 +420,105 @@ class UserManagementController extends Controller
         
 
         return $this->render('update', [
+            'model' => $model,
+            'roleArr' => $roleArr,
+            'suffix' => $suffix,
+            'student_section' => $student_section,
+            'student_year' => $student_year,
+            'program' => $program,
+            'major' => $major,
+            'position' => $position,
+            'department' => $department,
+            'company' => $company,
+        ]);
+    }
+
+    /**
+     * Updates an existing UserData model.
+     * If update is successful, the browser will be redirected to the 'view' page.
+     * @param int $id ID
+     * @return string|\yii\web\Response
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionUpdateMyAccount($id)
+    {
+        if(Yii::$app->user->identity->id != $id)
+        {
+            throw new NotFoundHttpException("Page not found");
+        }
+
+        $model = $this->findModel($id);
+        $roleAssignment = new AuthAssignment();
+
+        $queryRole = AuthItem::find()->where(['type' => 1])->all();
+        $roleArr = ArrayHelper::map($queryRole, 'name', 'name');
+
+        $suffix = ArrayHelper::map(Suffix::find()->all(), 'title', 'title');
+        $student_year = ArrayHelper::map(StudentYear::find()->all(), 'year', 'title');
+        $student_section = ArrayHelper::map(StudentSection::find()->all(), 'section', 'section');
+
+        $program = ArrayHelper::map(RefProgram::find()->all(), 'id', 'title');
+        $major =  ArrayHelper::map(ProgramMajor::find()->where(['ref_program_id' => $model->ref_program_id])->all(), 'id', 'title');
+
+        $position = ArrayHelper::map(Position::find()->all(), 'id', 'position');
+        $department = ArrayHelper::map(Department::find()->all(), 'id', 'title');
+
+        $model->company = !empty($model->userCompany->ref_company_id) ? $model->userCompany->ref_company_id : NULL;
+
+        $company = ArrayHelper::map(Company::find()->select(['id','CONCAT(name," (", address, ")") as name'])->all(), 'id', 'name');
+
+        $model->item_name = !empty($model->authAssignment->item_name) ? $model->authAssignment->item_name : null;
+
+       
+
+        if ($this->request->isPost && $model->load($this->request->post())) {
+
+            if($model->password)
+            {
+                $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
+            }
+
+            if($model->save())
+            {
+                \Yii::$app->getSession()->setFlash('success', 'Changes has been saved');
+            }
+
+            // print_r($model->company); exit;
+
+            if(UserCompany::find()->where(['user_id' => $model->id])->exists())
+            {
+                $userCompany = UserCompany::find()->where(['user_id' => $model->id])->one();
+                $userCompany->ref_company_id = $model->company;
+            
+                if(!$userCompany->save())
+                {
+                    print_r($userCompany->errors); exit;
+                }
+            }
+            else
+            {
+                $newUserCompany = new UserCompany();
+                $newUserCompany->user_id = $model->id;
+                $newUserCompany->ref_company_id = $model->company;
+                $newUserCompany->save();
+            }
+            
+
+           
+
+            $authAssigned = AuthAssignment::find()->where(['user_id' => $model->id])->one();
+            $authAssigned->item_name = $model->item_name;
+            $authAssigned->save();
+
+
+            return $this->redirect(['update-my-account', 
+            'id' => $id,
+        ]);
+        }
+
+        
+
+        return $this->render('update-my-account', [
             'model' => $model,
             'roleArr' => $roleArr,
             'suffix' => $suffix,

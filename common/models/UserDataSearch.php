@@ -42,6 +42,8 @@ class UserDataSearch extends UserData
      */
     public function search($params)
     {
+        
+
         $query = UserData::find()
         ->joinWith('authAssignment.itemName')
         ->joinWith('userCompany.company');
@@ -106,6 +108,7 @@ class UserDataSearch extends UserData
             }
 
             $query->andFilterWhere(['like','ref_company.name',$this->company]);
+
             
 
         return $dataProvider;

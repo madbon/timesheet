@@ -71,24 +71,25 @@ use yii\widgets\ActiveForm;
                 <code><strong>Note #1: </strong> If the company is not found in the search box, encode the company details in the list. <?= Html::a('CLICK HERE',['/company/create'],['target' => '_blank']) ?> to add the company.</code> <br/>
                 <code><strong>Note #2: </strong> If you have already encoded the company in the list, try again to search for it in the search box. </code>
             </p>
-            <h6 class="card-title">
-                COMPANY
-            </h6>
 
-            <?= $form->field($model, 'company')->dropDownList($company, ['prompt' => 'Select a company','class' => 'form-control'])->label(false) ?>
+            <?= $form->field($model, 'company')->dropDownList($company, ['prompt' => 'Select a company','class' => 'form-control'])->label("Company") ?>
 
-            <?php if(in_array($account_type,['companysupervisor'])){ ?>
-                <div class="row" style="margin-top: 20px;">
-                    <div class="col-sm-6">
-                        <label>Department</label>
-                        <?= $form->field($model, 'ref_department_id')->dropDownList($department, ['prompt' => 'Select Department', 'class' => 'form-control'])->label(false) ?>
-                    </div>
+            
+            <div class="row" style="margin-top: 10px;">
+                <?php if(in_array($account_type,['companysupervisor','trainee'])){ ?>
+                <div class="col-sm-6">
+                    <label>Department</label>
+                    <?= $form->field($model, 'ref_department_id')->dropDownList($department, ['prompt' => 'Select Department', 'class' => 'form-control'])->label(false) ?>
+                </div>
+                <?php } ?>
+                <?php if(in_array($account_type,['companysupervisor'])){ ?>
                     <div class="col-sm-6">
                         <label>Position</label>
                         <?= $form->field($model, 'ref_position_id')->dropDownList($position, ['prompt' => 'Select Position', 'class' => 'form-control'])->label(false) ?>
                     </div>
-                </div>
-            <?php } ?>
+                <?php } ?>
+            </div>
+            
 
             <?php
             // JavaScript

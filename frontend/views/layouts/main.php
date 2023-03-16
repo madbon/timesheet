@@ -159,8 +159,32 @@ AppAsset::register($this);
     }
     else
     {
-        $menuItems = [
-            
+        $roleName = "";
+        if(Yii::$app->user->can("Administrator"))
+        {
+            $roleName = "Administrator";
+        }
+        else if(Yii::$app->user->can("OjtCoordinator"))
+        {
+            $roleName = "OjtCoordinator";
+        }
+        else if(Yii::$app->user->can("CompanySupervisor"))
+        {
+            $roleName = "CompanySupervisor";
+        }
+        else if(Yii::$app->user->can("Trainee"))
+        {
+            $roleName = "Trainee";
+        }
+
+        // echo Html::beginForm(['/site/logout'], 'post', ['class' => 'd-flex'])
+        //     . Html::submitButton(
+        //         'Logout ('.$roleName.')',
+        //         ['class' => 'btn btn-link logout text-decoration-none']
+        //     )
+        //     . Html::endForm();
+
+        $menuItemsLeft = [
             [
                 'label' => 'User Management', 'url' => ['/user-management','UserDataSearch[item_name]' => 'Trainee'], 'active' => Yii::$app->controller->id == "user-management" ? true : false,
                 'visible' => Yii::$app->user->can('menu-user-management'),
@@ -185,43 +209,48 @@ AppAsset::register($this);
                 'visible' => Yii::$app->user->can('menu-settings'),
             ],
         ];
-
+        
+        $menuItemsRight = [
+            [
+                'label' => $roleName,
+                'items' => [
+                    ['label' => 'My Account', 'url' => ['user-management/update-my-account','id' => Yii::$app->user->identity->id]],
+                    [
+                        'label' => 'My e-Signature', 'url' => ['user-management/upload-my-signature','id' => Yii::$app->user->identity->id],
+                        'visible' => Yii::$app->user->can('upload-signature'),
+                    ],
+                    [
+                        'label' => 'Logout',
+                        'url' => \yii\helpers\Url::to(['site/logout']),
+                        'linkOptions' => [
+                            'class' => 'dropdown-item',
+                            'data-method' => 'post',
+                            'data-confirm' => 'Are you sure you want to logout?',
+                            'href' => \yii\helpers\Url::to(['site/logout'])
+                        ],
+                    ],
+                    
+                    // Add more submenu items as needed
+                ],
+                'options' => ['class' => 'nav-item dropdown'],
+                'linkOptions' => ['class' => 'nav-link dropdown-toggle', 'data-bs-toggle' => 'dropdown', 'role' => 'button', 'aria-expanded' => 'false'],
+            ],
+        ];
+        
         echo Nav::widget([
             'options' => ['class' => 'navbar-nav me-auto mb-2 mb-md-0'],
-            'items' => $menuItems,
+            'items' => $menuItemsLeft,
         ]);
+        
+        echo Nav::widget([
+            'options' => ['class' => 'navbar-nav ms-auto mb-2 mb-md-0'],
+            'items' => $menuItemsRight,
+        ]);
+        
     }
 
     
-    if (Yii::$app->user->isGuest) {
-        // echo Html::tag('div',Html::a('Login',['/site/login'],['class' => ['btn btn-link login text-decoration-none']]),['class' => ['d-flex']]);
-    } else {
 
-        $roleName = "";
-        if(Yii::$app->user->can("Administrator"))
-        {
-            $roleName = "Administrator";
-        }
-        else if(Yii::$app->user->can("OjtCoordinator"))
-        {
-            $roleName = "OjtCoordinator";
-        }
-        else if(Yii::$app->user->can("CompanySupervisor"))
-        {
-            $roleName = "CompanySupervisor";
-        }
-        else if(Yii::$app->user->can("Trainee"))
-        {
-            $roleName = "Trainee";
-        }
-
-        echo Html::beginForm(['/site/logout'], 'post', ['class' => 'd-flex'])
-            . Html::submitButton(
-                'Logout ('.$roleName.')',
-                ['class' => 'btn btn-link logout text-decoration-none link-logout']
-            )
-            . Html::endForm();
-    }
     NavBar::end();
     ?>
 </header>
