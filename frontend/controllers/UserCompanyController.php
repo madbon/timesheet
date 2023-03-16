@@ -152,6 +152,7 @@ class UserCompanyController extends Controller
             ->joinWith('authAssignment')
             ->where(['NOT', ['user.id' => null]])
             ->andWhere(['auth_assignment.item_name' => 'Trainee'])
+            ->andFilterWhere(['user.ref_program_id' => Yii::$app->getModule('admin')->GetAssignedProgram()])
             ->groupBy(['ref_company.id']);
 
         if ($search !== null) {
