@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 16, 2023 at 12:00 PM
+-- Generation Time: Mar 16, 2023 at 03:56 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -182,14 +182,9 @@ INSERT INTO `auth_item_child` (`parent`, `child`) VALUES
 ('Administrator', 'settings-user-accounts-form-reference-container'),
 ('Administrator', 'USER-MANAGEMENT-MODULE'),
 ('CompanySupervisor', 'access-trainee-index'),
-('CompanySupervisor', 'menu-settings'),
 ('CompanySupervisor', 'menu-user-management'),
 ('CompanySupervisor', 'SETTINGS'),
 ('CompanySupervisor', 'settings-index'),
-('CompanySupervisor', 'settings-list-companies'),
-('CompanySupervisor', 'settings-list-departments'),
-('CompanySupervisor', 'settings-mapping-tagging-container'),
-('CompanySupervisor', 'settings-user-accounts-form-reference-container'),
 ('CompanySupervisor', 'upload-signature'),
 ('CompanySupervisor', 'user-management-index'),
 ('OjtCoordinator', 'access-company-supervisor-index'),
@@ -265,7 +260,8 @@ INSERT INTO `files` (`id`, `user_id`, `model_name`, `model_id`, `file_name`, `ex
 (6, 2, 'UserData', 2, 'esig1', 'png', 'cb82b1232e6bd27563d9b4b121f6c506', NULL, 1678335196),
 (7, 2, 'UserData', 9, 'esig2', 'png', 'db8c00be880f4084d57946a7ee2cf1e3', NULL, 1678345294),
 (8, 2, 'UserData', 12, 'esig3', 'png', '66a9e2ea397cbbbf4f9a4b160796a596', NULL, 1678348171),
-(9, 2, 'UserData', 28, 'esig4', 'png', '47e2d40cf57a1028c173b4c50eb61bf7', NULL, 1678957490);
+(9, 2, 'UserData', 28, 'esig4', 'png', '47e2d40cf57a1028c173b4c50eb61bf7', NULL, 1678957490),
+(10, 31, 'UserData', 31, 'esig1', 'png', '787c4cbba8e7efd94fd124ee927b60af', NULL, 1678975571);
 
 -- --------------------------------------------------------
 
@@ -571,18 +567,18 @@ INSERT INTO `user` (`id`, `student_idno`, `student_year`, `student_section`, `re
 (12, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Warren', '', 'Celeste', NULL, '2013-03-05', 'M', 'warren', 'b8b5ohQe2b088Ag4oODLFGuZukUMf9Lf', '$2y$13$0BQ2nKuyj0JepnxthYtxKefTIv1A1g/8saAhcQFstW6OMAreXFpGO', NULL, 'warren@gm.com', NULL, '', NULL, 10, 0, 0, 'srcOj_S0cmMgsrccugdmIcu0aIvBUx7s_1678348138'),
 (13, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Ken', '', 'Mateo', NULL, '2005-03-10', 'M', 'ken', 'dU_YwJsZbxPpzMhLenmo62G3HUQRQByy', '$2y$13$d6/4LxP7LqGnJM3JJQLyf.XdJpnWfaSau3/Kn4Hb5pgaZc09hEfP.', NULL, 'ken@gm.com', NULL, '', NULL, 10, 0, 0, 'aFFYT7PA5MtXlgmzAwrrYi2kS4Er3kj-_1678434605'),
 (15, NULL, NULL, NULL, NULL, NULL, 2, 2, 'sdfdfd', 'fdfd', 'fdfdf', '', '2005-03-10', 'M', 'asdsd', 'Uas9Q6lT6K2ZleRjQUe7u9-f0STX8fUZ', '$2y$13$o5HF8ta/VDg0f7sn5hd1HekdePk7Jr5dPq7JoksNSUsYOHYzltH3K', NULL, 'sdfdf@gf.com', NULL, '', '', 10, 0, 0, 'Gx2hofcN7X0ltP3xHFAfi0lBd4RgzE6y_1678435021'),
-(18, '234343', 2, 'B', NULL, NULL, NULL, NULL, 'sdfd', 'fdf', 'dfdf', 'II', '2005-03-06', 'M', 'jer', 'yxYFkfmyTqysOAk8W9TjQ2-kUVmy4j7h', '$2y$13$02lOdIuKb3YUsiNzI9/SW.q9BXChjTWbUT0saWAPwY3dZzlCnRhjC', NULL, 'jer@gm.com', 2147483647, '1232323', '033B Elma Street, Don Fabian, Brgy. Commonwealth, Quezon City, 1121', 10, 0, 0, 'O6NNP9b9x-dPjyaHeh8J_r_J_SYx7VKV_1678674129'),
+(18, '234343', 2, 'B', NULL, NULL, 2, NULL, 'sdfd', 'fdf', 'dfdf', 'II', '2005-03-06', 'M', 'jer', 'yxYFkfmyTqysOAk8W9TjQ2-kUVmy4j7h', '$2y$13$02lOdIuKb3YUsiNzI9/SW.q9BXChjTWbUT0saWAPwY3dZzlCnRhjC', NULL, 'jer@gm.com', 2147483647, '1232323', '033B Elma Street, Don Fabian, Brgy. Commonwealth, Quezon City, 1121', 10, 0, 0, 'O6NNP9b9x-dPjyaHeh8J_r_J_SYx7VKV_1678674129'),
 (20, '1232090', 1, 'B', 1, 1, 1, 1, 'nap', '', 'nana', 'IV', '2005-03-06', 'M', 'nap', 'a7jMTVWHllh3qnNl9HE4lLBrexdWRYh8', '$2y$13$JuCqx7MTu2BWwixIm4Zjd.ySrhIwcgVIuwenfbNAgye2y3bJitV0K', NULL, 'nap@gm.com', 2147483647, '2343434', '12323 address', 10, 0, 0, 'BI5HOKRlYM6YNi6HhzRDRJX7jH7Fu3Xg_1678677157'),
-(21, '2313553', 4, 'B', 1, NULL, NULL, NULL, 'vilma', '', 'dayagmil', '', '2005-03-06', 'M', 'vilma', 'bQW83W97gNRv8h_OLOQQEcBKt82ZKDtG', '$2y$13$p12B2eY8FRiAArUz1ONr7.bugwXDqwfCjh7diU2YcVSc.BYIbHJQ6', NULL, 'vilma@gm.com', 9232323, 'sdfdf', 'sdfdfd', 10, 0, 0, 'mEhL6bWT6Dms3Cs8-jvfRt8N-D9OqWPL_1678677395'),
-(22, '234343', 4, 'E', 4, NULL, NULL, NULL, 'france', '', 'dacales', '', '2005-02-28', 'F', 'france', 'LEH7yRVrvsCkfYGvvykGSekyD_gq3q5S', '$2y$13$oqmSvq5yfCPHkOARf8Wyye5s4WnZjXJ8ilMdqmgFWjXT9hQah8LSK', NULL, 'france@gm.com', 2147483647, '2343434', 'sdfdfd', 10, 0, 0, 'NuE-OGiB9RnY3zRC6Qe7OGar1-Up5vrx_1678677582'),
+(21, '2313553', 4, 'B', 1, NULL, 3, NULL, 'vilma', '', 'dayagmil', '', '2005-03-06', 'M', 'vilma', 'bQW83W97gNRv8h_OLOQQEcBKt82ZKDtG', '$2y$13$p12B2eY8FRiAArUz1ONr7.bugwXDqwfCjh7diU2YcVSc.BYIbHJQ6', NULL, 'vilma@gm.com', 9232323, 'sdfdf', 'sdfdfd', 10, 0, 0, 'mEhL6bWT6Dms3Cs8-jvfRt8N-D9OqWPL_1678677395'),
+(22, '234343', 4, 'E', 4, NULL, 1, NULL, 'france', '', 'dacales', '', '2005-02-28', 'F', 'france', 'LEH7yRVrvsCkfYGvvykGSekyD_gq3q5S', '$2y$13$oqmSvq5yfCPHkOARf8Wyye5s4WnZjXJ8ilMdqmgFWjXT9hQah8LSK', NULL, 'france@gm.com', 2147483647, '2343434', 'sdfdfd', 10, 0, 0, 'NuE-OGiB9RnY3zRC6Qe7OGar1-Up5vrx_1678677582'),
 (23, NULL, NULL, NULL, 2, NULL, NULL, NULL, 'alvin', '', 'sibaluca', 'II', '2005-03-06', 'M', 'alvin', 'Jt2FFZ4bDd5qIpZXNgDVJgD5zdGcnaAN', '$2y$13$4PWK6Ic8FySi/zmcrSa16O698puS9W3ESCemobfyMHm1/FnJsNj0i', NULL, 'alvin@gm.com', 2147483647, 'tel12323', '031 Elma Stree, Don Fabian,  Brgy. Commonwealth, Quezon City, Metro Manila, 1121', 10, 0, 0, 'ycVi4JFu-nQdW7jEf0KESszpRK-XsFt2_1678687295'),
-(24, NULL, NULL, NULL, 5, NULL, NULL, NULL, 'Nicka', '', 'De Guzman', '', '2005-02-27', 'M', 'coor', '1Veun2dt3r9hnBJQ7Qn0G5H0Tkagzu84', '$2y$13$27LnUZ568Q46.lXRp4yXa.a689gXPsxms76TphmARiO9gbgUVIKqq', NULL, 'nickadg@gm.com', 2147483647, '2323323', 'Tabing Ilog, Malolos, Bulacan', 10, 0, 0, 'DlnHssTWDN0RLchN0Bf_udvgnI7qnM0C_1678689072'),
+(24, NULL, NULL, NULL, 1, NULL, NULL, NULL, 'Nicka', '', 'De Guzman', '', '2005-02-27', 'M', 'coor', '1Veun2dt3r9hnBJQ7Qn0G5H0Tkagzu84', '$2y$13$27LnUZ568Q46.lXRp4yXa.a689gXPsxms76TphmARiO9gbgUVIKqq', NULL, 'nickadg@gm.com', 2147483647, '2323323', 'Tabing Ilog, Malolos, Bulacan', 10, 0, 0, 'DlnHssTWDN0RLchN0Bf_udvgnI7qnM0C_1678689072'),
 (25, NULL, NULL, NULL, 2, NULL, NULL, NULL, 'Marcus', 'dfdf', 'Reyes', 'III', '2005-03-07', 'M', 'marcus', 'mS36TXMKD9ktQFooRCC1a1p6q6NK3qq7', '$2y$13$60UT0u3vkMLSTaMCP6vHG.uaWhFLVTrQQsvKbJEP3gDac.miq.qJS', NULL, 'marcus@gm.com', 2147483647, '1232323', 'fsdfdf', 10, 0, 0, 'EOoPNX67A_NLXRYhBO5xW-_22LSVzd1U_1678689188'),
 (26, NULL, NULL, NULL, 3, NULL, NULL, NULL, 'Leonel', '', 'Coor', 'Jr.', '2005-03-09', 'M', 'leonelcoor', '361qo_APVzQbGJDIs_lE4ZhkvLLfEVkk', '$2y$13$ijx.ka0GfD0WB0glocpag.lpcpMs7RsDJHiV0.TDt2sTPoIdkIJXe', NULL, 'leonelcoor@gm.com', 2147483647, '4342314', 'Elma Street, Comm', 10, 0, 0, '2RVtFc_XyO12dJyLeZNLDHE1-t__S44V_1678689352'),
 (27, NULL, NULL, NULL, 4, NULL, NULL, NULL, 'Romnick', '', 'Alfons', 'III', '2005-03-07', 'M', 'romnickalfons', '4YtvYAdGttEKx2ro_xL25Cr5v4hl8S7N', '$2y$13$2L2AdxFpw/uiu99rp15myev4.KptVpC2180EmucCNZYMnvN9miWhi', NULL, 'romnickalfons@gm.com', 2147483647, '', 'Batangas City', 10, 0, 0, 'mQKXx69OXzkobBHTxn_m7HqO3hOVG8zb_1678689520'),
-(28, '890232', 4, 'A', 5, NULL, NULL, NULL, 'Genese', '', 'Luna', '', '2005-03-15', 'F', 'genluna', 'PiowCQ7Fw-U9np-bROC2IsXvT9S2SY0I', '$2y$13$JItdkwe.rjAQqV2ofRJjaeVIp4afiNwBxxov3/CcHWgQ5k/TTMYQ6', NULL, 'genluna@gm.com', 923239232, '123-1232', 'Bocaue, Bulacan', 10, 0, 0, 'Nstb34KJO89hoarjamjI6F0WwMGrhSy9_1678847596'),
-(29, '12-209323', 2, 'C', 3, 0, NULL, NULL, 'NOEL', '', 'YESOR', 'Sr.', '2005-03-16', 'M', 'noelyessor', 'dmovFCrz1sHsQdC6W0qPjN92ZKFArEoh', '$2y$13$21oUDcAN7rbchJjgkWanweu4Ordf7IZZGJOmnoTB9h1XfS4JGf8py', NULL, 'noelyessor@gm.com', 912323232, '2343-4343', '394 Panga St. Don Fabian Brgy. Commonwealth, Quezon City', 10, 0, 0, '7Mg8dwkIznybc-MDFMQfMfz684kxp0Hm_1678948982'),
-(30, '12-0932323', 4, 'C', 2, 0, NULL, NULL, 'Coco', '', 'Martin', 'IV', '2005-03-07', 'M', 'cocomartin', 'j18zpNSDWoU7FIhBPg8rp8F54wDKvYbb', '$2y$13$SrkIl5Upg5cnC9tHtKu0VetZkr9Tpqd7mzYflToxNshTO5w.AitA2', NULL, 'cocomartin@gm.com', 934343434, '23434', '9123 Coco St. Brgy. Matapang, Bataan', 10, 0, 0, 'MAbkw-ZokCSnRrD3iKD7pz31CvudetfX_1678949188'),
+(28, '890232', 4, 'A', 5, NULL, 1, NULL, 'Genese', '', 'Luna', '', '2005-03-15', 'F', 'genluna', 'PiowCQ7Fw-U9np-bROC2IsXvT9S2SY0I', '$2y$13$JItdkwe.rjAQqV2ofRJjaeVIp4afiNwBxxov3/CcHWgQ5k/TTMYQ6', NULL, 'genluna@gm.com', 923239232, '123-1232', 'Bocaue, Bulacan', 10, 0, 0, 'Nstb34KJO89hoarjamjI6F0WwMGrhSy9_1678847596'),
+(29, '12-209323', 2, 'C', 3, NULL, 1, NULL, 'NOEL', '', 'YESOR', 'Sr.', '2005-03-16', 'M', 'noelyessor', 'dmovFCrz1sHsQdC6W0qPjN92ZKFArEoh', '$2y$13$21oUDcAN7rbchJjgkWanweu4Ordf7IZZGJOmnoTB9h1XfS4JGf8py', NULL, 'noelyessor@gm.com', 912323232, '2343-4343', '394 Panga St. Don Fabian Brgy. Commonwealth, Quezon City', 10, 0, 0, '7Mg8dwkIznybc-MDFMQfMfz684kxp0Hm_1678948982'),
+(30, '12-0932323', 4, 'C', 2, NULL, 1, NULL, 'Coco', '', 'Martin', 'IV', '2005-03-07', 'M', 'cocomartin', 'j18zpNSDWoU7FIhBPg8rp8F54wDKvYbb', '$2y$13$SrkIl5Upg5cnC9tHtKu0VetZkr9Tpqd7mzYflToxNshTO5w.AitA2', NULL, 'cocomartin@gm.com', 934343434, '23434', '9123 Coco St. Brgy. Matapang, Bataan', 10, 0, 0, 'MAbkw-ZokCSnRrD3iKD7pz31CvudetfX_1678949188'),
 (31, NULL, NULL, NULL, NULL, NULL, 1, 1, 'Heather', '', 'Miranda', '', '2005-03-15', 'F', 'heather', 'NiMqkvUJL1-jlIOs3H7Ev6kWEiD4wFdw', '$2y$13$6z620ZB726vDLxXO95Ai7OCFV2KL64.n42xcd6a1DWiJObikQIEca', NULL, 'heather@gm.com', 912323232, '454-45454', 'Malolos, Bulacan', 10, 0, 0, '5VPdHej0dhW3AmqIg2uDyLaym6ktx8Wl_1678957717');
 
 -- --------------------------------------------------------
@@ -610,7 +606,7 @@ INSERT INTO `user_company` (`id`, `user_id`, `ref_company_id`) VALUES
 (6, 29, 19),
 (7, 30, 19),
 (8, 15, 17),
-(9, 31, 17),
+(9, 31, 19),
 (10, 24, NULL);
 
 --
@@ -798,7 +794,7 @@ ALTER TABLE `attendance`
 -- AUTO_INCREMENT for table `files`
 --
 ALTER TABLE `files`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `post`
