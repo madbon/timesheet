@@ -65,6 +65,25 @@ $this->params['breadcrumbs'][] = $this->title;
         ?>
         </div>
 
+        <?php
+            $actionButtons = "";
+
+            if(Yii::$app->user->can("user-management-view"))
+            {
+                $actionButtons .= " {view} ";
+            }
+
+            if(Yii::$app->user->can("user-management-update"))
+            {
+                $actionButtons .= " {update} ";
+            }
+
+            if(Yii::$app->user->can("user-management-delete"))
+            {
+                $actionButtons .= " {delete} ";
+            }
+        ?>
+
 
         <div style="border:2px solid #ddd;  padding:5px;" class="table-responsive">
             <?= GridView::widget([
@@ -78,6 +97,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'attribute' => 'item_name',
                         'label' => 'ROLE',
                         'format' => 'raw',
+                        'visible' => Yii::$app->user->can('user-management-delete-role-assigned'),
                         'value' => function($model)
                         {
 
@@ -237,6 +257,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                     [
                         'class' => ActionColumn::className(),
+                        'template' => $actionButtons,
                         'urlCreator' => function ($action, UserData $model, $key, $index, $column) {
                             return Url::toRoute([$action, 'id' => $model->id]);
                         }

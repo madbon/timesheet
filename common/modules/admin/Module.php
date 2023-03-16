@@ -2,6 +2,8 @@
 
 namespace common\modules\admin;
 use common\models\Files;
+use common\models\UserData;
+use common\models\UserCompany;
 use Yii;
 
 /**
@@ -22,6 +24,27 @@ class Module extends \yii\base\Module
         parent::init();
 
         // custom initialization code goes here
+    }
+
+    public static function GetAssignedProgram()
+    {
+        $query = UserData::find()->where(['id' => Yii::$app->user->identity->id])->one();
+
+        return !empty($query->ref_program_id) ? $query->ref_program_id : NULL;
+    }
+
+    public static function GetAssignedDepartment()
+    {
+        $query = UserData::find()->where(['id' => Yii::$app->user->identity->id])->one();
+
+        return !empty($query->ref_department_id) ? $query->ref_department_id : NULL;
+    }
+
+    public static function GetAssignedCompany()
+    {
+        $query = UserCompany::find()->where(['user_id' => Yii::$app->user->identity->id])->one();
+
+        return !empty($query->ref_company_id) ? $query->ref_company_id : NULL;
     }
 
     public static function GetIcon($name)

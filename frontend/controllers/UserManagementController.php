@@ -301,6 +301,12 @@ class UserManagementController extends Controller
      */
     public function actionUploadMySignature($id,$message="Upload Signature")
     {
+        if(Yii::$app->user->identity->id != $id)
+        {
+            throw new NotFoundHttpException("Page not found");
+        }
+
+
         $modelUpload = new UploadForm();
 
         if (Yii::$app->request->isPost) {

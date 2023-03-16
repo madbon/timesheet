@@ -5,6 +5,7 @@ namespace common\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use common\models\UserData;
+use Yii;
 
 /**
  * UserDataSearch represents the model behind the search form of `common\models\UserData`.
@@ -98,6 +99,12 @@ class UserDataSearch extends UserData
             ->andFilterWhere(['=', 'ref_position_id', $this->ref_position_id])
             ->andFilterWhere(['=', 'ref_department_id', $this->ref_department_id]);
 
+            $query->andFilterWhere(['=','ref_department_id', Yii::$app->getModule('admin')->GetAssignedDepartment()]);
+
+            $query->andFilterWhere(['=','ref_program_id', Yii::$app->getModule('admin')->GetAssignedProgram()]);
+
+            $query->andFilterWhere(['=','user_company.ref_company_id', Yii::$app->getModule('admin')->GetAssignedCompany()]);
+
             if($this->item_name)
             {
                 $query->andFilterWhere(['like', 'auth_item.name', $this->item_name]);
@@ -108,6 +115,7 @@ class UserDataSearch extends UserData
             }
 
             $query->andFilterWhere(['like','ref_company.name',$this->company]);
+
 
             
 
