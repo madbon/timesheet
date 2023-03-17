@@ -64,14 +64,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Total No. of Hours',
                 'value' => function($model)
                 {
-                    $time1 = strtotime($model->time_in_pm);
-                    $time2 = strtotime($model->time_out_pm);
-                    $diffSeconds = $time2 - $time1;
-                    $diffHours = floor($diffSeconds / 3600);
-                    $diffMinutes = floor(($diffSeconds % 3600) / 60);
-                    $diffSeconds = $diffSeconds % 60;
+                    // $time1 = strtotime($model->time_in_pm);
+                    // $time2 = strtotime($model->time_out_pm);
+                    // $diffSeconds = $time2 - $time1;
+                    // $diffHours = floor($diffSeconds / 3600);
+                    // $diffMinutes = floor(($diffSeconds % 3600) / 60);
+                    // $diffSeconds = $diffSeconds % 60;
 
-                    return $diffHours . ' hours ' . $diffMinutes . ' minutes ' . $diffSeconds . ' seconds';
+                    // return $diffHours . ' hours ' . $diffMinutes . ' minutes ' . $diffSeconds . ' seconds';
+                    return "PENDING FEATURE";
                 }
             ],
             
