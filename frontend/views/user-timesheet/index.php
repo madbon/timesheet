@@ -56,7 +56,41 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Overtime',
                 'value' => function($model)
                 {
-                    return "PENDING FEATURE";
+                    $time1_am = strtotime($model->time_in_am);
+                    $time2_am = strtotime($model->time_out_am);
+                    $time1_pm = strtotime($model->time_in_pm);
+                    $time2_pm = strtotime($model->time_out_pm);
+
+                    // compute AM time difference
+                    $diffSecondsAM = $time2_am - $time1_am;
+                    $diffHoursAM = floor($diffSecondsAM / 3600);
+                    $diffMinutesAM = floor(($diffSecondsAM % 3600) / 60);
+                    $diffSecondsAM = $diffSecondsAM % 60;
+
+                    // compute PM time difference
+                    $diffSecondsPM = $time2_pm - $time1_pm;
+                    $diffHoursPM = floor($diffSecondsPM / 3600);
+                    $diffMinutesPM = floor(($diffSecondsPM % 3600) / 60);
+                    $diffSecondsPM = $diffSecondsPM % 60;
+
+                    // compute total time difference
+                    $totalSeconds = $diffSecondsAM + $diffSecondsPM;
+                    $totalMinutes = $diffMinutesAM + $diffMinutesPM + floor($totalSeconds / 60);
+                    $totalHours = $diffHoursAM + $diffHoursPM + floor($totalMinutes / 60);
+                    $totalMinutes = $totalMinutes % 60;
+                    $totalSeconds = $totalSeconds % 60;
+
+                    
+                    // compute overtime
+                    if ($totalHours > 8) {
+                        $overtimeHours = $totalHours - 8;
+                        $returnVal = $overtimeHours . 'hrs ' . $totalMinutes . 'mins ' . $totalSeconds . ' secs';
+                    } else {
+                        $returnVal = 'No overtime';
+                    }
+
+                    return $returnVal;
+
                 }
             ],
             'remarks',
@@ -64,15 +98,33 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Total No. of Hours',
                 'value' => function($model)
                 {
-                    // $time1 = strtotime($model->time_in_pm);
-                    // $time2 = strtotime($model->time_out_pm);
-                    // $diffSeconds = $time2 - $time1;
-                    // $diffHours = floor($diffSeconds / 3600);
-                    // $diffMinutes = floor(($diffSeconds % 3600) / 60);
-                    // $diffSeconds = $diffSeconds % 60;
+                    $time1_am = strtotime($model->time_in_am);
+                    $time2_am = strtotime($model->time_out_am);
+                    $time1_pm = strtotime($model->time_in_pm);
+                    $time2_pm = strtotime($model->time_out_pm);
 
-                    // return $diffHours . ' hours ' . $diffMinutes . ' minutes ' . $diffSeconds . ' seconds';
-                    return "PENDING FEATURE";
+                    // compute AM time difference
+                    $diffSecondsAM = $time2_am - $time1_am;
+                    $diffHoursAM = floor($diffSecondsAM / 3600);
+                    $diffMinutesAM = floor(($diffSecondsAM % 3600) / 60);
+                    $diffSecondsAM = $diffSecondsAM % 60;
+
+                    // compute PM time difference
+                    $diffSecondsPM = $time2_pm - $time1_pm;
+                    $diffHoursPM = floor($diffSecondsPM / 3600);
+                    $diffMinutesPM = floor(($diffSecondsPM % 3600) / 60);
+                    $diffSecondsPM = $diffSecondsPM % 60;
+
+                    // compute total time difference
+                    $totalSeconds = $diffSecondsAM + $diffSecondsPM;
+                    $totalMinutes = $diffMinutesAM + $diffMinutesPM + floor($totalSeconds / 60);
+                    $totalHours = $diffHoursAM + $diffHoursPM + floor($totalMinutes / 60);
+                    $totalMinutes = $totalMinutes % 60;
+                    $totalSeconds = $totalSeconds % 60;
+
+                    // display result
+                    return $totalHours . ' hours, ' . $totalMinutes . ' minutes, ' . $totalSeconds . ' seconds';
+
                 }
             ],
             
