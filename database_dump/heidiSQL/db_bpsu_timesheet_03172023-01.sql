@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS `auth_item` (
   CONSTRAINT `auth_item_ibfk_1` FOREIGN KEY (`rule_name`) REFERENCES `auth_rule` (`name`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
--- Dumping data for table db_bpsu_timesheet.auth_item: ~42 rows (approximately)
+-- Dumping data for table db_bpsu_timesheet.auth_item: ~43 rows (approximately)
 INSERT INTO `auth_item` (`name`, `type`, `description`, `rule_name`, `data`, `created_at`, `updated_at`) VALUES
 	('access-administrator-index', 2, '', NULL, NULL, NULL, NULL),
 	('access-all-index', 2, '', NULL, NULL, NULL, NULL),
@@ -89,6 +89,7 @@ INSERT INTO `auth_item` (`name`, `type`, `description`, `rule_name`, `data`, `cr
 	('create-button-trainee', 2, '', NULL, NULL, NULL, NULL),
 	('menu-map-markers', 2, '', NULL, NULL, NULL, NULL),
 	('menu-settings', 2, '', NULL, NULL, NULL, NULL),
+	('menu-timesheet', 2, '', NULL, NULL, NULL, NULL),
 	('menu-user-management', 2, '', NULL, NULL, NULL, NULL),
 	('OjtCoordinator', 1, '', NULL, NULL, NULL, NULL),
 	('SETTINGS', 2, 'SETTINGS MODULE', NULL, NULL, NULL, NULL),
@@ -129,7 +130,7 @@ CREATE TABLE IF NOT EXISTS `auth_item_child` (
   CONSTRAINT `auth_item_child_ibfk_2` FOREIGN KEY (`child`) REFERENCES `auth_item` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
--- Dumping data for table db_bpsu_timesheet.auth_item_child: ~69 rows (approximately)
+-- Dumping data for table db_bpsu_timesheet.auth_item_child: ~70 rows (approximately)
 INSERT INTO `auth_item_child` (`parent`, `child`) VALUES
 	('access-all-index', 'access-administrator-index'),
 	('access-all-index', 'access-company-supervisor-index'),
@@ -191,6 +192,7 @@ INSERT INTO `auth_item_child` (`parent`, `child`) VALUES
 	('OjtCoordinator', 'user-management-view'),
 	('SETTINGS', 'settings-index'),
 	('SETTINGS', 'settings-list-positions'),
+	('Trainee', 'menu-timesheet'),
 	('Trainee', 'time-in-out'),
 	('Trainee', 'upload-signature'),
 	('USER-MANAGEMENT-MODULE', 'user-management-create'),
@@ -562,11 +564,12 @@ CREATE TABLE IF NOT EXISTS `user_timesheet` (
   KEY `time_in_pm` (`time_in_pm`),
   KEY `time_out_pm` (`time_out_pm`),
   KEY `date` (`date`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table db_bpsu_timesheet.user_timesheet: ~1 rows (approximately)
+-- Dumping data for table db_bpsu_timesheet.user_timesheet: ~2 rows (approximately)
 INSERT INTO `user_timesheet` (`id`, `user_id`, `time_in_am`, `time_out_am`, `time_in_pm`, `time_out_pm`, `date`, `remarks`) VALUES
-	(1, 20, '11:12:24', '12:00:00', '11:31:46', NULL, '2023-03-17', NULL);
+	(12, 20, '08:00:00', '12:00:00', '14:48:13', '20:48:15', '2023-03-16', 'Sample remarks'),
+	(14, 20, NULL, NULL, '17:58:55', '17:59:05', '2023-03-17', NULL);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
