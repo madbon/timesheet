@@ -187,6 +187,10 @@ AppAsset::register($this);
 
         $menuItemsLeft = [
             [
+                'label' => 'Timesheet', 'url' => ['/user-timesheet'], 'active' => Yii::$app->controller->id == "user-timesheet" ? true : false,
+                'visible' => Yii::$app->user->can('menu-timesheet'),
+            ],
+            [
                 'label' => 'User Management', 'url' => ['/user-management','UserDataSearch[item_name]' => 'Trainee'], 'active' => Yii::$app->controller->id == "user-management" ? true : false,
                 'visible' => Yii::$app->user->can('menu-user-management'),
             ],
