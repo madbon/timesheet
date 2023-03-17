@@ -109,36 +109,135 @@ class UserTimesheetController extends Controller
             $update = UserTimesheet::find()->where(['user_id' => $user_id, 'date' => $date])->one();
             
 
-            if(empty($update->time_out_am))
+            if (time() >= strtotime('08:00pm') && time() <= strtotime('12:00pm')) {
+                if(empty($update->time_out_am))
+                {
+                    $update->time_out_am = $time;
+                }
+            }
+            else
             {
-                $update->time_out_am = $time;
+                if (time() > strtotime('12:00pm') && time() <= strtotime('05:00pm')) {
+                    if(empty($update->time_out_am))
+                    {
 
-                if (time() > strtotime('10:00am')) {
-                    // current time is greater than 10:00pm
-                    // your code here
-                    $update->time_out_am = "12:00:00";
-                    $update->time_in_pm = $time;
+                        if(empty($update->time_in_pm))
+                        {
+                            $update->time_in_pm = $time;
+                        }
+                        else
+                        {
+                            if(empty($update->time_out_pm))
+                            {
+                                $update->time_out_pm = $time;
+                            }
+                        }
+                        
+                    }
+                    else
+                    {
+                        if(empty($update->time_in_pm))
+                        {
+                            $update->time_in_pm = $time;
+                        }
+                        else
+                        {
+                            if(empty($update->time_out_pm))
+                            {
+                                $update->time_out_pm = $time;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if(time() > strtotime('05:00pm'))
+                    {
+                        if(empty($update->time_out_am))
+                        {
+                            
+                            $update->time_out_am = "12:00:00";
+                            
+                            if(empty($update->time_in_pm))
+                            {
+                                $update->time_in_pm = "1:00:00";
+                            }
+                            else
+                            {
+                                if(empty($update->time_out_pm))
+                                {
+                                    $update->time_out_pm = $time;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if(empty($update->time_in_pm))
+                            {
+                                $update->time_in_pm = "1:00:00";
+
+                                if(empty($update->time_out_pm))
+                                {
+                                    $update->time_out_pm = $time;
+                                }
+                            }
+                            else
+                            {
+                                if(empty($update->time_out_pm))
+                                {
+                                    $update->time_out_pm = $time;
+                                }
+                            }
+                        }
+                        
+                    }
                 }
 
-                $update->save();
             }
            
+            if(!$update->save())
+            {
+                print_r($update->errors); exit;
+            }
 
         }
         else
         {
-            $model->time_in_am = $time;
+            
+            if (time() >= strtotime('08:00pm') && time() <= strtotime('12:00pm')) {
+                $model->time_in_am = $time;
+            }
+            else
+            {
+                if (time() > strtotime('12:00pm') && time() <= strtotime('05:00pm')) {
+                    $model->time_in_pm = $time;
+                }
+                else
+                {
+                    if(time() > strtotime('05:00pm'))
+                    {
+                        $model->time_in_pm = $time;
+                    }
+                }
+            }
+
             $model->date = $date;
+
+            if(!$model->save())
+            {
+                print_r($model->errors); exit;
+            }
+            else
+            {
+                \Yii::$app->getSession()->setFlash('success', 'Your Time In has been saved');
+            }
         }
 
         
 
         // print_r($time); exit;
 
-        if($model->save())
-        {
-            \Yii::$app->getSession()->setFlash('success', 'Your Time In has been saved');
-        }
+        
 
         return $this->redirect(['index']);
     }
@@ -155,7 +254,9 @@ class UserTimesheetController extends Controller
         $model = $this->findModel($id);
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+
+            \Yii::$app->getSession()->setFlash('success', 'Remarks has been saved');
+            return $this->redirect(['index']);
         }
 
         return $this->render('update', [

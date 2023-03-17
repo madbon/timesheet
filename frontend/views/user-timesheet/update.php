@@ -5,9 +5,9 @@ use yii\helpers\Html;
 /** @var yii\web\View $this */
 /** @var common\models\UserTimesheet $model */
 
-$this->title = 'Update User Timesheet: ' . $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'User Timesheets', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
+$this->title = 'Update Remarks: ' . date('F j, Y', strtotime($model->date));
+$this->params['breadcrumbs'][] = ['label' => 'Timesheets', 'url' => ['index']];
+// $this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Update';
 ?>
 <div class="user-timesheet-update">

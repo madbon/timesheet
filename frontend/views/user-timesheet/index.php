@@ -52,11 +52,32 @@ $this->params['breadcrumbs'][] = $this->title;
             'time_out_am',
             'time_in_pm',
             'time_out_pm',
-            
+            [
+                'label' => 'Overtime',
+                'value' => function($model)
+                {
+                    return "PENDING FEATURE";
+                }
+            ],
             'remarks',
             [
+                'label' => 'Total No. of Hours',
+                'value' => function($model)
+                {
+                    $time1 = strtotime($model->time_in_pm);
+                    $time2 = strtotime($model->time_out_pm);
+                    $diffSeconds = $time2 - $time1;
+                    $diffHours = floor($diffSeconds / 3600);
+                    $diffMinutes = floor(($diffSeconds % 3600) / 60);
+                    $diffSeconds = $diffSeconds % 60;
+
+                    return $diffHours . ' hours ' . $diffMinutes . ' minutes ' . $diffSeconds . ' seconds';
+                }
+            ],
+            
+            [
                 'class' => ActionColumn::className(),
-                'template' => '{delete}',
+                'template' => '{update}',
                 'urlCreator' => function ($action, UserTimesheet $model, $key, $index, $column) {
                     return Url::toRoute([$action, 'id' => $model->id]);
                  }

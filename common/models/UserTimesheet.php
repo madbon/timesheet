@@ -32,7 +32,6 @@ class UserTimesheet extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_id','time_in_am'],'required'],
             [['user_id'], 'integer'],
             [['time_in_am', 'time_out_am', 'time_in_pm', 'time_out_pm', 'date'], 'safe'],
             [['remarks'], 'string', 'max' => 50],

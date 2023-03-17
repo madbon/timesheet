@@ -5,6 +5,7 @@ namespace common\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use common\models\UserTimesheet;
+use Yii;
 
 /**
  * UserTimesheetSearch represents the model behind the search form of `common\models\UserTimesheet`.
@@ -68,6 +69,11 @@ class UserTimesheetSearch extends UserTimesheet
         ]);
 
         $query->andFilterWhere(['like', 'remarks', $this->remarks]);
+
+        if(Yii::$app->user->can('Trainee'))
+        {
+            $query->andFilterWhere(['user_id' => Yii::$app->user->identity->id]);
+        }
 
         return $dataProvider;
     }

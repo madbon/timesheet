@@ -12,17 +12,17 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'user_id')->textInput() ?>
+    <?= $form->field($model, 'user_id')->hiddenInput()->label(false) ?>
 
-    <?= $form->field($model, 'time_in_am')->textInput() ?>
+    <?= $form->field($model, 'time_in_am')->hiddenInput()->label(false) ?>
 
-    <?= $form->field($model, 'time_out_am')->textInput() ?>
+    <?= $form->field($model, 'time_out_am')->hiddenInput()->label(false) ?>
 
-    <?= $form->field($model, 'time_in_pm')->textInput() ?>
+    <?= $form->field($model, 'time_in_pm')->hiddenInput()->label(false) ?>
 
-    <?= $form->field($model, 'time_out_pm')->textInput() ?>
+    <?= $form->field($model, 'time_out_pm')->hiddenInput()->label(false) ?>
 
-    <?= $form->field($model, 'date')->textInput() ?>
+    <?= $form->field($model, 'date')->hiddenInput()->label(false) ?>
 
     <?= $form->field($model, 'remarks')->textInput(['maxlength' => true]) ?>
 
