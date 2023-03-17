@@ -155,9 +155,6 @@ class UserTimesheetController extends Controller
                     {
                         if(empty($update->time_out_am))
                         {
-                            
-                            $update->time_out_am = "12:00:00";
-                            
                             if(empty($update->time_in_pm))
                             {
                                 $update->time_in_pm = "1:00:00";
