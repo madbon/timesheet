@@ -33,13 +33,13 @@ $this->params['breadcrumbs'][] = $this->title;
 
             // 'id',
             // 'user_id',
-            [
-                'attribute' => 'user_id',
-                'value' => function($model)
-                {
-                    return $model->user->fullName;
-                }
-            ],
+            // [
+            //     'attribute' => 'user_id',
+            //     'value' => function($model)
+            //     {
+            //         return $model->user->fullName;
+            //     }
+            // ],
             // 'date',
             [
                 'attribute' => 'date',

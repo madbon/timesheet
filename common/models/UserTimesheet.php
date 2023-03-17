@@ -45,11 +45,11 @@ class UserTimesheet extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'user_id' => 'User ID',
-            'time_in_am' => 'Time In Am',
-            'time_out_am' => 'Time Out Am',
-            'time_in_pm' => 'Time In Pm',
-            'time_out_pm' => 'Time Out Pm',
+            'user_id' => 'NAME',
+            'time_in_am' => 'IN (am)',
+            'time_out_am' => 'OUT (am)',
+            'time_in_pm' => 'IN (pm)',
+            'time_out_pm' => 'OUT (pm)',
             'date' => 'Date',
             'remarks' => 'Remarks',
         ];
