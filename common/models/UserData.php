@@ -121,7 +121,7 @@ class UserData extends \yii\db\ActiveRecord
         ];
     }
 
-    public function fullName()
+    public function getFullName()
     {
         return $this->sname.", ".$this->fname;
     }

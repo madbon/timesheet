@@ -17,6 +17,11 @@ return [
             'ruleTable' => '{{%auth_rule}}',
             'defaultRoles' => ['admin'],
         ],
+        'formatter' => [
+            'class' => 'yii\i18n\Formatter',
+            'timeZone' => 'Asia/Manila',
+            // other formatter configurations
+        ],
     ],
     'modules' => [
         'admin' => [

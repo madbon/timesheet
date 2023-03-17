@@ -43,6 +43,11 @@ return [
             'rules' => [
             ],
         ],
+        'formatter' => [
+            'class' => 'yii\i18n\Formatter',
+            'timeZone' => 'Asia/Manila',
+            // other formatter configurations
+        ],
         
     ],
     'defaultRoute' => 'site/login',

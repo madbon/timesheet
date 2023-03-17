@@ -145,6 +145,7 @@ AppAsset::register($this);
 
 <header>
     <?php
+    
     NavBar::begin([
         'brandLabel' => false,
         'brandUrl' => Yii::$app->homeUrl,

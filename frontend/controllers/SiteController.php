@@ -86,7 +86,16 @@ class SiteController extends Controller
     public function actionLogin()
     {
         if (!Yii::$app->user->isGuest) {
-            return $this->redirect('user-management');
+
+            if(Yii::$app->user->can('time-in-out'))
+            {
+                return $this->redirect('user-timesheet');
+            }
+            else
+            {
+                return $this->redirect('user-management');
+            }
+            
         }
 
         $model = new LoginForm();
