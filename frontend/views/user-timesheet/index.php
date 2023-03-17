@@ -86,7 +86,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         $overtimeHours = $totalHours - 8;
                         $returnVal = $overtimeHours . 'hrs ' . $totalMinutes . 'mins ' . $totalSeconds . ' secs';
                     } else {
-                        $returnVal = 'No overtime';
+                        $returnVal = '';
                     }
 
                     return $returnVal;
