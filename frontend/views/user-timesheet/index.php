@@ -48,10 +48,46 @@ $this->params['breadcrumbs'][] = $this->title;
                     return date('F j, Y', strtotime($model->date));
                 }
             ],
-            'time_in_am',
-            'time_out_am',
-            'time_in_pm',
-            'time_out_pm',
+            // 'time_in_am',
+            // 'time_out_am',
+            [
+                'attribute' => 'time_in_am',
+                'value' => function($model)
+                {
+                    $time = $model->time_in_am;
+                    $formattedTime = date('g:i:s A', strtotime($time));
+                    return !empty($model->time_in_am) ? $formattedTime : "";
+                }
+            ],
+            [
+                'attribute' => 'time_out_am',
+                'value' => function($model)
+                {
+                    $time = $model->time_out_am;
+                    $formattedTime = date('g:i:s A', strtotime($time));
+                    return !empty($model->time_out_am) ? $formattedTime : "";
+                }
+            ],
+            // 'time_in_pm',
+            [
+                'attribute' => 'time_in_pm',
+                'value' => function($model)
+                {
+                    $time = $model->time_in_pm;
+                    $formattedTime = date('g:i:s A', strtotime($time));
+                    return !empty($model->time_in_pm) ? $formattedTime : "";
+                }
+            ],
+            [
+                'attribute' => 'time_out_pm',
+                'value' => function($model)
+                {
+                    $time = $model->time_out_pm;
+                    $formattedTime = date('g:i:s A', strtotime($time));
+                    return !empty($model->time_out_pm) ? $formattedTime : "";
+                }
+            ],
+            // 'time_out_pm',
             [
                 'label' => 'Overtime',
                 'value' => function($model)
@@ -93,7 +129,13 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 }
             ],
-            'remarks',
+            [
+                'attribute' => 'Remarks',
+                'value' => function($model)
+                {
+                    return !empty($model->remarks) ? $model->remarks : "";
+                }
+            ],
             [
                 'label' => 'Total No. of Hours',
                 'value' => function($model)
@@ -123,7 +165,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     $totalSeconds = $totalSeconds % 60;
 
                     // display result
-                    return $totalHours . ' hours, ' . $totalMinutes . ' minutes, ' . $totalSeconds . ' seconds';
+                    return $totalHours . 'hrs ' . $totalMinutes . 'minutes ' . $totalSeconds . 'seconds';
 
                 }
             ],
