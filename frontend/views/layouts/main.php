@@ -31,6 +31,12 @@ AppAsset::register($this);
         {
             font-size:25px;
         }
+
+        .btn-outline-success,.btn-outline-primary,.btn-outline-danger,.btn-outline-secondary
+        {
+            background:white;
+        }
+
         .navbar
         {
             background:maroon;
@@ -114,6 +120,7 @@ AppAsset::register($this);
             border-bottom: none;
             color:#af4343;
             font-size:12px;
+            background:white;
         }
 
         a.active-tab

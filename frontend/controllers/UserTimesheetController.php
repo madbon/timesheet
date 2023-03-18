@@ -48,12 +48,81 @@ class UserTimesheetController extends Controller
      */
     public function actionIndex()
     {
+        date_default_timezone_set('Asia/Manila');
         $searchModel = new UserTimesheetSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
+        
+        $user_id = Yii::$app->user->identity->id;
+        $date = date('Y-m-d');
+
+        $time = date('H:i:s');
+        $timeInOut = "";
+
+        $query = UserTimesheet::find()->where(['user_id' => $user_id, 'date' => $date])->one();
+
+        if (time() >= strtotime('08:00am') && time() <= strtotime('12:00pm')) {
+            if(UserTimesheet::find()->where(['user_id' => $user_id, 'date' => $date])->exists())
+            {
+                if(empty($query->time_out_am))
+                {
+                    $timeInOut = "TIME OUT";
+                }
+                else
+                {
+                    $timeInOut = "TIME IN";
+                }
+            }
+            else
+            {
+                $timeInOut = "TIME IN";
+            }
+        }
+        else
+        {
+            if (time() >= strtotime('12:00pm') && time() <= strtotime('05:00pm')) {
+                if(UserTimesheet::find()->where(['user_id' => $user_id, 'date' => $date])->exists())
+                {
+                    if(empty($query->time_out_pm))
+                    {
+                        $timeInOut = "TIME OUT";
+                    }
+                    else
+                    {
+                        $timeInOut = "COMPLETED";
+                    }
+                }
+                else
+                {
+                    $timeInOut = "TIME IN";
+                }
+            }
+            else
+            {
+                if(time() > strtotime('05:00pm'))
+                {
+                    if(UserTimesheet::find()->where(['user_id' => $user_id, 'date' => $date])->exists())
+                    {
+                        if(empty($query->time_out_pm))
+                        {
+                            $timeInOut = "TIME OUT";
+                        }
+                        else
+                        {
+                            $timeInOut = "COMPLETED";
+                        }
+                    }
+                    else
+                    {
+                        $timeInOut = "TIME IN";
+                    }
+                }
+            }
+        }
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'timeInOut' => $timeInOut,
         ]);
     }
 
@@ -166,7 +235,13 @@ class UserTimesheetController extends Controller
                         {
                             if(empty($update->time_in_pm))
                             {
-                                $update->time_in_pm = "1:00:00";
+                                $update->time_out_am = "12:00:00";
+                                $update->time_in_pm = "13:00:00";
+
+                                if(empty($update->time_out_pm))
+                                {
+                                    $update->time_out_pm = $time;
+                                }
                             }
                             else
                             {
@@ -180,12 +255,7 @@ class UserTimesheetController extends Controller
                         {
                             if(empty($update->time_in_pm))
                             {
-                                $update->time_in_pm = "1:00:00";
-
-                                if(empty($update->time_out_pm))
-                                {
-                                    $update->time_out_pm = $time;
-                                }
+                                $update->time_in_pm = $time;
                             }
                             else
                             {
@@ -235,7 +305,7 @@ class UserTimesheetController extends Controller
             }
             else
             {
-                \Yii::$app->getSession()->setFlash('success', 'Your Time In has been saved');
+                \Yii::$app->getSession()->setFlash('success', 'Your TIME IN has been saved');
             }
         }
 
