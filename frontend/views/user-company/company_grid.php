@@ -2,8 +2,14 @@
 use yii\helpers\Html;
 ?>
 
-<div class="form-group">
-    <input type="text" class="form-control" name="search" placeholder="Search..." id="search-input">
+<div class="form-group" style="margin-bottom: 20px;">
+    <div class="row">
+        <div class="col-sm-9">
+        </div>
+        <div class="col-sm-3">
+            <input type="text" class="form-control" name="search" placeholder="Search Company Name.." id="search-input">
+        </div>
+    </div>
 </div>
 
 
