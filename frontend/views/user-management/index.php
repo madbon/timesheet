@@ -190,7 +190,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'format' => 'raw',
                         'value' => function($model)
                         {
-                            return !empty($model->fname) ? '<span style="font-weight:bold; text-transform:uppercase;">'. $model->fname.'</span>' : "";
+                            return !empty($model->fname) ? '<span style="font-size:14px; text-transform:uppercase;">'. $model->fname.'</span>' : "";
                         }
                     ],
                     [
@@ -198,7 +198,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'format' => 'raw',
                         'value' => function($model)
                         {
-                            return !empty($model->mname) ? '<span style="font-weight:bold; text-transform:uppercase;">'. $model->mname.'</span>' : "";
+                            return !empty($model->mname) ? '<span style="font-size:14px; text-transform:uppercase;">'. $model->mname.'</span>' : "";
                         }
                     ],
                     [
@@ -206,8 +206,16 @@ $this->params['breadcrumbs'][] = $this->title;
                         'format' => 'raw',
                         'value' => function($model)
                         {
-                            return !empty($model->sname) ? '<span style="font-weight:bold; text-transform:uppercase;">'. $model->sname.'</span>' : "";
+                            return !empty($model->sname) ? '<span style="font-size:14px; text-transform:uppercase;">'. $model->sname.'</span>' : "";
                         }
+                    ],
+                    [
+                        'attribute' => 'suffix',
+                        'format' => 'raw',
+                        'value' => function ($model) {
+                            return !empty($model->suffix) ? '<span style="font-size:14px; text-transform:uppercase;">'.$model->suffix.'</span>' : "";
+                        },
+                        'filter' => \yii\helpers\ArrayHelper::map(\common\models\Suffix::find()->asArray()->all(), 'title', 'title'),
                     ],
                     
                     // 'mname',
@@ -230,13 +238,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             'F' => 'Female',
                         ],
                     ],
-                    [
-                        'attribute' => 'suffix',
-                        'value' => function ($model) {
-                            return !empty($model->suffix) ? $model->suffix : "";
-                        },
-                        'filter' => \yii\helpers\ArrayHelper::map(\common\models\Suffix::find()->asArray()->all(), 'title', 'title'),
-                    ],
+                    
                     [
                         'attribute' => 'ref_position_id',
                         'value' => function ($model) {
