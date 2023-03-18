@@ -110,20 +110,23 @@ AppAsset::register($this);
         {
             padding:10px;
             text-decoration: none;
-            border:1px solid #ddd;
+            border:1px solid #af4343;
             border-bottom: none;
-            color:gray;
+            color:#af4343;
+            font-size:12px;
         }
 
         a.active-tab
         {
             padding:10px;
             text-decoration: none;
-            border:3px solid #ddd;
+            border:1px solid #af4343;
             border-bottom: none;
-            background-color: #ddd;
-            color:gray;
+            background-color: #af4343;
+            color:white;
             font-weight: bold;
+            font-size:12px;
+
         }
 
         button.link-logout
@@ -138,6 +141,41 @@ AppAsset::register($this);
             border:1px solid #ddd !important;
             border-radius: 25px;
         }
+
+        /* GRID STYLE */
+        
+        table.table.table-striped thead tr th
+        {
+            font-size:11px;
+            font-weight: normal;
+            text-transform: uppercase;
+            background:#af4343;
+            color:white;
+        }
+
+        table.table.table-striped thead tr td select option,table.table.table-striped thead tr td select, table.table.table-striped thead tr td input
+        {
+            font-size: 11px;
+        }
+
+        table.table.table-striped thead tr th a
+        {
+            font-size:11px;
+            text-decoration: none;
+            font-weight: normal;
+            color:white;
+        }
+
+        table.table.table-striped tbody tr td
+        {
+            font-size:11px;
+        }
+
+        table.table.table-striped tbody tr td a
+        {
+            font-size:11px;
+        }
+        /* GRID STYLE _END */
     </style>
 </head>
 <body class="d-flex flex-column h-100">

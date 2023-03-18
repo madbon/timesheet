@@ -101,23 +101,32 @@ class UserDataSearch extends UserData
 
             $query->andFilterWhere(['=','ref_department_id', Yii::$app->getModule('admin')->GetAssignedDepartment()]);
 
-            // $query->andFilterWhere(['=','ref_program_id', Yii::$app->getModule('admin')->GetAssignedProgram()]);
-
             $query->andFilterWhere(['=','user_company.ref_company_id', Yii::$app->getModule('admin')->GetAssignedCompany()]);
-
-            if(Yii::$app->user->can('OjtCoordinator'))
-            {
-                $query->andFilterWhere(['user_company.ref_company_id' => Yii::$app->getModule('admin')->GetCompanyBasedOnCourse()]);
-            }
 
             if($this->item_name)
             {
-                $query->andFilterWhere(['like', 'auth_item.name', $this->item_name]);
+                $this->item_name = $this->item_name;
             }
             else
             {
-                $query->andFilterWhere(['like', 'auth_item.name', "Trainee"]);
+               $this->item_name = "Trainee";
             }
+
+            if(Yii::$app->user->can('OjtCoordinator'))
+            {
+                if($this->item_name == "CompanySupervisor")
+                {
+                    $query->andFilterWhere(['user_company.ref_company_id' => Yii::$app->getModule('admin')->GetCompanyBasedOnCourse()]);
+                }
+                else if($this->item_name == "Trainee")
+                {
+                    $query->andFilterWhere(['=','ref_program_id', Yii::$app->getModule('admin')->GetAssignedProgram()]);
+                }
+            }
+
+            
+
+            $query->andFilterWhere(['like', 'auth_item.name', $this->item_name]);
 
             $query->andFilterWhere(['like','ref_company.name',$this->company]);
 

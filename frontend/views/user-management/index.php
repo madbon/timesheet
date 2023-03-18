@@ -17,16 +17,16 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <div class="user-data-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <!-- <h1><?php // Html::encode($this->title) ?></h1> -->
 
     <p>
-        <?= Yii::$app->user->can('create-button-trainee') ? Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' Trainee', ['create', 'account_type' => 'trainee'], ['class' => 'btn btn-success']) : "" ?>
+        <?= Yii::$app->user->can('create-button-trainee') ? Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' Trainee', ['create', 'account_type' => 'trainee'], ['class' => 'btn btn-outline-success btn-sm']) : "" ?>
 
-        <?= Yii::$app->user->can('create-button-ojt-coordinator') ? Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' OJT Coordinator', ['create','account_type' => 'ojtcoordinator'], ['class' => 'btn btn-success']) : "" ?>
+        <?= Yii::$app->user->can('create-button-ojt-coordinator') ? Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' OJT Coordinator', ['create','account_type' => 'ojtcoordinator'], ['class' => 'btn btn-outline-success btn-sm']) : "" ?>
 
-        <?= Yii::$app->user->can('create-button-company-supervisor') ?  Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' Company Supervisor', ['create','account_type' => 'companysupervisor'], ['class' => 'btn btn-success']) : "" ?>
+        <?= Yii::$app->user->can('create-button-company-supervisor') ?  Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' Company Supervisor', ['create','account_type' => 'companysupervisor'], ['class' => 'btn btn-outline-success btn-sm']) : "" ?>
 
-        <?= Yii::$app->user->can('create-button-administrator') ? Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' Administrator', ['create','account_type' => 'administrator'], ['class' => 'btn btn-outline-primary']) : "" ?>
+        <?= Yii::$app->user->can('create-button-administrator') ? Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' Administrator', ['create','account_type' => 'administrator'], ['class' => 'btn btn-outline-primary btn-sm']) : "" ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
@@ -36,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div style="margin-top:50px;">
 
-        <div style="margin-bottom: 8px; margin-top:20px;">
+        <div style="margin-bottom: 7.5px; margin-top:20px;">
         
 
         <?php 
@@ -85,7 +85,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ?>
 
 
-        <div style="border:2px solid #ddd;  padding:5px;" class="table-responsive">
+        <div style="border:2px solid #af4343;" class="table-responsive">
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
@@ -93,53 +93,55 @@ $this->params['breadcrumbs'][] = $this->title;
                 'columns' => [
                     ['class' => 'yii\grid\SerialColumn'],
 
-                    [
-                        'attribute' => 'item_name',
-                        'label' => 'ROLE',
-                        'format' => 'raw',
-                        'visible' => Yii::$app->user->can('user-management-delete-role-assigned'),
-                        'value' => function($model)
-                        {
+                    // [
+                    //     'attribute' => 'item_name',
+                    //     'label' => 'ROLE',
+                    //     'format' => 'raw',
+                    //     'visible' => Yii::$app->user->can('user-management-delete-role-assigned'),
+                    //     'value' => function($model)
+                    //     {
 
-                            if(!empty($model->authAssignment->itemName->name))
-                            {
-                                if($model->authAssignment->itemName->name == "Administrator")
-                                {
-                                    return Html::a(($model->authAssignment->itemName->name),['delete-role-assigned','user_id' => $model->id],[
-                                        'class' => 'btn btn-sm btn-outline-primary',
-                                        'data' => ['confirm' => 'Are you sure you want to remove the assigned role? Click OK to perform action.'],
-                                    ]);
-                                }
-                                else
-                                {
-                                    return Html::a(($model->authAssignment->itemName->name),['delete-role-assigned','user_id' => $model->id],[
-                                        'class' => 'btn btn-sm btn-outline-success',
-                                        'data' => ['confirm' => 'Are you sure you want to remove the assigned role? Click OK to perform action.'],
-                                    ]);
-                                }
+                    //         if(!empty($model->authAssignment->itemName->name))
+                    //         {
+                    //             if($model->authAssignment->itemName->name == "Administrator")
+                    //             {
+                    //                 return Html::a(($model->authAssignment->itemName->name),['delete-role-assigned','user_id' => $model->id],[
+                    //                     'class' => 'btn btn-sm btn-outline-primary',
+                    //                     'data' => ['confirm' => 'Are you sure you want to remove the assigned role? Click OK to perform action.'],
+                    //                 ]);
+                    //             }
+                    //             else
+                    //             {
+                    //                 return Html::a(($model->authAssignment->itemName->name),['delete-role-assigned','user_id' => $model->id],[
+                    //                     'class' => 'btn btn-sm btn-outline-success',
+                    //                     'data' => ['confirm' => 'Are you sure you want to remove the assigned role? Click OK to perform action.'],
+                    //                 ]);
+                    //             }
                                 
-                            }
-                            else
-                            {
-                                return '<span style="color:red;">NO ASSIGNED ROLE</span>';
-                            }
+                    //         }
+                    //         else
+                    //         {
+                    //             return '<span style="color:red;">NO ASSIGNED ROLE</span>';
+                    //         }
 
-                        },
-                        'filter' => \yii\helpers\ArrayHelper::map(\common\models\AuthItem::find()->where(['type' => 1])->asArray()->all(), 'name', 'name'),
-                    ],
+                    //     },
+                    //     'filter' => \yii\helpers\ArrayHelper::map(\common\models\AuthItem::find()->where(['type' => 1])->asArray()->all(), 'name', 'name'),
+                    // ],
                     [
                         'label' => $searchModel->item_name == 'OjtCoordinator' ? 'Assigned Program/Course' : 'Program/Course',
+                        'format' => 'raw',
                         'attribute' => 'ref_program_id',
                         'value' => function ($model) {
-                            return !empty($model->program->title) ? $model->program->title : "";
+                            return !empty($model->program->title) ? "<span style='color:#af4343; text-transform:uppercase;'>".$model->program->title."</span>" : "";
                         },
                         'filter' => \yii\helpers\ArrayHelper::map(\common\models\RefProgram::find()->asArray()->all(), 'id', 'title'),
                         'visible' => in_array($searchModel->item_name,['Trainee','OjtCoordinator',NULL,'']) ? true : false,
                     ],
                     [
                         'attribute' => 'ref_program_major_id',
+                        'format' => 'raw',
                         'value' => function ($model) {
-                            return !empty($model->programMajor->title) ? $model->programMajor->title : "";
+                            return !empty($model->programMajor->title) ? "<span style='color:#af4343;'>".$model->programMajor->title."</span>" : "";
                         },
                         'filter' => \yii\helpers\ArrayHelper::map(\common\models\ProgramMajor::find()->asArray()->all(), 'id', 'title'),
                         'visible' => in_array($searchModel->item_name,['Trainee',NULL,'']) ? true : false,
@@ -162,13 +164,54 @@ $this->params['breadcrumbs'][] = $this->title;
                         'visible' => in_array($searchModel->item_name,['Trainee',NULL,'']) ? true : false,
                     ],
                     [
+                        'attribute' => 'company',
+                        'format' => 'raw',
+                        'visible' => in_array($searchModel->item_name,['Trainee','CompanySupervisor',NULL,'']) ? true : false,
+                        'value' => function ($model) {
+                            return !empty($model->userCompany->company->name) ? "<span style='color:#af4343; text-transform:uppercase;'>".$model->userCompany->company->name."</span>" : "---";
+                        },
+                    ],
+                    [
+                        'attribute' => 'ref_department_id',
+                        'format' => 'raw',
+                        'value' => function ($model) {
+                            return !empty($model->department->title) ? "<span style='color:#af4343; font-style:italic;'>".$model->department->title."</span>" : "";
+                        },
+                        'filter' => \yii\helpers\ArrayHelper::map(\common\models\Department::find()->asArray()->all(), 'id', 'title'),
+                        'visible' => in_array($searchModel->item_name,['Trainee','CompanySupervisor',NULL,'']) ? true : false,
+                    ],
+                    [
                         'attribute' => 'student_idno',
                         'visible' => in_array($searchModel->item_name,['Trainee',NULL,'']) ? true : false,
                     ],
-                    'fname',
+                    // 'fname',
+                    [
+                        'attribute' => 'fname',
+                        'format' => 'raw',
+                        'value' => function($model)
+                        {
+                            return !empty($model->fname) ? '<span style="font-weight:bold; text-transform:uppercase;">'. $model->fname.'</span>' : "";
+                        }
+                    ],
+                    [
+                        'attribute' => 'mname',
+                        'format' => 'raw',
+                        'value' => function($model)
+                        {
+                            return !empty($model->mname) ? '<span style="font-weight:bold; text-transform:uppercase;">'. $model->mname.'</span>' : "";
+                        }
+                    ],
+                    [
+                        'attribute' => 'sname',
+                        'format' => 'raw',
+                        'value' => function($model)
+                        {
+                            return !empty($model->sname) ? '<span style="font-weight:bold; text-transform:uppercase;">'. $model->sname.'</span>' : "";
+                        }
+                    ],
                     
-                    'mname',
-                    'sname',
+                    // 'mname',
+                    // 'sname',
                     'bday',
                     // [
                     //     'attribute' => 'bday',
@@ -195,22 +238,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         'filter' => \yii\helpers\ArrayHelper::map(\common\models\Suffix::find()->asArray()->all(), 'title', 'title'),
                     ],
                     [
-                        'attribute' => 'company',
-                        'format' => 'raw',
-                        'visible' => in_array($searchModel->item_name,['Trainee','CompanySupervisor',NULL,'']) ? true : false,
-                        'value' => function ($model) {
-                            return !empty($model->userCompany->company->name) ? "<i style='color:blue;'>".$model->userCompany->company->name."</i>" : "<i style='color:red; font-weight:bold;'>---</i>";
-                        },
-                    ],
-                    [
-                        'attribute' => 'ref_department_id',
-                        'value' => function ($model) {
-                            return !empty($model->department->title) ? $model->department->title : "";
-                        },
-                        'filter' => \yii\helpers\ArrayHelper::map(\common\models\Department::find()->asArray()->all(), 'id', 'title'),
-                        'visible' => in_array($searchModel->item_name,['Trainee','CompanySupervisor',NULL,'']) ? true : false,
-                    ],
-                    [
                         'attribute' => 'ref_position_id',
                         'value' => function ($model) {
                             return !empty($model->position->position) ? $model->position->position : "";
@@ -230,9 +257,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     //'updated_at',
                     //'verification_token',
                     'address',
-                    [
+                    [   
                         'format' => 'raw',
-                        'label' => 'Actions',
+                        'label' => 'Has e-Signature?',
+                        'visible' => !Yii::$app->user->can('upload-others-esig'),
                         'value' => function($model)
                         {
                             $buttons = "";
@@ -242,26 +270,85 @@ $this->params['breadcrumbs'][] = $this->title;
 
                                 if($findFile)
                                 {
-                                    $buttons .= Html::a((Yii::$app->getModule('admin')->GetIcon('upload-cloud')),['upload-file','id' => $model->id,'message' => 'Signature'],['class' => 'btn btn-sm btn-outline-primary']);
+                                    $buttons .= "<span style='font-size:11px; color:white; background:#198754; padding-left:10px; padding-right:10px; border-radius:25px;'>YES</span>";
                                 }
                                 else
                                 {
-                                    $buttons .= Html::a((Yii::$app->getModule('admin')->GetIcon('upload-cloud')),['upload-file','id' => $model->id],['class' => 'btn btn-sm btn-outline-secondary']);
+                                    $buttons .= "<span style='font-size:11px; color:white; background:gray; padding-left:10px; padding-right:10px; border-radius:25px;'>NO</span>";
                                 }
-                                
                             }
 
                             return $buttons;
                             
                         }
                     ],
+                    
+                    // [
+                    //     'class' => ActionColumn::className(),
+                    //     'template' => $actionButtons,
+                    //     'urlCreator' => function ($action, UserData $model, $key, $index, $column) {
+                    //         return Url::toRoute([$action, 'id' => $model->id]);
+                    //     }
+                    // ],
                     [
                         'class' => ActionColumn::className(),
-                        'template' => $actionButtons,
-                        'urlCreator' => function ($action, UserData $model, $key, $index, $column) {
-                            return Url::toRoute([$action, 'id' => $model->id]);
-                        }
+                        'template' => '{esig} {view} {update} {delete}',
+                        'buttons' => [
+                            'esig' => function ($url, $model) {
+                                $buttons = "";
+                                if(in_array($model->authAssignment->item_name,['CompanySupervisor','Trainee']))
+                                {
+                                    $findFile = Yii::$app->getModule('admin')->FileExistsByQuery('UserData',$model->id);
+
+                                    if($findFile)
+                                    {
+                                    $buttons .= Html::a('e-Sig',['upload-file','id' => $model->id,'message' => 'Signature'],['class' => 'btn btn-sm btn-outline-primary']);
+                                    }
+                                    else
+                                    {
+                                        $buttons .= Html::a('e-Sig',['upload-file','id' => $model->id],['class' => 'btn btn-sm btn-outline-secondary']);
+                                    }
+                                }
+
+                                return Yii::$app->user->can('upload-others-esig') ? $buttons : false;
+                            },
+                            'view' => function ($url, $model) {
+                                return Html::a('View', $url, [
+                                    'title' => Yii::t('yii', 'View'),
+                                    'class' => 'btn btn-sm btn-outline-primary', // set the button class to outline-primary
+                                ]);
+                            },
+                            'update' => function ($url, $model) {
+                                return Html::a('Edit', $url, [
+                                    'title' => Yii::t('yii', 'Update'),
+                                    'class' => 'btn btn-sm btn-outline-primary', // set the button class to outline-primary
+                                ]);
+                            },
+                            'delete' => function ($url, $model) {
+                                return Html::a('Del', $url, [
+                                    'title' => Yii::t('yii', 'Delete'),
+                                    'class' => 'btn btn-sm btn-outline-danger', // set the button class to outline-danger
+                                    'data' => [
+                                        'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                        'method' => 'post',
+                                    ],
+                                ]);
+                            },
+                        ],
+                        'urlCreator' => function ($action, $model, $key, $index) {
+                            if ($action === 'view') {
+                                $url = Url::to(['view', 'id' => $model->id]);
+                                return $url;
+                            } elseif ($action === 'update') {
+                                $url = Url::to(['update', 'id' => $model->id]);
+                                return $url;
+                            } elseif ($action === 'delete') {
+                                $url = Url::to(['delete', 'id' => $model->id]);
+                                return $url;
+                            }
+                        },
                     ],
+                    
                 ],
             ]); ?>
         </div>
