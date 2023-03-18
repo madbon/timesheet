@@ -140,9 +140,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Total No. of Hours',
                 'value' => function($model)
                 {
-                    if($model->time_out_am || $model->time_out_pm)
-                    {
-                        $time1_am = strtotime($model->time_in_am);
+                    $time1_am = strtotime($model->time_in_am);
                         $time2_am = strtotime($model->time_out_am);
                         $time1_pm = strtotime($model->time_in_pm);
                         $time2_pm = strtotime($model->time_out_pm);
@@ -166,15 +164,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         $totalMinutes = $totalMinutes % 60;
                         $totalSeconds = $totalSeconds % 60;
 
-                        // display result
-                        return $totalHours . 'hrs ' . $totalMinutes . 'minutes ' . $totalSeconds . 'seconds';
-                    }
-                    else
-                    {
-                        return "";
-                    }
-                    
-
+                        return ($totalHours > 0 ? $totalHours.' hrs ' : ''). ($totalMinutes > 0 ? $totalMinutes.' min ' : ''). ($totalSeconds > 0 ? $totalSeconds.' sec ' : '');
                 }
             ],
             

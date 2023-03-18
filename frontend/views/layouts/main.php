@@ -110,7 +110,7 @@ AppAsset::register($this);
         {
             padding:10px;
             text-decoration: none;
-            border:1px solid #af4343;
+            border:1px solid #ffdbdb;
             border-bottom: none;
             color:#af4343;
             font-size:12px;
@@ -120,10 +120,10 @@ AppAsset::register($this);
         {
             padding:10px;
             text-decoration: none;
-            border:1px solid #af4343;
+            border:1px solid #ffdbdb;
             border-bottom: none;
-            background-color: #af4343;
-            color:white;
+            background-color: #ffdbdb;
+            color:#af4343;
             font-weight: bold;
             font-size:12px;
 
@@ -149,8 +149,10 @@ AppAsset::register($this);
             font-size:11px;
             font-weight: normal;
             text-transform: uppercase;
-            background:#af4343;
-            color:white;
+            /* background:#af4343; */
+            background: #ffdbdb;
+            color:#af4343;
+            text-align: center;
         }
 
         table.table.table-striped thead tr td select option,table.table.table-striped thead tr td select, table.table.table-striped thead tr td input
@@ -163,7 +165,7 @@ AppAsset::register($this);
             font-size:11px;
             text-decoration: none;
             font-weight: normal;
-            color:white;
+            color:#af4343;
         }
 
         table.table.table-striped tbody tr td
@@ -175,7 +177,30 @@ AppAsset::register($this);
         {
             font-size:11px;
         }
+        
+        table.table.table-striped
+        {
+            background-color: white;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+
         /* GRID STYLE _END */
+
+        /* MENU ASSIGNMENT */
+        ul.navbar-nav li.role-name
+        {
+            font-size:11px;
+        }
+
+        ul.navbar-nav li.role-name span#role-name-container
+        {
+            background:#ffdbdb;
+            border-radius: 25px;
+            padding:5px;
+            color:#ae0505;
+        }
+        /* MENU ASSIGNMENT _END */
     </style>
 </head>
 <body class="d-flex flex-column h-100">
@@ -199,21 +224,26 @@ AppAsset::register($this);
     else
     {
         $roleName = "";
+        $assignedProgram = Yii::$app->getModule('admin')->AssignedProgramTitle();
+        $assignedCompany = Yii::$app->getModule('admin')->AssignedCompany();
+        $assignedDepartment = Yii::$app->getModule('admin')->AssignedDepartment();
+
         if(Yii::$app->user->can("Administrator"))
         {
             $roleName = "Administrator";
+            
         }
         else if(Yii::$app->user->can("OjtCoordinator"))
         {
-            $roleName = "OjtCoordinator";
+            $roleName = "<span id='role-name-container'>OJT Coordinator</span> of ".$assignedProgram;
         }
         else if(Yii::$app->user->can("CompanySupervisor"))
         {
-            $roleName = "CompanySupervisor";
+            $roleName = "<span id='role-name-container'>Supervisor</span> at ".$assignedCompany.($assignedDepartment == "NOTHING" ? "" : ", ".$assignedDepartment);
         }
         else if(Yii::$app->user->can("Trainee"))
         {
-            $roleName = "Trainee";
+            $roleName = "<span id='role-name-container'>Trainee</span> at ".$assignedCompany.($assignedDepartment == "NOTHING" ? "" : ", ".$assignedDepartment);
         }
 
         // echo Html::beginForm(['/site/logout'], 'post', ['class' => 'd-flex'])
@@ -275,7 +305,7 @@ AppAsset::register($this);
                     
                     // Add more submenu items as needed
                 ],
-                'options' => ['class' => 'nav-item dropdown'],
+                'options' => ['class' => 'nav-item dropdown role-name'],
                 'linkOptions' => ['class' => 'nav-link dropdown-toggle', 'data-bs-toggle' => 'dropdown', 'role' => 'button', 'aria-expanded' => 'false'],
             ],
         ];
@@ -283,11 +313,13 @@ AppAsset::register($this);
         echo Nav::widget([
             'options' => ['class' => 'navbar-nav me-auto mb-2 mb-md-0'],
             'items' => $menuItemsLeft,
+            'encodeLabels' => false,
         ]);
         
         echo Nav::widget([
             'options' => ['class' => 'navbar-nav ms-auto mb-2 mb-md-0'],
             'items' => $menuItemsRight,
+            'encodeLabels' => false,
         ]);
         
     }
@@ -301,7 +333,9 @@ AppAsset::register($this);
 <main role="main" class="flex-shrink-0">
     <div class="container-fluid">
         <?php 
-            if (!Yii::$app->user->isGuest) {
+            if (!Yii::$app->user->isGuest) { ?>
+
+        <?php
                 echo Breadcrumbs::widget([
                     'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
                 ]);

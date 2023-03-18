@@ -85,7 +85,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ?>
 
 
-        <div style="border:2px solid #af4343;" class="table-responsive">
+        <div style="border:2px solid #ffdbdb; background:white;" class="table-responsive">
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
@@ -313,26 +313,26 @@ $this->params['breadcrumbs'][] = $this->title;
                                 return Yii::$app->user->can('upload-others-esig') ? $buttons : false;
                             },
                             'view' => function ($url, $model) {
-                                return Html::a('View', $url, [
+                                return Yii::$app->user->can('user-management-view') ? Html::a('View', $url, [
                                     'title' => Yii::t('yii', 'View'),
                                     'class' => 'btn btn-sm btn-outline-primary', // set the button class to outline-primary
-                                ]);
+                                ]) : false;
                             },
                             'update' => function ($url, $model) {
-                                return Html::a('Edit', $url, [
+                                return Yii::$app->user->can('user-management-update') ?  Html::a('Edit', $url, [
                                     'title' => Yii::t('yii', 'Update'),
                                     'class' => 'btn btn-sm btn-outline-primary', // set the button class to outline-primary
-                                ]);
+                                ]) : false;
                             },
                             'delete' => function ($url, $model) {
-                                return Html::a('Del', $url, [
+                                return Yii::$app->user->can('user-management-delete') ?  Html::a('Del', $url, [
                                     'title' => Yii::t('yii', 'Delete'),
                                     'class' => 'btn btn-sm btn-outline-danger', // set the button class to outline-danger
                                     'data' => [
                                         'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
                                         'method' => 'post',
                                     ],
-                                ]);
+                                ]) : false;
                             },
                         ],
                         'urlCreator' => function ($action, $model, $key, $index) {

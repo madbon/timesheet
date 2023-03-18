@@ -26,6 +26,33 @@ class Module extends \yii\base\Module
         // custom initialization code goes here
     }
 
+    public static function AssignedProgramTitle()
+    {
+        $query = UserData::find()
+        ->joinWith('program')
+        ->where(['user.id' => Yii::$app->user->identity->id])->one();
+
+        return !empty($query->program->title) ? $query->program->title : "NOTHING";
+    }
+
+    public static function AssignedCompany()
+    {
+        $query = UserData::find()
+        ->joinWith('userCompany.company')
+        ->where(['user.id' => Yii::$app->user->identity->id])->one();
+
+        return !empty($query->userCompany->company->name) ? $query->userCompany->company->name : "NOTHING";
+    }
+
+    public static function AssignedDepartment()
+    {
+        $query = UserData::find()
+        ->joinWith('department')
+        ->where(['user.id' => Yii::$app->user->identity->id])->one();
+
+        return !empty($query->department->title) ? $query->department->title : "NOTHING";
+    }
+
     public static function GetAssignedProgram()
     {
         $query = UserData::find()->where(['id' => Yii::$app->user->identity->id])->one();

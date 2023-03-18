@@ -123,7 +123,16 @@ class UserTimesheetController extends Controller
 
                         if(empty($update->time_in_pm))
                         {
-                            $update->time_in_pm = $time;
+                            if(!empty($update->time_in_am))
+                            {
+                                $update->time_out_am = "12:00:00";
+                                $update->time_in_pm = $time;
+                            }
+                            else
+                            {
+                                $update->time_in_pm = $time;
+                            }
+                            
                         }
                         else
                         {
@@ -199,7 +208,7 @@ class UserTimesheetController extends Controller
 
         }
         else
-        {
+        { // NEW DATE TIME IN
             
             if (time() >= strtotime('08:00am') && time() <= strtotime('12:00pm')) {
                 $model->time_in_am = $time;
