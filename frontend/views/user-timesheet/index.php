@@ -140,32 +140,40 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Total No. of Hours',
                 'value' => function($model)
                 {
-                    $time1_am = strtotime($model->time_in_am);
-                    $time2_am = strtotime($model->time_out_am);
-                    $time1_pm = strtotime($model->time_in_pm);
-                    $time2_pm = strtotime($model->time_out_pm);
+                    if($model->time_out_am || $model->time_out_pm)
+                    {
+                        $time1_am = strtotime($model->time_in_am);
+                        $time2_am = strtotime($model->time_out_am);
+                        $time1_pm = strtotime($model->time_in_pm);
+                        $time2_pm = strtotime($model->time_out_pm);
 
-                    // compute AM time difference
-                    $diffSecondsAM = $time2_am - $time1_am;
-                    $diffHoursAM = floor($diffSecondsAM / 3600);
-                    $diffMinutesAM = floor(($diffSecondsAM % 3600) / 60);
-                    $diffSecondsAM = $diffSecondsAM % 60;
+                        // compute AM time difference
+                        $diffSecondsAM = $time2_am - $time1_am;
+                        $diffHoursAM = floor($diffSecondsAM / 3600);
+                        $diffMinutesAM = floor(($diffSecondsAM % 3600) / 60);
+                        $diffSecondsAM = $diffSecondsAM % 60;
 
-                    // compute PM time difference
-                    $diffSecondsPM = $time2_pm - $time1_pm;
-                    $diffHoursPM = floor($diffSecondsPM / 3600);
-                    $diffMinutesPM = floor(($diffSecondsPM % 3600) / 60);
-                    $diffSecondsPM = $diffSecondsPM % 60;
+                        // compute PM time difference
+                        $diffSecondsPM = $time2_pm - $time1_pm;
+                        $diffHoursPM = floor($diffSecondsPM / 3600);
+                        $diffMinutesPM = floor(($diffSecondsPM % 3600) / 60);
+                        $diffSecondsPM = $diffSecondsPM % 60;
 
-                    // compute total time difference
-                    $totalSeconds = $diffSecondsAM + $diffSecondsPM;
-                    $totalMinutes = $diffMinutesAM + $diffMinutesPM + floor($totalSeconds / 60);
-                    $totalHours = $diffHoursAM + $diffHoursPM + floor($totalMinutes / 60);
-                    $totalMinutes = $totalMinutes % 60;
-                    $totalSeconds = $totalSeconds % 60;
+                        // compute total time difference
+                        $totalSeconds = $diffSecondsAM + $diffSecondsPM;
+                        $totalMinutes = $diffMinutesAM + $diffMinutesPM + floor($totalSeconds / 60);
+                        $totalHours = $diffHoursAM + $diffHoursPM + floor($totalMinutes / 60);
+                        $totalMinutes = $totalMinutes % 60;
+                        $totalSeconds = $totalSeconds % 60;
 
-                    // display result
-                    return $totalHours . 'hrs ' . $totalMinutes . 'minutes ' . $totalSeconds . 'seconds';
+                        // display result
+                        return $totalHours . 'hrs ' . $totalMinutes . 'minutes ' . $totalSeconds . 'seconds';
+                    }
+                    else
+                    {
+                        return "";
+                    }
+                    
 
                 }
             ],

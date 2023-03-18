@@ -101,9 +101,14 @@ class UserDataSearch extends UserData
 
             $query->andFilterWhere(['=','ref_department_id', Yii::$app->getModule('admin')->GetAssignedDepartment()]);
 
-            $query->andFilterWhere(['=','ref_program_id', Yii::$app->getModule('admin')->GetAssignedProgram()]);
+            // $query->andFilterWhere(['=','ref_program_id', Yii::$app->getModule('admin')->GetAssignedProgram()]);
 
             $query->andFilterWhere(['=','user_company.ref_company_id', Yii::$app->getModule('admin')->GetAssignedCompany()]);
+
+            if(Yii::$app->user->can('OjtCoordinator'))
+            {
+                $query->andFilterWhere(['user_company.ref_company_id' => Yii::$app->getModule('admin')->GetCompanyBasedOnCourse()]);
+            }
 
             if($this->item_name)
             {
@@ -117,7 +122,7 @@ class UserDataSearch extends UserData
             $query->andFilterWhere(['like','ref_company.name',$this->company]);
 
 
-            
+            // print_r($query->createCommand()->rawSql); exit;
 
         return $dataProvider;
     }

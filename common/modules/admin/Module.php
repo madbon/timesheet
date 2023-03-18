@@ -33,6 +33,28 @@ class Module extends \yii\base\Module
         return !empty($query->ref_program_id) ? $query->ref_program_id : NULL;
     }
 
+    public static function GetCompanyBasedOnCourse()
+    {
+        $query = UserData::find()->where(['ref_program_id' => Yii::$app->getModule('admin')->GetAssignedProgram()])->all();
+
+        $students = [];
+
+        foreach ($query as $key => $row) {
+            $students[] = $row['id'];
+        }
+
+
+        $userCompany = UserCompany::find()->where(['user_id' => $students])->all();
+
+        $companies = [];
+
+        foreach ($userCompany as $key2 => $row2) {
+            $companies[] = $row2['ref_company_id'];
+        }
+
+        return $companies;
+    }
+
     public static function GetAssignedDepartment()
     {
         $query = UserData::find()->where(['id' => Yii::$app->user->identity->id])->one();
