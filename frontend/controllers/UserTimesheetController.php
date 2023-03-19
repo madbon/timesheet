@@ -58,71 +58,75 @@ class UserTimesheetController extends Controller
         $time = date('H:i:s');
         $timeInOut = "";
 
-        $query = UserTimesheet::find()->where(['user_id' => $user_id, 'date' => $date])->one();
+        $model = UserTimesheet::findOne(['user_id' => $user_id]);
+        
 
-        if (time() >= strtotime('08:00am') && time() <= strtotime('12:00pm')) {
-            if(UserTimesheet::find()->where(['user_id' => $user_id, 'date' => $date])->exists())
-            {
-                if(empty($query->time_out_am))
-                {
-                    $timeInOut = "TIME OUT";
-                }
-                else
-                {
-                    $timeInOut = "TIME IN";
-                }
-            }
-            else
-            {
-                $timeInOut = "TIME IN";
-            }
-        }
-        else
-        {
-            if (time() >= strtotime('12:00pm') && time() <= strtotime('05:00pm')) {
-                if(UserTimesheet::find()->where(['user_id' => $user_id, 'date' => $date])->exists())
-                {
-                    if(empty($query->time_out_pm))
-                    {
-                        $timeInOut = "TIME OUT";
-                    }
-                    else
-                    {
-                        $timeInOut = "COMPLETED";
-                    }
-                }
-                else
-                {
-                    $timeInOut = "TIME IN";
-                }
-            }
-            else
-            {
-                if(time() > strtotime('05:00pm'))
-                {
-                    if(UserTimesheet::find()->where(['user_id' => $user_id, 'date' => $date])->exists())
-                    {
-                        if(empty($query->time_out_pm))
-                        {
-                            $timeInOut = "TIME OUT";
-                        }
-                        else
-                        {
-                            $timeInOut = "COMPLETED";
-                        }
-                    }
-                    else
-                    {
-                        $timeInOut = "TIME IN";
-                    }
-                }
-            }
-        }
+        // $query = UserTimesheet::find()->where(['user_id' => $user_id, 'date' => $date])->one();
+
+        // if (time() >= strtotime('08:00am') && time() <= strtotime('12:00pm')) {
+        //     if(UserTimesheet::find()->where(['user_id' => $user_id, 'date' => $date])->exists())
+        //     {
+        //         if(empty($query->time_out_am))
+        //         {
+        //             $timeInOut = "TIME OUT";
+        //         }
+        //         else
+        //         {
+        //             $timeInOut = "TIME IN";
+        //         }
+        //     }
+        //     else
+        //     {
+        //         $timeInOut = "TIME IN";
+        //     }
+        // }
+        // else
+        // {
+        //     if (time() >= strtotime('12:00pm') && time() <= strtotime('05:00pm')) {
+        //         if(UserTimesheet::find()->where(['user_id' => $user_id, 'date' => $date])->exists())
+        //         {
+        //             if(empty($query->time_out_pm))
+        //             {
+        //                 $timeInOut = "TIME OUT";
+        //             }
+        //             else
+        //             {
+        //                 $timeInOut = "COMPLETED";
+        //             }
+        //         }
+        //         else
+        //         {
+        //             $timeInOut = "TIME IN";
+        //         }
+        //     }
+        //     else
+        //     {
+        //         if(time() > strtotime('05:00pm'))
+        //         {
+        //             if(UserTimesheet::find()->where(['user_id' => $user_id, 'date' => $date])->exists())
+        //             {
+        //                 if(empty($query->time_out_pm))
+        //                 {
+        //                     $timeInOut = "TIME OUT";
+        //                 }
+        //                 else
+        //                 {
+        //                     $timeInOut = "COMPLETED";
+        //                 }
+        //             }
+        //             else
+        //             {
+        //                 $timeInOut = "TIME IN";
+        //             }
+        //         }
+        //     }
+        // }
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'timeInOut' => $timeInOut,
+            'model' => $model,
         ]);
     }
 

@@ -75,6 +75,8 @@ class UserTimesheetSearch extends UserTimesheet
             $query->andFilterWhere(['user_id' => Yii::$app->user->identity->id]);
         }
 
+        // print_r($query->createCommand()->rawSql); exit;
+
         return $dataProvider;
     }
 }

@@ -126,6 +126,26 @@ class UserData extends \yii\db\ActiveRecord
         return $this->sname.", ".$this->fname;
     }
 
+    public function getUserFullName()
+    {
+        return $this->fname." ".$this->mname." ".$this->sname;
+    }
+
+    public function getUserFullNameWithMiddleInitial()
+    {
+        return $this->fname." ".$this->mname." ".$this->sname;
+    }
+
+    public function getMiddleInitial($middleName)
+    {
+        $middleNameArray = explode(' ', trim($middleName));
+        $middleInitial = '';
+        foreach ($middleNameArray as $name) {
+            $middleInitial .= strtoupper(substr($name, 0, 1)).".";
+        }
+        return $middleInitial;
+    }
+
      /**
      * Gets query for [[CmsRole]].
      *

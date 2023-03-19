@@ -59,4 +59,10 @@ class UserTimesheet extends \yii\db\ActiveRecord
     {
         return $this->hasOne(UserData::class, ['id' => 'user_id']); 
     }
+
+    public static function getModelByDate($date)
+    {
+        $model = static::findOne(['date' => $date]);
+        return $model;
+    }
 }
