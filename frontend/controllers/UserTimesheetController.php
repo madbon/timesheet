@@ -348,12 +348,6 @@ class UserTimesheetController extends Controller
             }
         }
 
-        
-
-        // print_r($time); exit;
-
-        
-
         return $this->redirect(['index']);
     }
 
