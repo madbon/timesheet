@@ -5,6 +5,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
+use yii\helpers\FormatConverter;
 
 /** @var yii\web\View $this */
 /** @var common\models\UserTimesheetSearch $searchModel */
@@ -124,13 +125,18 @@ date_default_timezone_set('Asia/Manila');
                     <th>IN</th>
                     <th>OUT</th>
                     <th>OVERTIME</th>
-                    <th>REMARKS</th>
                     <th>TOTAL NO. OF HOURS</th>
+                    <th>REMARKS</th>
                     <th>STATUS</th>
                     <th></th>
             </tr>";
             echo "</thead>";
             echo "<tbody>";
+
+            $totalHoursRendered = 0;
+            $totalMinutesRendered = 0;
+            $totalSecondsRendered = 0;
+
             foreach ($date_range as $date) {
                 $models = UserTimesheet::findAll(['date' => $date->format('Y-m-d')]); // Retrieve all models for date
 
@@ -140,42 +146,7 @@ date_default_timezone_set('Asia/Manila');
 
                     foreach ($models as $model) {
 
-                        // // OVERTIME
-                        //     $ot_time1_am = strtotime($model->time_in_am);
-                        //     $ot_time2_am = strtotime($model->time_out_am);
-                        //     $ot_time1_pm = strtotime($model->time_in_pm);
-                        //     $ot_time2_pm = strtotime($model->time_out_pm);
-
-                        //     // compute AM time difference
-                        //     $ot_diffSecondsAM = $ot_time2_am - $ot_time1_am;
-                        //     $ot_diffHoursAM = floor($ot_diffSecondsAM / 3600);
-                        //     $ot_diffMinutesAM = floor(($ot_diffSecondsAM % 3600) / 60);
-                        //     $ot_diffSecondsAM = $ot_diffSecondsAM % 60;
-
-                        //     // compute PM time difference
-                        //     $ot_diffSecondsPM = $ot_time2_pm - $ot_time1_pm;
-                        //     $ot_diffHoursPM = floor($ot_diffSecondsPM / 3600);
-                        //     $ot_diffMinutesPM = floor(($ot_diffSecondsPM % 3600) / 60);
-                        //     $ot_diffSecondsPM = $ot_diffSecondsPM % 60;
-
-                        //     // compute total time difference
-                        //     $ot_totalSeconds = $ot_diffSecondsAM + $ot_diffSecondsPM;
-                        //     $ot_totalMinutes = $ot_diffMinutesAM + $ot_diffMinutesPM + floor($ot_totalSeconds / 60);
-                        //     $ot_totalHours = $ot_diffHoursAM + $ot_diffHoursPM + floor($ot_totalMinutes / 60);
-                        //     $ot_totalMinutes = $ot_totalMinutes % 60;
-                        //     $ot_totalSeconds = $ot_totalSeconds % 60;
-
-                            
-                        //     // compute overtime
-                        //     if ($ot_totalHours > 8) {
-                        //         $ot_overtimeHours = $ot_totalHours - 8;
-                        //         $returnValOT = $ot_overtimeHours . 'hrs ' . $ot_totalMinutes . 'mins ' . $ot_totalSeconds . ' secs';
-                        //     } else {
-                        //         $returnValOT = '';
-                        //     }
-                        // // OVERTIME _END
-
-                    // TOTAL NO. OF HOURS
+                    // TOTAL NO. OF HOURS 
 
                     $time1_am = strtotime($model->time_in_am);
                     $time2_am = strtotime($model->time_out_am);
@@ -189,18 +160,17 @@ date_default_timezone_set('Asia/Manila');
                     $diffSecondsAM = $diffSecondsAM % 60;
 
                     // compute PM time difference
-                    $diffSecondsPM = $time2_pm - $time1_pm;
-                    $diffHoursPM = floor($diffSecondsPM / 3600);
-
-                    // check if time_in_pm is between 12:00 pm and 1:00 pm
-                    if (date('H:i', $time1_pm) >= '12:00' && date('H:i', $time1_pm) < '13:00') {
-                        // exclude minutes and seconds from time_in_pm
-                        $diffMinutesPM = 0;
-                        $diffSecondsPM = 0;
+                    if ($time1_pm < strtotime('12:00:00 PM')) {
+                        // adjust for time before 12:00 PM
+                        $diffSecondsPM = $time2_pm - strtotime('12:00:00 PM');
+                        $diffSecondsPM += strtotime('12:00:00 PM') - $time1_pm;
                     } else {
-                        $diffMinutesPM = floor(($diffSecondsPM % 3600) / 60);
-                        $diffSecondsPM = $diffSecondsPM % 60;
+                        // adjust for time after 12:00 PM
+                        $diffSecondsPM = $time2_pm - $time1_pm;
                     }
+                    $diffHoursPM = floor($diffSecondsPM / 3600);
+                    $diffMinutesPM = floor(($diffSecondsPM % 3600) / 60);
+                    $diffSecondsPM = $diffSecondsPM % 60;
 
                     // compute total time difference
                     $totalSeconds = $diffSecondsAM + $diffSecondsPM;
@@ -208,6 +178,11 @@ date_default_timezone_set('Asia/Manila');
                     $totalHours = $diffHoursAM + $diffHoursPM + floor($totalMinutes / 60);
                     $totalMinutes = $totalMinutes % 60;
                     $totalSeconds = $totalSeconds % 60;
+
+                    $sumTotal = ($totalHours .' hrs ' ). ($totalMinutes.' min '). ($totalSeconds.' sec ');
+                    $totalHoursRendered += $totalHours;
+                    $totalMinutesRendered += $totalMinutes;
+                    $totalSecondsRendered += $totalSeconds;
 
                     // compute overtime if the total hours rendered is greater than 8 hours
                     $overtimeHours = $overtimeMinutes = $overtimeSeconds = 0;
@@ -231,7 +206,6 @@ date_default_timezone_set('Asia/Manila');
                         }
                     }
 
-                    $totalNoHoursRendered = ($totalHours > 0 ? $totalHours.' hrs ' : ''). ($totalMinutes > 0 ? $totalMinutes.' min ' : ''). ($totalSeconds > 0 ? $totalSeconds.' sec ' : '');
 
                     $overtime = ($overtimeHours > 0 ? $overtimeHours.' hrs ' : ''). ($overtimeMinutes > 0 ? $overtimeMinutes.' min ' : ''). ($overtimeSeconds > 0 ? $overtimeSeconds.' sec ' : '');
 
@@ -250,8 +224,8 @@ date_default_timezone_set('Asia/Manila');
                             echo "<td>" . Html::encode($formatted_in_pm) . "</td>";
                             echo "<td>" . Html::encode($formatted_out_pm) . "</td>";
                             echo "<td>" . Html::encode($overtime) . "</td>";
+                            echo "<td>" . Html::encode($sumTotal) . "</td>";
                             echo "<td>" . Html::encode($model->remarks) . "</td>";
-                            echo "<td>" . Html::encode($totalNoHoursRendered) . "</td>";
                             echo "<td><a href='#' class='btn btn-secondary btn-sm'>VALIDATE</td>";
                             echo "<td>" . Html::a('REMARKS',['update', 'id' => $model->id],['class' => 'btn btn-sm btn-primary btn-sm']) . "</td>";
                         echo "</tr>";
@@ -271,6 +245,39 @@ date_default_timezone_set('Asia/Manila');
                     echo "</tr>";
                 }
             }
+
+            // $overallTotal = sprintf("%02d:%02d:%02d", $totalHours, $totalMinutes, $totalSeconds);
+
+                // $seconds = $totalHoursRendered * 60 * 60 + $totalMinutesRendered * 60 + $totalSecondsRendered;
+                // echo gmdate('H:i:s', $seconds);
+
+                // $totalHoursRendered = 24;
+                // $totalMinutesRendered = 117;
+                // $totalSecondsRendered = 81;
+
+                // $total_seconds = ($totalHoursRendered * 60 * 60) + ($totalMinutesRendered * 60) + $totalSecondsRendered;
+                // $total_minutes = floor(($total_seconds / 60) % 60);
+                // $total_hours = floor($total_seconds / 3600);
+                // $total_minutes += ($total_seconds / 60) - ($total_hours * 60);
+                // $total_hours += floor($total_minutes / 60);
+                // $total_minutes %= 60;
+                // $total_seconds %= 60;
+
+                $total_seconds = $totalHoursRendered * 3600 + $totalMinutesRendered * 60 + $totalSecondsRendered;
+                $total_hours = floor($total_seconds / 3600);
+                $total_minutes = floor(($total_seconds % 3600) / 60);
+                $total_seconds = $total_seconds % 60;
+
+                $sumTotalValue = $total_hours . " hours, " . $total_minutes . " minutes, and " . $total_seconds . " seconds";
+
+            
+                echo "<tr>";
+                echo "<td colspan='6' style='text-align:right;'>TOTAL NO. OF HOURS FOR THIS MONTH</td>";
+                echo "<td>".$sumTotalValue."</td>";
+                echo "<td></td>";
+                echo "<td></td>";
+                echo "<td></td>";
+                echo "</tr>";
             echo "</tbody>";
             echo "</table>";
         ?>
