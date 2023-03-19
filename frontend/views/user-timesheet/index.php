@@ -18,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p style="text-align: center;">
-        <?= $timeInOut == "COMPLETED" ? "" : Html::a($timeInOut, ['time-in'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a("TIME IN", ['time-in'], ['class' => 'btn btn-success']) ?>
 
     </p>
 

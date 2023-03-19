@@ -170,12 +170,14 @@ class UserTimesheetController extends Controller
         date_default_timezone_set('Asia/Manila');
         $user_id = Yii::$app->user->identity->id;
         $date = date('Y-m-d');
-        $model->user_id = $user_id;
         $time = date('H:i:s');
+        $model->user_id = $user_id;
+        $model->date = $date;
 
         if(UserTimesheet::find()->where(['user_id' => $user_id, 'date' => $date])->exists())
         { 
-            $update = UserTimesheet::find()->where(['user_id' => $user_id, 'date' => $date])->one();
+            $update = UserTimesheet::find()->where(['user_id' => $user_id, 'date' => $date])
+            ->orderBy(['id' => SORT_DESC])->one();
             
             if(time() < strtotime('08:00am'))
             {
@@ -188,13 +190,17 @@ class UserTimesheetController extends Controller
                     {
                         $update->time_out_am = $time;
                     }
+                    else
+                    { // save another row in the same date
+                        // $model->time_in_am = $time;
+                        // $model->save();
+                    }
                 }
                 else
                 {
                     if (time() > strtotime('12:00pm') && time() <= strtotime('05:00pm')) {
                         if(empty($update->time_out_am))
                         {
-    
                             if(empty($update->time_in_pm))
                             {
                                 if(!empty($update->time_in_am))
@@ -203,7 +209,7 @@ class UserTimesheetController extends Controller
                                     $update->time_in_pm = $time;
                                 }
                                 else
-                                {
+                                { // unnecessary code
                                     $update->time_in_pm = $time;
                                 }
                                 
@@ -213,6 +219,11 @@ class UserTimesheetController extends Controller
                                 if(empty($update->time_out_pm))
                                 {
                                     $update->time_out_pm = $time;
+                                }
+                                else
+                                { // save another row in the same date
+                                    // $model->time_in_pm = $time;
+                                    // $model->save();
                                 }
                             }
                             
@@ -229,11 +240,16 @@ class UserTimesheetController extends Controller
                                 {
                                     $update->time_out_pm = $time;
                                 }
+                                else
+                                {// save another row in the same date
+                                    // $model->time_in_pm = $time;
+                                    // $model->save();
+                                }
                             }
                         }
-                    }
+                    } // 12:00pm to 5:00pm -end
                     else
-                    {
+                    { // after 5:00pm
                         if(time() > strtotime('05:00pm'))
                         {
                             if(empty($update->time_out_am))
@@ -254,6 +270,11 @@ class UserTimesheetController extends Controller
                                     {
                                         $update->time_out_pm = $time;
                                     }
+                                    else
+                                    { // save another row in the same date
+                                        // $model->time_in_pm = $time;
+                                        // $model->save();
+                                    }
                                 }
                             }
                             else
@@ -267,6 +288,11 @@ class UserTimesheetController extends Controller
                                     if(empty($update->time_out_pm))
                                     {
                                         $update->time_out_pm = $time;
+                                    }
+                                    else
+                                    { // save another row in the same date
+                                        // $model->time_in_pm = $time;
+                                        // $model->save();
                                     }
                                 }
                             }
@@ -311,10 +337,6 @@ class UserTimesheetController extends Controller
                     }
                 }
             }
-
-            
-
-            $model->date = $date;
 
             if(!$model->save())
             {
