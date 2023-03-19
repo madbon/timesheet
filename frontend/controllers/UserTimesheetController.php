@@ -174,85 +174,51 @@ class UserTimesheetController extends Controller
         $time = date('H:i:s');
 
         if(UserTimesheet::find()->where(['user_id' => $user_id, 'date' => $date])->exists())
-        {
+        { 
             $update = UserTimesheet::find()->where(['user_id' => $user_id, 'date' => $date])->one();
             
-
-            if (time() >= strtotime('08:00am') && time() <= strtotime('12:00pm')) {
-                if(empty($update->time_out_am))
-                {
-                    $update->time_out_am = $time;
-                }
+            if(time() < strtotime('08:00am'))
+            {
+                $update->time_out_am = $time;
             }
             else
             {
-                if (time() > strtotime('12:00pm') && time() <= strtotime('05:00pm')) {
+                if (time() >= strtotime('08:00am') && time() <= strtotime('12:00pm')) {
                     if(empty($update->time_out_am))
                     {
-
-                        if(empty($update->time_in_pm))
+                        $update->time_out_am = $time;
+                    }
+                }
+                else
+                {
+                    if (time() > strtotime('12:00pm') && time() <= strtotime('05:00pm')) {
+                        if(empty($update->time_out_am))
                         {
-                            if(!empty($update->time_in_am))
+    
+                            if(empty($update->time_in_pm))
                             {
-                                $update->time_out_am = "12:00:00";
-                                $update->time_in_pm = $time;
+                                if(!empty($update->time_in_am))
+                                {
+                                    $update->time_out_am = "12:00:00";
+                                    $update->time_in_pm = $time;
+                                }
+                                else
+                                {
+                                    $update->time_in_pm = $time;
+                                }
+                                
                             }
                             else
                             {
-                                $update->time_in_pm = $time;
+                                if(empty($update->time_out_pm))
+                                {
+                                    $update->time_out_pm = $time;
+                                }
                             }
                             
                         }
                         else
                         {
-                            if(empty($update->time_out_pm))
-                            {
-                                $update->time_out_pm = $time;
-                            }
-                        }
-                        
-                    }
-                    else
-                    {
-                        if(empty($update->time_in_pm))
-                        {
-                            $update->time_in_pm = $time;
-                        }
-                        else
-                        {
-                            if(empty($update->time_out_pm))
-                            {
-                                $update->time_out_pm = $time;
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    if(time() > strtotime('05:00pm'))
-                    {
-                        if(empty($update->time_out_am))
-                        {
-                            if(empty($update->time_in_pm))
-                            {
-                                $update->time_out_am = "12:00:00";
-                                $update->time_in_pm = "13:00:00";
-
-                                if(empty($update->time_out_pm))
-                                {
-                                    $update->time_out_pm = $time;
-                                }
-                            }
-                            else
-                            {
-                                if(empty($update->time_out_pm))
-                                {
-                                    $update->time_out_pm = $time;
-                                }
-                            }
-                        }
-                        else
-                        {
                             if(empty($update->time_in_pm))
                             {
                                 $update->time_in_pm = $time;
@@ -265,12 +231,54 @@ class UserTimesheetController extends Controller
                                 }
                             }
                         }
-                        
                     }
+                    else
+                    {
+                        if(time() > strtotime('05:00pm'))
+                        {
+                            if(empty($update->time_out_am))
+                            {
+                                if(empty($update->time_in_pm))
+                                {
+                                    $update->time_out_am = "12:00:00";
+                                    $update->time_in_pm = "13:00:00";
+    
+                                    if(empty($update->time_out_pm))
+                                    {
+                                        $update->time_out_pm = $time;
+                                    }
+                                }
+                                else
+                                {
+                                    if(empty($update->time_out_pm))
+                                    {
+                                        $update->time_out_pm = $time;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if(empty($update->time_in_pm))
+                                {
+                                    $update->time_in_pm = $time;
+                                }
+                                else
+                                {
+                                    if(empty($update->time_out_pm))
+                                    {
+                                        $update->time_out_pm = $time;
+                                    }
+                                }
+                            }
+                            
+                        }
+                    }
+    
                 }
-
             }
-           
+
+            
+  
             if(!$update->save())
             {
                 print_r($update->errors); exit;
@@ -280,22 +288,31 @@ class UserTimesheetController extends Controller
         else
         { // NEW DATE TIME IN
             
-            if (time() >= strtotime('08:00am') && time() <= strtotime('12:00pm')) {
+            if(time() < strtotime('08:00am'))
+            {
                 $model->time_in_am = $time;
             }
             else
             {
-                if (time() > strtotime('12:00pm') && time() <= strtotime('05:00pm')) {
-                    $model->time_in_pm = $time;
+                if (time() >= strtotime('08:00am') && time() <= strtotime('12:00pm')) {
+                    $model->time_in_am = $time;
                 }
                 else
                 {
-                    if(time() > strtotime('05:00pm'))
-                    {
+                    if (time() > strtotime('12:00pm') && time() <= strtotime('05:00pm')) {
                         $model->time_in_pm = $time;
+                    }
+                    else
+                    {
+                        if(time() > strtotime('05:00pm'))
+                        {
+                            $model->time_in_pm = $time;
+                        }
                     }
                 }
             }
+
+            
 
             $model->date = $date;
 
