@@ -42,9 +42,16 @@ class UserTimesheetController extends Controller
         ];
     }
 
-    public function actionPreviewPdf()
+    public function actionPreviewPdf($user_id)
     {
-        $user_id = Yii::$app->user->identity->id;
+        if(!Yii::$app->user->can('view-other-timesheet'))
+        {
+            if(Yii::$app->user->identity->id != $user_id)
+            {
+                throw new NotFoundHttpException("Page not found");
+            }
+        }
+
         $model = UserTimesheet::findOne(['user_id' => $user_id]);
 
         $content = $this->renderPartial('_reportView',[

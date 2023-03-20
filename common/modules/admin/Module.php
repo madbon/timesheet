@@ -51,6 +51,30 @@ class Module extends \yii\base\Module
         
     }
 
+    public static function GetSupervisorIdByTraineeUserId($trainee_user_id)
+    {
+        // print_r($trainee_user_id); exit;
+        $getCompany = UserCompany::findOne(['user_id' => $trainee_user_id]);
+        $company = !empty($getCompany->ref_company_id) ? $getCompany->ref_company_id : NULL;
+
+        $getUserIdsInCompany = UserCompany::find()->where(['ref_company_id' => $company])->all();
+
+        $userIds = [];
+
+        foreach ($getUserIdsInCompany as $key => $row) {
+            $userIds[] = $row['user_id'];
+        }
+
+        $query = AuthAssignment::find()->where(['user_id' => $userIds, 'item_name' => 'CompanySupervisor'])->one();
+
+        $getSupervisorId = !empty($query->user_id) ? $query->user_id : null;
+
+        $user = UserData::findOne(['id' => $getSupervisorId]);
+
+        return !empty($user->id) ? $user->id : null;
+        
+    }
+
     public static function AssignedProgramTitle()
     {
         $query = UserData::find()

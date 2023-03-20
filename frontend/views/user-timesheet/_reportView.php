@@ -255,4 +255,59 @@ use common\models\UserTimesheet;
                 echo "</tr>";
             echo "</tbody>";
             echo "</table>";
+
         ?>
+
+<!-- SIGNATURE -->
+<table>
+    <tbody>
+        <tr>
+            <td style="display: flex; justify-content: center; align-items: center; text-align:center;">
+                <?php
+                    $uploadedFileName = Yii::$app->getModule('admin')->GetFileNameExt('UserData',$model->user->id);
+
+                    $uploadedFile = Yii::$app->getModule('admin')->GetFileUpload('UserData',$model->user->id);
+        
+                    if(Yii::$app->getModule('admin')->FileExists($uploadedFileName)) 
+                    {
+                        echo Html::img(Yii::$app->request->baseUrl.$uploadedFile, ['alt'=>'My Image', 'style' => '', 'height' => '70', 'width' => '70']);
+                    }
+                    else
+                    {
+                        echo "NO UPLOADED E-SIGNATURE";
+                    }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-bottom:1px solid black; text-align:center; font-size:11px; "><?= !empty($model->user->UserFullNameWithMiddleInitial) ? $model->user->UserFullNameWithMiddleInitial : "" ?></td>
+        </tr>
+        <tr>
+            <td style="font-size:11px; font-weight:bold; text-align:center;">Intern Signature over printed name</td>
+        </tr>
+        <tr>
+            <td style="display: flex; justify-content: center; align-items: center; text-align:center;">
+                <?php
+                    $uploadedFileNameCP = Yii::$app->getModule('admin')->GetFileNameExt('UserData',$model->user->id);
+
+                    $uploadedFileCP = Yii::$app->getModule('admin')->GetFileUpload('UserData',Yii::$app->getModule('admin')->GetSupervisorIdByTraineeUserId($model->user_id));
+        
+                    if(Yii::$app->getModule('admin')->FileExists($uploadedFileNameCP)) 
+                    {
+                        echo Html::img(Yii::$app->request->baseUrl.$uploadedFileCP, ['alt'=>'My Image', 'style' => '', 'height' => '50', 'width' => '50']);
+                    }
+                    else
+                    {
+                        echo "NO UPLOADED E-SIGNATURE";
+                    }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-bottom:1px solid black; text-align:center; font-weight:bold; text-transform:uppercase; font-size:11px;"><?= Yii::$app->getModule('admin')->GetSupervisorByTraineeUserId($model->user_id); ?></td>
+        </tr>
+        <tr>
+            <td style="font-size:11px; font-weight:bold;">Immidiate Supervisor Signature over printed name</td>
+        </tr>
+    </tbody>
+</table>

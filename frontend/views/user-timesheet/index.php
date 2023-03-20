@@ -69,21 +69,25 @@ date_default_timezone_set('Asia/Manila');
 <div class="user-timesheet-index">
 
     
-
-    <h1 style="text-align: center; font-size:30px; font-weight:bold;">DAILY TIME RECORD</h1>
-
-    <p style="text-align: center;">
-        <?= Html::a("RECORD TIME IN/OUT", ['time-in'], ['class' => 'btn btn-outline-dark']) ?>
-
-    </p>
+   
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <div class="container">
+        <div style="text-align:right;">
+            <?= Html::a('PREVIEW PDF',['preview-pdf','user_id' => $model->user->id],['class' => 'btn btn-outline-danger btn-sm', 'target' => '_blank']); ?>
+        </div>
+        <h1 style="text-align: center; font-size:30px; font-weight:bold;">DAILY TIME RECORD</h1>
+
+        <p style="text-align: center;">
+            <?= Html::a("RECORD TIME IN/OUT", ['time-in'], ['class' => 'btn btn-outline-dark']) ?>
+
+        </p>
+
         <table class="table-primary-details">
             <tbody>
                 <tr>
                     <td style="font-weight:bold;">NAME:</td>
-                    <td colspan="3" style="border-bottom:2px solid black; font-weight:bold; text-transform:uppercase;"><?= $model->user->userFullName; ?></td>
+                    <td colspan="3" style="border-bottom:2px solid black; font-weight:bold; text-transform:uppercase;"><?= $model->user->userFullNameWithMiddleInitial; ?></td>
                 </tr>
                 <tr>
                     <td style="font-weight:bold;">MONTH:</td>
@@ -139,7 +143,7 @@ date_default_timezone_set('Asia/Manila');
             $totalSecondsRendered = 0;
 
             foreach ($date_range as $date) {
-                $models = UserTimesheet::findAll(['date' => $date->format('Y-m-d'), 'user_id' => Yii::$app->user->identity->id]); // Retrieve all models for date
+                $models = UserTimesheet::findAll(['date' => $date->format('Y-m-d'), 'user_id' => $model->user->id]); // Retrieve all models for date
 
                 
 
@@ -327,8 +331,8 @@ date_default_timezone_set('Asia/Manila');
 
             
                 echo "<tr>";
-                echo "<td colspan='6' style='text-align:right;'>TOTAL NO. OF HOURS FOR THIS MONTH</td>";
-                echo "<td>".$sumTotalValue."</td>";
+                echo "<td colspan='6' style='text-align:right; font-weight:normal;'>TOTAL NO. OF HOURS FOR THIS MONTH</td>";
+                echo "<td style='background:#fbbc04; font-weight:bold;'>".$sumTotalValue."</td>";
                 echo "<td></td>";
                 echo "<td></td>";
                 echo "<td></td>";
@@ -340,10 +344,46 @@ date_default_timezone_set('Asia/Manila');
         <table>
             <tbody>
                 <tr>
-                    <td style="border-bottom:1px solid black; text-align:center; font-weight:bold; text-transform:uppercase; font-size:15px;"><?= $model->user->UserFullNameWithMiddleInitial; ?></td>
+                    <td style="display: flex; justify-content: center; align-items: center;">
+                        <?php
+                            $uploadedFileName = Yii::$app->getModule('admin')->GetFileNameExt('UserData',$model->user->id);
+
+                            $uploadedFile = Yii::$app->getModule('admin')->GetFileUpload('UserData',$model->user->id);
+                
+                            if(Yii::$app->getModule('admin')->FileExists($uploadedFileName)) 
+                            {
+                                echo Html::img(Yii::$app->request->baseUrl.$uploadedFile, ['alt'=>'My Image', 'style' => '', 'height' => '100', 'width' => '100']);
+                            }
+                            else
+                            {
+                                echo "NO UPLOADED E-SIGNATURE";
+                            }
+                        ?>
+                    </td>
                 </tr>
                 <tr>
-                    <td style="font-size:11px; font-weight:bold;">Intern Signature over printed name</td>
+                    <td style="border-bottom:1px solid black; text-align:center; font-size:15px; "><?= !empty($model->user->UserFullNameWithMiddleInitial) ? $model->user->UserFullNameWithMiddleInitial : "" ?></td>
+                </tr>
+                <tr>
+                    <td style="font-size:11px; font-weight:bold; text-align:center;">Intern Signature over printed name</td>
+                </tr>
+                <tr>
+                    <td style="display: flex; justify-content: center; align-items: center;">
+                        <?php
+                            $uploadedFileNameCP = Yii::$app->getModule('admin')->GetFileNameExt('UserData',$model->user->id);
+
+                            $uploadedFileCP = Yii::$app->getModule('admin')->GetFileUpload('UserData',Yii::$app->getModule('admin')->GetSupervisorIdByTraineeUserId($model->user_id));
+                
+                            if(Yii::$app->getModule('admin')->FileExists($uploadedFileNameCP)) 
+                            {
+                                echo Html::img(Yii::$app->request->baseUrl.$uploadedFileCP, ['alt'=>'My Image', 'style' => '', 'height' => '100', 'width' => '100']);
+                            }
+                            else
+                            {
+                                echo "NO UPLOADED E-SIGNATURE";
+                            }
+                        ?>
+                    </td>
                 </tr>
                 <tr>
                     <td style="border-bottom:1px solid black; text-align:center; font-weight:bold; text-transform:uppercase; font-size:15px;"><?= Yii::$app->getModule('admin')->GetSupervisorByTraineeUserId($model->user_id); ?></td>
