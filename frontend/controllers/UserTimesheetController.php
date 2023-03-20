@@ -189,6 +189,16 @@ class UserTimesheetController extends Controller
             }
             else
             {
+                if(time() >= strtotime('12:00pm') && time() < strtotime('01:00pm'))
+                {
+                    if(!empty($update->time_in_pm))
+                    {
+                        \Yii::$app->getSession()->setFlash('danger', 'Action cannot be performed. Please wait until 1pm. Thank you!');
+                        return $this->redirect(['index']);
+                    }
+                    
+                }
+
                 if (time() >= strtotime('08:00am') && time() <= strtotime('12:00pm')) {
                     if(empty($update->time_out_am))
                     {

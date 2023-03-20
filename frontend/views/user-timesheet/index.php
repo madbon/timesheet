@@ -160,14 +160,15 @@ date_default_timezone_set('Asia/Manila');
                     $diffSecondsAM = $diffSecondsAM % 60;
 
                     // compute PM time difference
-                    if ($time1_pm < strtotime('12:00:00 PM')) {
+                    if ($time1_pm < strtotime('01:00:00 PM')) {
                         // adjust for time before 12:00 PM
-                        $diffSecondsPM = $time2_pm - strtotime('12:00:00 PM');
-                        $diffSecondsPM += strtotime('12:00:00 PM') - $time1_pm;
+                        $diffSecondsPM = $time2_pm - strtotime('01:00:00 PM');
+                        // $diffSecondsPM += strtotime('01:00:00 PM') - $time1_pm;
                     } else {
                         // adjust for time after 12:00 PM
                         $diffSecondsPM = $time2_pm - $time1_pm;
                     }
+                    
                     $diffHoursPM = floor($diffSecondsPM / 3600);
                     $diffMinutesPM = floor(($diffSecondsPM % 3600) / 60);
                     $diffSecondsPM = $diffSecondsPM % 60;
@@ -179,10 +180,56 @@ date_default_timezone_set('Asia/Manila');
                     $totalMinutes = $totalMinutes % 60;
                     $totalSeconds = $totalSeconds % 60;
 
-                    $sumTotal = ($totalHours .' hrs ' ). ($totalMinutes.' min '). ($totalSeconds.' sec ');
-                    $totalHoursRendered += $totalHours;
-                    $totalMinutesRendered += $totalMinutes;
-                    $totalSecondsRendered += $totalSeconds;
+                    if(!empty($model->time_in_am))
+                    {
+                        if(empty($model->time_out_am))
+                        {
+                            $totalHours = 0;
+                            $totalMinutes = 0;
+                            $totalSeconds = 0;
+                        }
+                    }
+
+                    if(!empty($model->time_in_pm))
+                    {
+                        if(empty($model->time_out_pm))
+                        {
+                            $totalHours = 0;
+                            $totalMinutes = 0;
+                            $totalSeconds = 0;
+                        }
+                    }
+
+                    
+
+                    if($totalHours > 0)
+                    {
+                        $totalHoursRendered += $totalHours;
+                    }
+                    else
+                    {
+                        $totalHoursRendered += 0;
+                    }
+
+                    if($totalMinutes > 0)
+                    {
+                        $totalMinutesRendered += $totalMinutes;
+                    }
+                    else
+                    {
+                        $totalMinutesRendered += 0;
+                    }
+
+                    if($totalSeconds > 0)
+                    {
+                        $totalSecondsRendered += $totalSeconds;
+                    }
+                    else
+                    {
+                        $totalSecondsRendered += 0;
+                    }
+
+                    $sumTotal = (($totalHours > 0 ? $totalHours : 0) .' hrs ' ). (($totalMinutes > 0 ? $totalMinutes : 0).' min '). (($totalSeconds > 0 ? $totalSeconds : 0).' sec ');
 
                     // compute overtime if the total hours rendered is greater than 8 hours
                     $overtimeHours = $overtimeMinutes = $overtimeSeconds = 0;
@@ -262,6 +309,10 @@ date_default_timezone_set('Asia/Manila');
                 // $total_hours += floor($total_minutes / 60);
                 // $total_minutes %= 60;
                 // $total_seconds %= 60;
+
+                // $totalHoursRenderedRES = ($totalHoursRendered > 0) ? $totalHoursRendered : 0;
+                // $totalMinutesRenderedRES = ($totalMinutesRendered > 0) ? $totalMinutesRendered : 0;
+                // $totalSecondsRenderedRES = ($totalSecondsRendered > 0) ? $totalSecondsRendered : 0;
 
                 $total_seconds = $totalHoursRendered * 3600 + $totalMinutesRendered * 60 + $totalSecondsRendered;
                 $total_hours = floor($total_seconds / 3600);
