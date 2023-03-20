@@ -323,6 +323,10 @@ class UserTimesheetController extends Controller
             {
                 print_r($update->errors); exit;
             }
+            else
+            {
+                \Yii::$app->getSession()->setFlash('success', 'Your TIME has been recorded');
+            }
 
         }
         else
@@ -358,7 +362,7 @@ class UserTimesheetController extends Controller
             }
             else
             {
-                \Yii::$app->getSession()->setFlash('success', 'Your TIME IN has been saved');
+                \Yii::$app->getSession()->setFlash('success', 'Your TIME has been recorded');
             }
         }
 

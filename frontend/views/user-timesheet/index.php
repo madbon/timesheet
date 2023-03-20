@@ -72,7 +72,7 @@ date_default_timezone_set('Asia/Manila');
     <h1 style="text-align: center; font-size:30px; font-weight:bold;">DAILY TIME RECORD</h1>
 
     <p style="text-align: center;">
-        <?= Html::a("TIME IN", ['time-in'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a("RECORD TIME", ['time-in'], ['class' => 'btn btn-success']) ?>
 
     </p>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
@@ -162,7 +162,7 @@ date_default_timezone_set('Asia/Manila');
                     // compute PM time difference
                     if ($time1_pm < strtotime('01:00:00 PM')) {
                         // adjust for time before 12:00 PM
-                        $diffSecondsPM = $time2_pm - strtotime('01:00:00 PM');
+                        $diffSecondsPM =  $time2_pm - strtotime('01:00:00 PM');
                         // $diffSecondsPM += strtotime('01:00:00 PM') - $time1_pm;
                     } else {
                         // adjust for time after 12:00 PM
@@ -174,11 +174,14 @@ date_default_timezone_set('Asia/Manila');
                     $diffSecondsPM = $diffSecondsPM % 60;
 
                     // compute total time difference
+                    
                     $totalSeconds = $diffSecondsAM + $diffSecondsPM;
                     $totalMinutes = $diffMinutesAM + $diffMinutesPM + floor($totalSeconds / 60);
                     $totalHours = $diffHoursAM + $diffHoursPM + floor($totalMinutes / 60);
+
                     $totalMinutes = $totalMinutes % 60;
                     $totalSeconds = $totalSeconds % 60;
+
 
                     if(!empty($model->time_in_am))
                     {
@@ -202,7 +205,7 @@ date_default_timezone_set('Asia/Manila');
 
                     
 
-                    if($totalHours > 0)
+                    if($totalHours > 0) 
                     {
                         $totalHoursRendered += $totalHours;
                     }
