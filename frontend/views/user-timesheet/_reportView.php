@@ -11,7 +11,7 @@ use common\models\UserTimesheet;
         </tr>
         <tr>
             <td style="font-weight:bold; font-size:11px;">MONTH:</td>
-            <td colspan="3" style="font-size:11px; border-bottom:2px solid black; font-weight:bold;"><?= date('F', strtotime('M')) ?></td>
+            <td colspan="3" style="font-size:11px; border-bottom:2px solid black; font-weight:bold;"><?= $month ?></td>
         </tr>
         <tr>
             <td style="font-size:11px;">OFFICE HOUR:</td>
@@ -21,11 +21,13 @@ use common\models\UserTimesheet;
     </tbody>
 </table>
 
+<?php  ?>
+
 <?php
             // Define the date range
             
-            $current_year = date('Y');
-            $current_month = date('m');
+            $current_year = $year;
+            $current_month = $month_id;
 
             $start_date = new DateTime("$current_year-$current_month-01");
             $end_date = new DateTime("$current_year-$current_month-01");

@@ -29,6 +29,7 @@ class UserTimesheet extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
+    public $month,$month_id,$year;
     public function rules()
     {
         return [

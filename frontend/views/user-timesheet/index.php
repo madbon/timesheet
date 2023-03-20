@@ -73,13 +73,55 @@ date_default_timezone_set('Asia/Manila');
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <div class="container">
+        <div style="margin-top:20px; margin-bottom:20px;">
+            <p>
+                
+            <?php
+                if(count($queryYear) > 1)
+                {
+                    echo "SELECTED YEAR: ";
+                    foreach ($queryYear as $keyear => $yearval) {
+                        if($yearval['year'] == $year)
+                        {
+                            echo Html::a($yearval['year'],['index','month' => $month, 'month_id' => $month_id, 'year' => $yearval['year']],['class' => 'btn btn-sm btn-warning']);
+                        }
+                        else
+                        {
+                            echo Html::a($yearval['year'],['index','month' => $month, 'month_id' => $month_id, 'year' => $yearval['year']],['class' => 'btn btn-sm btn-outline-warning']);
+                        }
+                    }
+                }
+            ?>
+            <?php
+                echo "SELECTED MONTH: ";
+                foreach ($queryMonth as $keymo => $mon) {
+                    
+                    if($mon['month'] == $month)
+                    {
+                        echo Html::a($mon['month'],['index','month' => $mon['month'], 'month_id' => $mon['month_id'], 'year' => $year],['class' => 'btn btn-sm btn-warning']);
+                    }
+                    else
+                    {
+                        echo Html::a($mon['month'],['index','month' => $mon['month'], 'month_id' => $mon['month_id'],'year' => $year],['class' => 'btn btn-sm btn-outline-warning']);
+                    }
+
+                    
+                }
+            ?>
+            </p>
+        </div>
         <div style="text-align:right;">
-            <?= Html::a('PREVIEW PDF',['preview-pdf','user_id' => $model->user->id],['class' => 'btn btn-outline-danger btn-sm', 'target' => '_blank']); ?>
+            <?= Html::a('PREVIEW PDF',['preview-pdf',
+            'user_id' => $model->user->id,
+            'year' => $year,
+            'month' => $month,
+            'month_id' => $month,
+            ],['class' => 'btn btn-outline-danger btn-sm', 'target' => '_blank']); ?>
         </div>
         <h1 style="text-align: center; font-size:30px; font-weight:bold;">DAILY TIME RECORD</h1>
 
         <p style="text-align: center;">
-            <?= Html::a("RECORD TIME IN/OUT", ['time-in'], ['class' => 'btn btn-outline-dark']) ?>
+            <?= Html::a("RECORD TIME IN/OUT", ['time-in'], ['class' => 'btn btn-outline-warning']) ?>
 
         </p>
 
@@ -91,7 +133,10 @@ date_default_timezone_set('Asia/Manila');
                 </tr>
                 <tr>
                     <td style="font-weight:bold;">MONTH:</td>
-                    <td colspan="3" style="border-bottom:2px solid black; font-weight:bold;"><?= date('F', strtotime('M')) ?></td>
+                    <td colspan="3" style="border-bottom:2px solid black; font-weight:bold;">
+                        <?php // date('F', strtotime('M')) ?>
+                        <?= $month ?>
+                    </td>
                 </tr>
                 <tr>
                     <td>OFFICE HOUR:</td>
@@ -100,12 +145,13 @@ date_default_timezone_set('Asia/Manila');
                 </tr>
             </tbody>
         </table>
-        
+
+
         <?php
             // Define the date range
-            
-            $current_year = date('Y');
-            $current_month = date('m');
+            // print_r(date('m')); exit;
+            $current_year = $year;
+            $current_month = $month_id;
 
             $start_date = new DateTime("$current_year-$current_month-01");
             $end_date = new DateTime("$current_year-$current_month-01");
@@ -143,7 +189,10 @@ date_default_timezone_set('Asia/Manila');
             $totalSecondsRendered = 0;
 
             foreach ($date_range as $date) {
-                $models = UserTimesheet::findAll(['date' => $date->format('Y-m-d'), 'user_id' => $model->user->id]); // Retrieve all models for date
+                $models = UserTimesheet::findAll([
+                    'date' => $date->format('Y-m-d'), 
+                    'user_id' => $model->user->id
+                ]); // Retrieve all models for date
 
                 
 
