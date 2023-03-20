@@ -7,6 +7,7 @@ use common\models\UserTimesheetSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use kartik\mpdf\Pdf;
 use Yii;
 
 /**
@@ -25,7 +26,7 @@ class UserTimesheetController extends Controller
                 // 'only' => ['logout', 'signup'],
                 'rules' => [
                     [
-                        'actions' => ['index','create','update','view','delete','time-in'],
+                        'actions' => ['index','create','update','view','delete','time-in','preview-pdf'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -41,24 +42,118 @@ class UserTimesheetController extends Controller
         ];
     }
 
+    public function actionPreviewPdf()
+    {
+        $user_id = Yii::$app->user->identity->id;
+        $model = UserTimesheet::findOne(['user_id' => $user_id]);
+
+        $content = $this->renderPartial('_reportView',[
+            'model' => $model,
+        ]);
+    
+        // setup kartik\mpdf\Pdf component
+        $pdf = new Pdf([
+            // set to use core fonts only
+            'mode' => Pdf::MODE_CORE, 
+            // A4 paper format
+            'format' => Pdf::FORMAT_LETTER, 
+            // portrait orientation
+            'orientation' => Pdf::ORIENT_PORTRAIT, 
+            // stream to browser inline
+            'destination' => Pdf::DEST_BROWSER, 
+            'marginLeft' => 5,
+            'marginRight' => 5,
+            // your html content input
+            'content' => $content,  
+            // format content from your own css file if needed or use the
+            // enhanced bootstrap css built by Krajee for mPDF formatting 
+            // 'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
+            // any css to be embedded if required
+            'cssInline' => '
+                table.table thead tr th
+                {
+                    font-size:11px;
+                    text-align: center;
+                    border:1px solid black;
+                    border-bottom:none;
+                } 
+                
+                table.table thead tr:nth-child(2) th
+                {
+                    background: #fbbc04;
+                    border-bottom:none;
+                } 
+                
+                table.table tbody tr td
+                {
+                    font-size:11px;
+                    padding:0;
+                    padding-left: 2px;
+                    padding-right:2px;
+                    text-align: center;
+                    vertical-align: middle;
+                    border:1px solid black;
+                }
+            
+                table.table tbody tr td a
+                {
+                    font-size:11px;
+                }
+            
+                table.table
+                {
+                    background: white;
+                }
+            
+                table.table tbody tr td:first-child
+                {
+                    font-weight: bold;
+                }
+                table.table tbody tr td:last-child
+                {
+                    text-align: center;
+                    padding:0;
+                }
+            
+                table.table-primary-details tbody tr td
+                {
+                    padding: 0;  
+                    text-transform: uppercase;
+                }
+            ', 
+            // set mPDF properties on the fly
+            'options' => ['title' => 'Krajee Report Title'],
+            // call mPDF methods on the fly
+            'methods' => [ 
+                // 'SetHeader'=>['Krajee Report Header'], 
+                // 'SetFooter'=>['{PAGENO}'],
+            ]
+        ]);
+        
+        // return the pdf output as per the destination setting
+        return $pdf->render(); 
+    }
+
     /**
      * Lists all UserTimesheet models.
      *
      * @return string
      */
-    public function actionIndex()
+    public function actionIndex($trainee_user_id = null)
     {
         date_default_timezone_set('Asia/Manila');
         $searchModel = new UserTimesheetSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
         
-        $user_id = Yii::$app->user->identity->id;
+        
         $date = date('Y-m-d');
 
         $time = date('H:i:s');
         $timeInOut = "";
 
+        $user_id = Yii::$app->user->can('Trainee') ? Yii::$app->user->identity->id : $trainee_user_id;
         $model = UserTimesheet::findOne(['user_id' => $user_id]);
+        
         
 
         // $query = UserTimesheet::find()->where(['user_id' => $user_id, 'date' => $date])->one();

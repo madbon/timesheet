@@ -133,7 +133,7 @@ class UserData extends \yii\db\ActiveRecord
 
     public function getUserFullNameWithMiddleInitial()
     {
-        return $this->fname." ".$this->mname." ".$this->sname;
+        return $this->fname." ".($this->getMiddleInitial($this->mname))." ".$this->sname;
     }
 
     public function getMiddleInitial($middleName)
@@ -143,7 +143,7 @@ class UserData extends \yii\db\ActiveRecord
         foreach ($middleNameArray as $name) {
             $middleInitial .= strtoupper(substr($name, 0, 1)).".";
         }
-        return $middleInitial;
+        return !empty($middleName) ? $middleInitial : "";
     }
 
      /**

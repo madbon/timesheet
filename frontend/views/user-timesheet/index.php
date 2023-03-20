@@ -21,6 +21,7 @@ date_default_timezone_set('Asia/Manila');
         font-size:11px;
         text-align: center;
         border:1px solid black;
+        
     } 
     
     table.table thead tr:nth-child(2) th
@@ -113,10 +114,10 @@ date_default_timezone_set('Asia/Manila');
             echo "<table class='table table-bordered'>";
             echo "<thead>";
             echo "<tr>
-                    <th></th>
+                    <th style='border-left:1px solid #f5f6ff; background-color:#f5f6ff; border-top:1px solid #f5f6ff;'></th>
                     <th colspan='2'>AM</th>
                     <th colspan='2'>PM</th>
-                    <th colspan='5'></th>
+                    <th colspan='5' style='border-top:1px solid #f5f6ff; border-right:1px solid #f5f6ff; background:#f5f6ff;'></th>
             </tr>";
             echo "<tr>
                     <th>DAYS</th>
@@ -138,7 +139,7 @@ date_default_timezone_set('Asia/Manila');
             $totalSecondsRendered = 0;
 
             foreach ($date_range as $date) {
-                $models = UserTimesheet::findAll(['date' => $date->format('Y-m-d')]); // Retrieve all models for date
+                $models = UserTimesheet::findAll(['date' => $date->format('Y-m-d'), 'user_id' => Yii::$app->user->identity->id]); // Retrieve all models for date
 
                 
 
@@ -335,9 +336,26 @@ date_default_timezone_set('Asia/Manila');
             echo "</tbody>";
             echo "</table>";
         ?>
+
+        <table>
+            <tbody>
+                <tr>
+                    <td style="border-bottom:1px solid black; text-align:center; font-weight:bold; text-transform:uppercase; font-size:15px;"><?= $model->user->UserFullNameWithMiddleInitial; ?></td>
+                </tr>
+                <tr>
+                    <td style="font-size:11px; font-weight:bold;">Intern Signature over printed name</td>
+                </tr>
+                <tr>
+                    <td style="border-bottom:1px solid black; text-align:center; font-weight:bold; text-transform:uppercase; font-size:15px;"><?= Yii::$app->getModule('admin')->GetSupervisorByTraineeUserId($model->user_id); ?></td>
+                </tr>
+                <tr>
+                    <td style="font-size:11px; font-weight:bold;">Immidiate Supervisor Signature over printed name</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 
-
+    
 
 
     <?php 
