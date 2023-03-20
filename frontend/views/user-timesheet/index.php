@@ -72,7 +72,7 @@ date_default_timezone_set('Asia/Manila');
     <h1 style="text-align: center; font-size:30px; font-weight:bold;">DAILY TIME RECORD</h1>
 
     <p style="text-align: center;">
-        <?= Html::a("RECORD TIME", ['time-in'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a("RECORD TIME IN/OUT", ['time-in'], ['class' => 'btn btn-outline-dark']) ?>
 
     </p>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>

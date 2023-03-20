@@ -318,14 +318,16 @@ class UserTimesheetController extends Controller
             }
 
             
-  
-            if(!$update->save())
+            if($update->getOldAttributes() != $update->getAttributes())
             {
-                print_r($update->errors); exit;
-            }
-            else
-            {
-                \Yii::$app->getSession()->setFlash('success', 'Your TIME has been recorded');
+                if($update->save())
+                {
+                    \Yii::$app->getSession()->setFlash('success', 'Your TIME has been recorded');
+                }
+                else
+                {
+                    print_r($update->errors); exit;
+                }
             }
 
         }
