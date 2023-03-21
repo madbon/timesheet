@@ -26,7 +26,7 @@ class UserTimesheetController extends Controller
                 // 'only' => ['logout', 'signup'],
                 'rules' => [
                     [
-                        'actions' => ['index','create','update','view','delete','time-in','preview-pdf'],
+                        'actions' => ['index','create','update','view','delete','time-in','preview-pdf','validate-timesheet'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -40,6 +40,26 @@ class UserTimesheetController extends Controller
                 ],
             ],
         ];
+    }
+
+    public function actionValidateTimesheet($id)
+    {
+        $query = UserTimesheet::findOne(['id' => $id]);
+
+        if($query->status)
+        {
+            $query->status = 0;
+            \Yii::$app->getSession()->setFlash('success', 'The Status is back to pending');
+            $query->save();
+        }
+        else
+        {
+            \Yii::$app->getSession()->setFlash('success', 'The selected record has been validated');
+            $query->status = 1;
+            $query->save();
+        }
+
+        return $this->redirect(Yii::$app->request->referrer);
     }
 
     public function actionPreviewPdf($user_id,$month= null,$month_id=null,$year=null)

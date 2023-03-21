@@ -335,10 +335,10 @@ date_default_timezone_set('Asia/Manila');
                             {
                                 if($model->status)
                                 {
-                                    echo "<td><a href='#' class='btn btn-success btn-sm'>VALIDATED</td>";
+                                    echo "<td>".Html::a('VALIDATED',['validate-timesheet','id' => $model->id],['class' => 'btn btn-success btn-sm'])."</td>";
                                 }
                                 else{
-                                    echo "<td><a href='#' class='btn btn-outline-success btn-sm'>VALIDATE</td>";
+                                    echo "<td>".Html::a('VALIDATE',['validate-timesheet','id' => $model->id],['class' => 'btn btn-outline-success btn-sm'])."</td>";
                                 }
                             }
                             else
@@ -348,7 +348,7 @@ date_default_timezone_set('Asia/Manila');
                                     echo "<td>VALIDATED</td>";
                                 }
                                 else{
-                                    echo "<td>VALIDATE</td>";
+                                    echo "<td>PENDING</td>";
                                 }
                             }
                             

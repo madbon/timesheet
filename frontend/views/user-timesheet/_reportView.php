@@ -203,7 +203,7 @@ use common\models\UserTimesheet;
                             echo "<td>" . Html::encode($overtime) . "</td>";
                             echo "<td>" . Html::encode($sumTotal) . "</td>";
                             echo "<td>" . Html::encode($model->remarks) . "</td>";
-                            echo "<td></td>";
+                            echo "<td>".($model->status ? "VALIDATED" : "PENDING")."</td>";
                         echo "</tr>";
                     }
                 } else {
