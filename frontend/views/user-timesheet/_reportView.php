@@ -63,6 +63,7 @@ use common\models\UserTimesheet;
             $totalHoursRendered = 0;
             $totalMinutesRendered = 0;
             $totalSecondsRendered = 0;
+            $countPendingRecord = 0;
 
             foreach ($date_range as $date) {
                 $models = UserTimesheet::findAll(['date' => $date->format('Y-m-d'), 'user_id' => $user_id]); // Retrieve all models for date
@@ -72,7 +73,11 @@ use common\models\UserTimesheet;
                 if ($models) {
 
                     foreach ($models as $model) {
-
+                    
+                    if(empty($model->status))
+                    {
+                        $countPendingRecord += 1;
+                    }
                     // TOTAL NO. OF HOURS 
 
                     $time1_am = strtotime($model->time_in_am);
@@ -289,20 +294,24 @@ use common\models\UserTimesheet;
             <td style="font-size:11px; font-weight:bold; text-align:center;">Intern Signature over printed name</td>
         </tr>
         <tr>
-            <td style="display: flex; justify-content: center; align-items: center; text-align:center;">
+            <td style="display: flex; justify-content: center; align-items: center; text-align:center; height:50px;">
                 <?php
-                    $uploadedFileNameCP = Yii::$app->getModule('admin')->GetFileNameExt('UserData',$model->user->id);
+                    if(empty($countPendingRecord))
+                    {
+                        $uploadedFileNameCP = Yii::$app->getModule('admin')->GetFileNameExt('UserData',$model->user->id);
 
-                    $uploadedFileCP = Yii::$app->getModule('admin')->GetFileUpload('UserData',Yii::$app->getModule('admin')->GetSupervisorIdByTraineeUserId($model->user_id));
-        
-                    if(Yii::$app->getModule('admin')->FileExists($uploadedFileNameCP)) 
-                    {
-                        echo Html::img(Yii::$app->request->baseUrl.$uploadedFileCP, ['alt'=>'My Image', 'style' => '', 'height' => '50', 'width' => '50']);
+                        $uploadedFileCP = Yii::$app->getModule('admin')->GetFileUpload('UserData',Yii::$app->getModule('admin')->GetSupervisorIdByTraineeUserId($model->user_id));
+            
+                        if(Yii::$app->getModule('admin')->FileExists($uploadedFileNameCP)) 
+                        {
+                            echo Html::img(Yii::$app->request->baseUrl.$uploadedFileCP, ['alt'=>'My Image', 'style' => '', 'height' => '50', 'width' => '50']);
+                        }
+                        else
+                        {
+                            echo "NO UPLOADED E-SIGNATURE";
+                        }
                     }
-                    else
-                    {
-                        echo "NO UPLOADED E-SIGNATURE";
-                    }
+                    
                 ?>
             </td>
         </tr>

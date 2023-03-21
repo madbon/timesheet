@@ -187,7 +187,7 @@ date_default_timezone_set('Asia/Manila');
             $totalHoursRendered = 0;
             $totalMinutesRendered = 0;
             $totalSecondsRendered = 0;
-            
+            $countPendingRecord = 0;
 
             foreach ($date_range as $date) {
                 $models = UserTimesheet::findAll([
@@ -202,6 +202,11 @@ date_default_timezone_set('Asia/Manila');
                     $countCompleteTime = 0;
 
                     foreach ($models as $model) {
+
+                    if(empty($model->status))
+                    {
+                        $countPendingRecord += 1;
+                    }
 
                     // TOTAL NO. OF HOURS 
 
@@ -503,17 +508,24 @@ date_default_timezone_set('Asia/Manila');
                 <tr>
                     <td style="display: flex; justify-content: center; align-items: center;">
                         <?php
-                            $uploadedFileNameCP = Yii::$app->getModule('admin')->GetFileNameExt('UserData',$model->user->id);
-
-                            $uploadedFileCP = Yii::$app->getModule('admin')->GetFileUpload('UserData',Yii::$app->getModule('admin')->GetSupervisorIdByTraineeUserId($model->user_id));
-                
-                            if(Yii::$app->getModule('admin')->FileExists($uploadedFileNameCP)) 
+                            if(empty($countPendingRecord))
                             {
-                                echo Html::img(Yii::$app->request->baseUrl.$uploadedFileCP, ['alt'=>'My Image', 'style' => '', 'height' => '100', 'width' => '100']);
+                                $uploadedFileNameCP = Yii::$app->getModule('admin')->GetFileNameExt('UserData',$model->user->id);
+
+                                $uploadedFileCP = Yii::$app->getModule('admin')->GetFileUpload('UserData',Yii::$app->getModule('admin')->GetSupervisorIdByTraineeUserId($model->user_id));
+                    
+                                if(Yii::$app->getModule('admin')->FileExists($uploadedFileNameCP)) 
+                                {
+                                    echo Html::img(Yii::$app->request->baseUrl.$uploadedFileCP, ['alt'=>'My Image', 'style' => '', 'height' => '100', 'width' => '100']);
+                                }
+                                else
+                                {
+                                    echo "NO UPLOADED E-SIGNATURE";
+                                }
                             }
                             else
                             {
-                                echo "NO UPLOADED E-SIGNATURE";
+                                echo "<div style='height:50px;'></div>";
                             }
                         ?>
                     </td>
