@@ -26,9 +26,19 @@ class UserTimesheetController extends Controller
                 // 'only' => ['logout', 'signup'],
                 'rules' => [
                     [
-                        'actions' => ['index','create','update','view','delete','time-in','preview-pdf','validate-timesheet'],
+                        'actions' => ['index','create','update','view','delete','time-in','preview-pdf'],
                         'allow' => true,
                         'roles' => ['@'],
+                    ],
+                    [
+                        'actions' => ['update-timeout'],
+                        'allow' => true,
+                        'roles' => ['edit-time'],
+                    ],
+                    [
+                        'actions' => ['validate-timesheet'],
+                        'allow' => true,
+                        'roles' => ['validate-timesheet'],
                     ],
                     
                 ],
@@ -45,11 +55,12 @@ class UserTimesheetController extends Controller
     public function actionValidateTimesheet($id)
     {
         $query = UserTimesheet::findOne(['id' => $id]);
+        
 
         if($query->status)
         {
             $query->status = 0;
-            \Yii::$app->getSession()->setFlash('success', 'The Status is back to pending');
+            \Yii::$app->getSession()->setFlash('warning', 'The Status is back to pending');
             $query->save();
         }
         else
@@ -478,6 +489,28 @@ class UserTimesheetController extends Controller
         }
 
         return $this->render('update', [
+            'model' => $model,
+        ]);
+    }
+
+     /**
+     * Updates an existing UserTimesheet model.
+     * If update is successful, the browser will be redirected to the 'view' page.
+     * @param int $id ID
+     * @return string|\yii\web\Response
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionUpdateTimeout($id)
+    {
+        $model = $this->findModel($id);
+
+        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
+
+            \Yii::$app->getSession()->setFlash('success', 'Time Out has been saved');
+            return $this->redirect(['index','trainee_user_id' => $model->user->id]);
+        }
+
+        return $this->render('update_time_out', [
             'model' => $model,
         ]);
     }

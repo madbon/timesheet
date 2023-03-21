@@ -179,7 +179,7 @@ date_default_timezone_set('Asia/Manila');
                     <th>TOTAL NO. OF HOURS</th>
                     <th>REMARKS</th>
                     <th>STATUS</th>
-                    <th></th>
+                    ".(Yii::$app->user->can('timesheet-remarks') || Yii::$app->user->can('edit-time') ? "<th></th>" : "")."
             </tr>";
             echo "</thead>";
             echo "<tbody>";
@@ -187,6 +187,7 @@ date_default_timezone_set('Asia/Manila');
             $totalHoursRendered = 0;
             $totalMinutesRendered = 0;
             $totalSecondsRendered = 0;
+            
 
             foreach ($date_range as $date) {
                 $models = UserTimesheet::findAll([
@@ -197,6 +198,8 @@ date_default_timezone_set('Asia/Manila');
                 
 
                 if ($models) {
+
+                    $countCompleteTime = 0;
 
                     foreach ($models as $model) {
 
@@ -331,14 +334,42 @@ date_default_timezone_set('Asia/Manila');
                             echo "<td>" . Html::encode($sumTotal) . "</td>";
                             echo "<td>" . Html::encode($model->remarks) . "</td>";
 
+                            
+
+                            if($model->time_in_am)
+                            {
+                                $countCompleteTime += 1;
+                            }
+
+                            if($model->time_out_am)
+                            {
+                                $countCompleteTime += 1;
+                            }
+
+                            if($model->time_in_pm)
+                            {
+                                $countCompleteTime += 1;
+                            }
+
+                            if($model->time_out_pm)
+                            {
+                                $countCompleteTime += 1;
+                            }
+
                             if(Yii::$app->user->can('validate-timesheet'))
                             {
                                 if($model->status)
                                 {
-                                    echo "<td>".Html::a('VALIDATED',['validate-timesheet','id' => $model->id],['class' => 'btn btn-success btn-sm'])."</td>";
+
+                                    echo "<td>";
+                                    
+                                    echo Html::a('VALIDATED',['validate-timesheet','id' => $model->id],['class' => 'btn btn-success btn-sm']);
+                                    echo "</td>";
                                 }
                                 else{
-                                    echo "<td>".Html::a('VALIDATE',['validate-timesheet','id' => $model->id],['class' => 'btn btn-outline-success btn-sm'])."</td>";
+                                    echo "<td>";
+                                    echo Html::a('VALIDATE',['validate-timesheet','id' => $model->id],['class' => 'btn btn-outline-success btn-sm']);
+                                    echo "</td>";
                                 }
                             }
                             else
@@ -352,8 +383,24 @@ date_default_timezone_set('Asia/Manila');
                                 }
                             }
                             
+                            if(Yii::$app->user->can('timesheet-remarks'))
+                            {
+                                echo "<td>";
+                                if(Yii::$app->user->can('edit-time'))
+                                {
+                                    echo Html::a('EDIT TIME',['update-timeout','id' => $model->id,'count_complete_time' => $countCompleteTime],['class' => 'btn btn-outline-primary btn-sm'])." ";
+                                }
+                                echo Html::a('REMARKS',['update', 'id' => $model->id],['class' => 'btn btn-sm btn-primary btn-sm']) . "</td>";
+                            }
+                            else
+                            {
+                                if(Yii::$app->user->can('edit-time'))
+                                {
+                                    echo "<td>".Html::a('EDIT TIME',['update-timeout','id' => $model->id,'count_complete_time' => $countCompleteTime],['class' => 'btn btn-outline-primary btn-sm'])."</td>";
+                                }
+                            }
                             
-                            echo "<td>" . Html::a('REMARKS',['update', 'id' => $model->id],['class' => 'btn btn-sm btn-primary btn-sm']) . "</td>";
+                            
                         echo "</tr>";
                     }
                 } else {
@@ -367,7 +414,10 @@ date_default_timezone_set('Asia/Manila');
                     echo "<td></td>";
                     echo "<td></td>";
                     echo "<td></td>";
-                    echo "<td></td>";
+                    if(Yii::$app->user->can('timesheet-remarks') || Yii::$app->user->can('edit-time'))
+                    {
+                        echo "<td></td>";
+                    }
                     echo "</tr>";
                 }
             }
@@ -406,7 +456,11 @@ date_default_timezone_set('Asia/Manila');
                 echo "<td style='background:#fbbc04; font-weight:bold;'>".$sumTotalValue."</td>";
                 echo "<td></td>";
                 echo "<td></td>";
-                echo "<td></td>";
+
+                if(Yii::$app->user->can('timesheet-remarks') || Yii::$app->user->can('edit-time'))
+                {
+                    echo "<td></td>";
+                }
                 echo "</tr>";
             echo "</tbody>";
             echo "</table>";
