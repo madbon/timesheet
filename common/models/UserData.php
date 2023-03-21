@@ -217,4 +217,14 @@ class UserData extends \yii\db\ActiveRecord
         return $this->hasOne(AuthAssignment::class, ['user_id' => 'id']);
     }
 
+    /**
+     * Gets query for [[CmsRole]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUserTimesheet()
+    {
+        return $this->hasOne(UserTimesheet::class, ['user_id' => 'id']);
+    }
+
 }

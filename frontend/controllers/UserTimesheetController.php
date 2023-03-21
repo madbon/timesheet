@@ -169,6 +169,7 @@ class UserTimesheetController extends Controller
         $timeInOut = "";
 
         $user_id = Yii::$app->user->can('Trainee') ? Yii::$app->user->identity->id : $trainee_user_id;
+
         $model = UserTimesheet::findOne(['user_id' => $user_id]);
         
         $queryMonth = UserTimesheet::find()
@@ -183,8 +184,6 @@ class UserTimesheetController extends Controller
         ->where(['user_id' => $user_id])
         ->groupBy(['year'])
         ->all();
-
-        
 
         return $this->render('index', [
             // 'searchModel' => $searchModel,
