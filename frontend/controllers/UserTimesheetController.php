@@ -77,6 +77,7 @@ class UserTimesheetController extends Controller
             'destination' => Pdf::DEST_BROWSER, 
             'marginLeft' => 5,
             'marginRight' => 5,
+            'marginTop' => 10,
             // your html content input
             'content' => $content,  
             // format content from your own css file if needed or use the

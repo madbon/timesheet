@@ -3,11 +3,12 @@ use yii\helpers\Html;
 use common\models\UserTimesheet;
 ?>
 
+<h1 style="text-align: center; font-size:20px; font-weight:bold;">DAILY TIME RECORD</h1>
 <table class="table-primary-details">
     <tbody>
         <tr>
             <td style="font-weight:bold; font-size:11px; ">NAME:</td>
-            <td colspan="3" style="font-size:11px; border-bottom:2px solid black; font-weight:bold; text-transform:uppercase;"><?= $model->user->userFullName; ?></td>
+            <td colspan="3" style="font-size:11px; border-bottom:2px solid black; font-weight:bold; text-transform:uppercase;"><?= $model->user->userFullNameWithMiddleInitial; ?></td>
         </tr>
         <tr>
             <td style="font-weight:bold; font-size:11px;">MONTH:</td>
