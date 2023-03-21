@@ -109,6 +109,19 @@ class Module extends \yii\base\Module
         return !empty($query->ref_program_id) ? $query->ref_program_id : NULL;
     }
 
+    public static function GetDepartmentBasedOnCourse()
+    {
+        $query = UserData::find()->where(['ref_program_id' => Yii::$app->getModule('admin')->GetAssignedProgram()])->all();
+
+        $departmentIds = [];
+
+        foreach ($query as $key => $row) {
+            $departmentIds[] = $row['ref_department_id'];
+        }
+
+        return $departmentIds;
+    }
+
     public static function GetCompanyBasedOnCourse()
     {
         $query = UserData::find()->where(['ref_program_id' => Yii::$app->getModule('admin')->GetAssignedProgram()])->all();
