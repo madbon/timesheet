@@ -115,13 +115,13 @@ date_default_timezone_set('Asia/Manila');
             'user_id' => $model->user->id,
             'year' => $year,
             'month' => $month,
-            'month_id' => $month,
+            'month_id' => $month_id,
             ],['class' => 'btn btn-outline-danger btn-sm', 'target' => '_blank']); ?>
         </div>
         <h1 style="text-align: center; font-size:30px; font-weight:bold;">DAILY TIME RECORD</h1>
 
         <p style="text-align: center;">
-            <?= Html::a("RECORD TIME IN/OUT", ['time-in'], ['class' => 'btn btn-outline-warning']) ?>
+            <?=  Yii::$app->user->can('record-time-in-out') ? Html::a("RECORD TIME IN/OUT", ['time-in'], ['class' => 'btn btn-outline-warning']) : "" ?>
 
         </p>
 
@@ -330,7 +330,29 @@ date_default_timezone_set('Asia/Manila');
                             echo "<td>" . Html::encode($overtime) . "</td>";
                             echo "<td>" . Html::encode($sumTotal) . "</td>";
                             echo "<td>" . Html::encode($model->remarks) . "</td>";
-                            echo "<td><a href='#' class='btn btn-secondary btn-sm'>VALIDATE</td>";
+
+                            if(Yii::$app->user->can('validate-timesheet'))
+                            {
+                                if($model->status)
+                                {
+                                    echo "<td><a href='#' class='btn btn-success btn-sm'>VALIDATED</td>";
+                                }
+                                else{
+                                    echo "<td><a href='#' class='btn btn-outline-success btn-sm'>VALIDATE</td>";
+                                }
+                            }
+                            else
+                            {
+                                if($model->status)
+                                {
+                                    echo "<td>VALIDATED</td>";
+                                }
+                                else{
+                                    echo "<td>VALIDATE</td>";
+                                }
+                            }
+                            
+                            
                             echo "<td>" . Html::a('REMARKS',['update', 'id' => $model->id],['class' => 'btn btn-sm btn-primary btn-sm']) . "</td>";
                         echo "</tr>";
                     }

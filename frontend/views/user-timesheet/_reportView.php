@@ -65,7 +65,7 @@ use common\models\UserTimesheet;
             $totalSecondsRendered = 0;
 
             foreach ($date_range as $date) {
-                $models = UserTimesheet::findAll(['date' => $date->format('Y-m-d'), 'user_id' => Yii::$app->user->identity->id]); // Retrieve all models for date
+                $models = UserTimesheet::findAll(['date' => $date->format('Y-m-d'), 'user_id' => $user_id]); // Retrieve all models for date
 
                 
 

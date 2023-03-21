@@ -51,7 +51,7 @@ class UserTimesheetController extends Controller
                 throw new NotFoundHttpException("Page not found");
             }
         }
-
+        
         $model = UserTimesheet::findOne(['user_id' => $user_id]);
 
         $month = $month ? $month : date('F', strtotime('M'));
@@ -63,6 +63,7 @@ class UserTimesheetController extends Controller
             'month' => $month,
             'month_id' => $month_id,
             'year' => $year,
+            'user_id' => $user_id,
         ]);
     
         // setup kartik\mpdf\Pdf component
