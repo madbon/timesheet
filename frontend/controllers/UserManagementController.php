@@ -29,6 +29,7 @@ use yii\web\ForbiddenHttpException;
 use common\components\PdfWidget;
 use yii\data\ActiveDataProvider;
 use yii\helpers\Json;
+use yii\widgets\ActiveForm;
 use Yii;
 
 /**
@@ -156,8 +157,15 @@ class UserManagementController extends Controller
        
         $itemName = NULL;
 
+        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            return \yii\widgets\ActiveForm::validate($model);
+        }
+
         if ($this->request->isPost) {
+            
             if ($model->load($this->request->post())) {
+
 
                 $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
                 $model->auth_key = Yii::$app->security->generateRandomString();
@@ -209,8 +217,6 @@ class UserManagementController extends Controller
                 {
                     print_r($userCompany->errors); exit;
                 }
-
-                // return $this->redirect(['upload-file', 'id' => $model_id]);
 
                 return $this->redirect(['index', 
                     'UserDataSearch[item_name]' => $itemName,

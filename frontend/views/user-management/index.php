@@ -294,8 +294,20 @@ $this->params['breadcrumbs'][] = $this->title;
                     // ],
                     [
                         'class' => ActionColumn::className(),
-                        'template' => '{esig} {view} {update} {delete}',
+                        'template' => '{timesheet} {esig} {view} {update} {delete}',
                         'buttons' => [
+                            'timesheet' => function ($url, $model) {
+                                if(Yii::$app->user->can('view-other-timesheet'))
+                                {
+                                    if($model->authAssignment->item_name == "Trainee")
+                                    {
+                                        if(!empty($model->userTimesheet))
+                                        {
+                                            return Html::a('DTR',['/user-timesheet/index','trainee_user_id' => $model->id],['class' => 'btn btn-warning btn-sm','target' => '_blank']);
+                                        }
+                                    }
+                                }
+                            },
                             'esig' => function ($url, $model) {
                                 $buttons = "";
                                 if(in_array($model->authAssignment->item_name,['CompanySupervisor','Trainee']))

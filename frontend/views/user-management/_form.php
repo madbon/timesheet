@@ -13,6 +13,7 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin([
         'id' => 'user-management-form',
+        'enableAjaxValidation' => true,
         // ... other options ...
     ]); ?>
     

@@ -7,7 +7,7 @@
 use yii\helpers\Html;
 use yii\bootstrap5\ActiveForm; 
 
-$this->title = 'LOGIN';
+$this->title = 'TIME IN/OUT';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <style>
@@ -69,16 +69,14 @@ $this->params['breadcrumbs'][] = $this->title;
                             ?>
                         </div>
                     </div>
-
-                    
                     
                     <div style="border:1px solid #ddd; padding:10px; padding-top:0px;">
 
                         <div class="row" style="margin-bottom:20px;">
-                            <div class="col-sm-6 col-xs-6 col-md-6 col-lg-6 active-link">
+                            <div class="col-sm-6 col-xs-6 col-md-6 col-lg-6">
                                 <?= Html::a('Login',['login'],['style' => 'width:100%;','class' => 'btn btn-outline-light']); ?>
                             </div>
-                            <div class="col-sm-6 col-xs-6 col-md-6 col-lg-6">
+                            <div class="col-sm-6 col-xs-6 col-md-6 col-lg-6 active-link">
                                 <?= Html::a('Time In/Out',['time-in-out'],['style' => 'width:100%; text-decoration:none;', 'class' => 'btn btn-outline-light']); ?>
                             </div>
                         </div>
@@ -87,16 +85,14 @@ $this->params['breadcrumbs'][] = $this->title;
                         
                         <div class="card-body">
                             
-                            <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>
+                            <?php $form = ActiveForm::begin(['id' => 'timein-form']); ?>
 
-                                <?= $form->field($model, 'username')->textInput(['autofocus' => true, 'placeholder' => 'Username'])->label(false) ?>
+                                <?= $form->field($model, 'username2')->textInput(['autofocus' => true, 'placeholder' => 'Username'])->label(false) ?>
 
-                                <?= $form->field($model, 'password')->passwordInput(['placeholder' => 'Password'])->label(false) ?>
-
-                                <?= $form->field($model, 'rememberMe')->checkbox() ?>
+                                <?= $form->field($model, 'password2')->passwordInput(['placeholder' => 'Password'])->label(false) ?>
 
                                 <div class="form-group">
-                                    <?= Html::submitButton('LOGIN', ['class' => 'btn btn-danger', 'name' => 'login-button', 'style' => 'width:100%; border-radius:25px;']) ?>
+                                    <?= Html::submitButton('TIME IN/OUT', ['class' => 'btn btn-warning', 'name' => 'login-button', 'style' => 'width:100%; border-radius:25px;']) ?>
                                 </div>
 
                             <?php ActiveForm::end(); ?>
@@ -108,6 +104,3 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 </div>
-
-
-

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 17, 2023 at 11:49 AM
+-- Generation Time: Mar 22, 2023 at 12:55 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -59,6 +59,9 @@ INSERT INTO `auth_assignment` (`item_name`, `user_id`, `created_at`) VALUES
 ('Administrator', '6', NULL),
 ('CompanySupervisor', '15', NULL),
 ('CompanySupervisor', '31', NULL),
+('CompanySupervisor', '32', NULL),
+('CompanySupervisor', '33', NULL),
+('CompanySupervisor', '34', NULL),
 ('OjtCoordinator', '24', NULL),
 ('OjtCoordinator', '25', NULL),
 ('OjtCoordinator', '26', NULL),
@@ -105,11 +108,13 @@ INSERT INTO `auth_item` (`name`, `type`, `description`, `rule_name`, `data`, `cr
 ('create-button-company-supervisor', 2, '', NULL, NULL, NULL, NULL),
 ('create-button-ojt-coordinator', 2, '', NULL, NULL, NULL, NULL),
 ('create-button-trainee', 2, '', NULL, NULL, NULL, NULL),
+('edit-time', 2, '', NULL, NULL, NULL, NULL),
 ('menu-map-markers', 2, '', NULL, NULL, NULL, NULL),
 ('menu-settings', 2, '', NULL, NULL, NULL, NULL),
 ('menu-timesheet', 2, '', NULL, NULL, NULL, NULL),
 ('menu-user-management', 2, '', NULL, NULL, NULL, NULL),
 ('OjtCoordinator', 1, '', NULL, NULL, NULL, NULL),
+('record-time-in-out', 2, '', NULL, NULL, NULL, NULL),
 ('SETTINGS', 2, 'SETTINGS MODULE', NULL, NULL, NULL, NULL),
 ('settings-index', 2, '', NULL, NULL, NULL, NULL),
 ('settings-list-companies', 2, '', NULL, NULL, NULL, NULL),
@@ -127,7 +132,9 @@ INSERT INTO `auth_item` (`name`, `type`, `description`, `rule_name`, `data`, `cr
 ('settings-roles-permission-container', 2, '', NULL, NULL, NULL, NULL),
 ('settings-user-accounts-form-reference-container', 2, '', NULL, NULL, NULL, NULL),
 ('time-in-out', 2, '', NULL, NULL, NULL, NULL),
+('timesheet-remarks', 2, '', NULL, NULL, NULL, NULL),
 ('Trainee', 1, '', NULL, NULL, NULL, NULL),
+('upload-others-esig', 2, '', NULL, NULL, NULL, NULL),
 ('upload-signature', 2, 'permission to upload signature', NULL, NULL, NULL, NULL),
 ('user-management-create', 2, NULL, NULL, NULL, NULL, NULL),
 ('user-management-delete', 2, '', NULL, NULL, NULL, NULL),
@@ -136,7 +143,9 @@ INSERT INTO `auth_item` (`name`, `type`, `description`, `rule_name`, `data`, `cr
 ('USER-MANAGEMENT-MODULE', 2, 'access to all permissions of user management', NULL, NULL, NULL, NULL),
 ('user-management-update', 2, '', NULL, NULL, NULL, NULL),
 ('user-management-upload-file', 2, '', NULL, NULL, NULL, NULL),
-('user-management-view', 2, '', NULL, NULL, NULL, NULL);
+('user-management-view', 2, '', NULL, NULL, NULL, NULL),
+('validate-timesheet', 2, '', NULL, NULL, NULL, NULL),
+('view-other-timesheet', 2, '', NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -182,13 +191,19 @@ INSERT INTO `auth_item_child` (`parent`, `child`) VALUES
 ('Administrator', 'settings-roles'),
 ('Administrator', 'settings-roles-permission-container'),
 ('Administrator', 'settings-user-accounts-form-reference-container'),
+('Administrator', 'upload-others-esig'),
 ('Administrator', 'USER-MANAGEMENT-MODULE'),
+('Administrator', 'view-other-timesheet'),
 ('CompanySupervisor', 'access-trainee-index'),
+('CompanySupervisor', 'edit-time'),
 ('CompanySupervisor', 'menu-user-management'),
 ('CompanySupervisor', 'SETTINGS'),
 ('CompanySupervisor', 'settings-index'),
+('CompanySupervisor', 'timesheet-remarks'),
 ('CompanySupervisor', 'upload-signature'),
 ('CompanySupervisor', 'user-management-index'),
+('CompanySupervisor', 'validate-timesheet'),
+('CompanySupervisor', 'view-other-timesheet'),
 ('OjtCoordinator', 'access-company-supervisor-index'),
 ('OjtCoordinator', 'access-trainee-index'),
 ('OjtCoordinator', 'create-button-company-supervisor'),
@@ -212,10 +227,13 @@ INSERT INTO `auth_item_child` (`parent`, `child`) VALUES
 ('OjtCoordinator', 'user-management-update'),
 ('OjtCoordinator', 'user-management-upload-file'),
 ('OjtCoordinator', 'user-management-view'),
+('OjtCoordinator', 'view-other-timesheet'),
 ('SETTINGS', 'settings-index'),
 ('SETTINGS', 'settings-list-positions'),
 ('Trainee', 'menu-timesheet'),
+('Trainee', 'record-time-in-out'),
 ('Trainee', 'time-in-out'),
+('Trainee', 'timesheet-remarks'),
 ('Trainee', 'upload-signature'),
 ('USER-MANAGEMENT-MODULE', 'user-management-create'),
 ('USER-MANAGEMENT-MODULE', 'user-management-delete'),
@@ -268,7 +286,8 @@ INSERT INTO `files` (`id`, `user_id`, `model_name`, `model_id`, `file_name`, `ex
 (7, 2, 'UserData', 9, 'esig2', 'png', 'db8c00be880f4084d57946a7ee2cf1e3', NULL, 1678345294),
 (8, 2, 'UserData', 12, 'esig3', 'png', '66a9e2ea397cbbbf4f9a4b160796a596', NULL, 1678348171),
 (9, 2, 'UserData', 28, 'esig4', 'png', '47e2d40cf57a1028c173b4c50eb61bf7', NULL, 1678957490),
-(10, 31, 'UserData', 31, 'esig1', 'png', '787c4cbba8e7efd94fd124ee927b60af', NULL, 1678975571);
+(10, 31, 'UserData', 31, 'esig1', 'png', '787c4cbba8e7efd94fd124ee927b60af', NULL, 1678975571),
+(11, 20, 'UserData', 20, 'esig4', 'png', 'b12014b1fb25fdf438f40e308225d135', NULL, 1679147038);
 
 -- --------------------------------------------------------
 
@@ -345,7 +364,8 @@ INSERT INTO `ref_company` (`id`, `name`, `address`, `latitude`, `longitude`, `co
 (14, 'Sky Cable', 'Sky Cable, Saturn, Mandaluyong, Metro Manila, Philippines', '14.5791861', '121.0249454', ''),
 (17, 'Converge ICT Solutions Inc', 'Converge ICT Solutions Inc, Eulogio Rodriguez Jr. Avenue, Pasig, Metro Manila, Philippines', '14.5779240', '121.0739720', '2343434'),
 (18, 'La Bella Villa Resort', 'La Bella Villa Resort, Bgy, San Baraquiel, St, Valenzuela, Metro Manila, Philippines', '14.7411074', '120.9862269', '2343-12323'),
-(19, 'Accenture Gateway Tower 2', 'Accenture Gateway Tower 2, General Aguinaldo Avenue, Cubao, Quezon City, Metro Manila, Philippines', '14.6226048', '121.0530741', '');
+(19, 'Accenture Gateway Tower 2', 'Accenture Gateway Tower 2, General Aguinaldo Avenue, Cubao, Quezon City, Metro Manila, Philippines', '14.6226048', '121.0530741', ''),
+(20, 'Emerson Electric (Asia) Ltd.', 'Emerson Electric (Asia) Ltd., Ortigas Center, Pasig, Metro Manila, Philippines', '14.5878487', '121.0617371', '');
 
 -- --------------------------------------------------------
 
@@ -573,10 +593,9 @@ INSERT INTO `user` (`id`, `student_idno`, `student_year`, `student_section`, `re
 (10, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Jojo', '', 'Vito', NULL, '2013-03-05', 'M', 'jojo', 'kgnloB8kX1qv5R0N78G0CJIdH1JQcqNb', '$2y$13$kIL70sEYgnrCazTa8vMite4vvwuRPMwXdeeEmC8pnYBP5IrSIgNee', NULL, 'jojo@gm.com', NULL, '', NULL, 10, 0, 0, 'he3TEKOJUefD02o1eDVd1CE7fOBEuups_1678345337'),
 (12, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Warren', '', 'Celeste', NULL, '2013-03-05', 'M', 'warren', 'b8b5ohQe2b088Ag4oODLFGuZukUMf9Lf', '$2y$13$0BQ2nKuyj0JepnxthYtxKefTIv1A1g/8saAhcQFstW6OMAreXFpGO', NULL, 'warren@gm.com', NULL, '', NULL, 10, 0, 0, 'srcOj_S0cmMgsrccugdmIcu0aIvBUx7s_1678348138'),
 (13, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Ken', '', 'Mateo', NULL, '2005-03-10', 'M', 'ken', 'dU_YwJsZbxPpzMhLenmo62G3HUQRQByy', '$2y$13$d6/4LxP7LqGnJM3JJQLyf.XdJpnWfaSau3/Kn4Hb5pgaZc09hEfP.', NULL, 'ken@gm.com', NULL, '', NULL, 10, 0, 0, 'aFFYT7PA5MtXlgmzAwrrYi2kS4Er3kj-_1678434605'),
-(15, NULL, NULL, NULL, NULL, NULL, 2, 2, 'sdfdfd', 'fdfd', 'fdfdf', '', '2005-03-10', 'M', 'asdsd', 'Uas9Q6lT6K2ZleRjQUe7u9-f0STX8fUZ', '$2y$13$o5HF8ta/VDg0f7sn5hd1HekdePk7Jr5dPq7JoksNSUsYOHYzltH3K', NULL, 'sdfdf@gf.com', NULL, '', '', 10, 0, 0, 'Gx2hofcN7X0ltP3xHFAfi0lBd4RgzE6y_1678435021'),
-(18, '234343', 2, 'B', NULL, NULL, 2, NULL, 'sdfd', 'fdf', 'dfdf', 'II', '2005-03-06', 'M', 'jer', 'yxYFkfmyTqysOAk8W9TjQ2-kUVmy4j7h', '$2y$13$02lOdIuKb3YUsiNzI9/SW.q9BXChjTWbUT0saWAPwY3dZzlCnRhjC', NULL, 'jer@gm.com', 2147483647, '1232323', '033B Elma Street, Don Fabian, Brgy. Commonwealth, Quezon City, 1121', 10, 0, 0, 'O6NNP9b9x-dPjyaHeh8J_r_J_SYx7VKV_1678674129'),
-(20, '1232090', 1, 'B', 1, 1, 1, 1, 'John', '', 'Smooth', 'IV', '2005-03-06', 'M', 'trainee', 'a7jMTVWHllh3qnNl9HE4lLBrexdWRYh8', '$2y$13$bBA.7wEkNaHZUm9WTxjoieI8XTckTg2eMoDltOdMeq9Y7eNfil27W', NULL, 'nap@gm.com', 2147483647, '2343434', '12323 address', 10, 0, 0, 'BI5HOKRlYM6YNi6HhzRDRJX7jH7Fu3Xg_1678677157'),
-(21, '2313553', 4, 'B', 1, 2, 3, NULL, 'vilma', '', 'dayagmil', '', '2005-03-06', 'M', 'vilma', 'bQW83W97gNRv8h_OLOQQEcBKt82ZKDtG', '$2y$13$p12B2eY8FRiAArUz1ONr7.bugwXDqwfCjh7diU2YcVSc.BYIbHJQ6', NULL, 'vilma@gm.com', 9232323, 'sdfdf', 'sdfdfd', 10, 0, 0, 'mEhL6bWT6Dms3Cs8-jvfRt8N-D9OqWPL_1678677395'),
+(15, NULL, NULL, NULL, NULL, NULL, 2, 2, 'Yael', 'Di Makulangan', 'Yuzon', '', '2005-03-10', 'M', 'asdsd', 'Uas9Q6lT6K2ZleRjQUe7u9-f0STX8fUZ', '$2y$13$o5HF8ta/VDg0f7sn5hd1HekdePk7Jr5dPq7JoksNSUsYOHYzltH3K', NULL, 'sdfdf@gf.com', NULL, '', '', 10, 0, 0, 'Gx2hofcN7X0ltP3xHFAfi0lBd4RgzE6y_1678435021'),
+(20, '1232090', 1, 'B', 1, 1, 1, 1, 'JOHN', 'De Guzman', 'SMOOTH', 'IV', '2005-03-06', 'M', 'trainee', 'a7jMTVWHllh3qnNl9HE4lLBrexdWRYh8', '$2y$13$bBA.7wEkNaHZUm9WTxjoieI8XTckTg2eMoDltOdMeq9Y7eNfil27W', NULL, 'nap@gm.com', 2147483647, '2343434', '12323 address', 10, 0, 0, 'BI5HOKRlYM6YNi6HhzRDRJX7jH7Fu3Xg_1678677157'),
+(21, '2313553', 4, 'B', 1, 2, 1, NULL, 'vilma', '', 'dayagmil', '', '2005-03-06', 'M', 'vilma', 'bQW83W97gNRv8h_OLOQQEcBKt82ZKDtG', '$2y$13$p12B2eY8FRiAArUz1ONr7.bugwXDqwfCjh7diU2YcVSc.BYIbHJQ6', NULL, 'vilma@gm.com', 9232323, 'sdfdf', 'sdfdfd', 10, 0, 0, 'mEhL6bWT6Dms3Cs8-jvfRt8N-D9OqWPL_1678677395'),
 (22, '234343', 4, 'E', 4, NULL, 1, NULL, 'france', '', 'dacales', '', '2005-02-28', 'F', 'france', 'LEH7yRVrvsCkfYGvvykGSekyD_gq3q5S', '$2y$13$oqmSvq5yfCPHkOARf8Wyye5s4WnZjXJ8ilMdqmgFWjXT9hQah8LSK', NULL, 'france@gm.com', 2147483647, '2343434', 'sdfdfd', 10, 0, 0, 'NuE-OGiB9RnY3zRC6Qe7OGar1-Up5vrx_1678677582'),
 (23, NULL, NULL, NULL, 2, NULL, NULL, NULL, 'alvin', '', 'sibaluca', 'II', '2005-03-06', 'M', 'alvin', 'Jt2FFZ4bDd5qIpZXNgDVJgD5zdGcnaAN', '$2y$13$4PWK6Ic8FySi/zmcrSa16O698puS9W3ESCemobfyMHm1/FnJsNj0i', NULL, 'alvin@gm.com', 2147483647, 'tel12323', '031 Elma Stree, Don Fabian,  Brgy. Commonwealth, Quezon City, Metro Manila, 1121', 10, 0, 0, 'ycVi4JFu-nQdW7jEf0KESszpRK-XsFt2_1678687295'),
 (24, NULL, NULL, NULL, 1, NULL, NULL, NULL, 'Nicka', '', 'De Guzman', '', '2005-02-27', 'M', 'coor', '1Veun2dt3r9hnBJQ7Qn0G5H0Tkagzu84', '$2y$13$27LnUZ568Q46.lXRp4yXa.a689gXPsxms76TphmARiO9gbgUVIKqq', NULL, 'nickadg@gm.com', 2147483647, '2323323', 'Tabing Ilog, Malolos, Bulacan', 10, 0, 0, 'DlnHssTWDN0RLchN0Bf_udvgnI7qnM0C_1678689072'),
@@ -584,9 +603,10 @@ INSERT INTO `user` (`id`, `student_idno`, `student_year`, `student_section`, `re
 (26, NULL, NULL, NULL, 3, NULL, NULL, NULL, 'Leonel', '', 'Coor', 'Jr.', '2005-03-09', 'M', 'leonelcoor', '361qo_APVzQbGJDIs_lE4ZhkvLLfEVkk', '$2y$13$ijx.ka0GfD0WB0glocpag.lpcpMs7RsDJHiV0.TDt2sTPoIdkIJXe', NULL, 'leonelcoor@gm.com', 2147483647, '4342314', 'Elma Street, Comm', 10, 0, 0, '2RVtFc_XyO12dJyLeZNLDHE1-t__S44V_1678689352'),
 (27, NULL, NULL, NULL, 4, NULL, NULL, NULL, 'Romnick', '', 'Alfons', 'III', '2005-03-07', 'M', 'romnickalfons', '4YtvYAdGttEKx2ro_xL25Cr5v4hl8S7N', '$2y$13$2L2AdxFpw/uiu99rp15myev4.KptVpC2180EmucCNZYMnvN9miWhi', NULL, 'romnickalfons@gm.com', 2147483647, '', 'Batangas City', 10, 0, 0, 'mQKXx69OXzkobBHTxn_m7HqO3hOVG8zb_1678689520'),
 (28, '890232', 4, 'A', 5, NULL, 1, NULL, 'Genese', '', 'Luna', '', '2005-03-15', 'F', 'genluna', 'PiowCQ7Fw-U9np-bROC2IsXvT9S2SY0I', '$2y$13$JItdkwe.rjAQqV2ofRJjaeVIp4afiNwBxxov3/CcHWgQ5k/TTMYQ6', NULL, 'genluna@gm.com', 923239232, '123-1232', 'Bocaue, Bulacan', 10, 0, 0, 'Nstb34KJO89hoarjamjI6F0WwMGrhSy9_1678847596'),
-(29, '12-209323', 2, 'C', 3, NULL, 1, NULL, 'NOEL', '', 'YESOR', 'Sr.', '2005-03-16', 'M', 'noelyessor', 'dmovFCrz1sHsQdC6W0qPjN92ZKFArEoh', '$2y$13$21oUDcAN7rbchJjgkWanweu4Ordf7IZZGJOmnoTB9h1XfS4JGf8py', NULL, 'noelyessor@gm.com', 912323232, '2343-4343', '394 Panga St. Don Fabian Brgy. Commonwealth, Quezon City', 10, 0, 0, '7Mg8dwkIznybc-MDFMQfMfz684kxp0Hm_1678948982'),
 (30, '12-0932323', 4, 'C', 2, NULL, 1, NULL, 'Coco', '', 'Martin', 'IV', '2005-03-07', 'M', 'cocomartin', 'j18zpNSDWoU7FIhBPg8rp8F54wDKvYbb', '$2y$13$SrkIl5Upg5cnC9tHtKu0VetZkr9Tpqd7mzYflToxNshTO5w.AitA2', NULL, 'cocomartin@gm.com', 934343434, '23434', '9123 Coco St. Brgy. Matapang, Bataan', 10, 0, 0, 'MAbkw-ZokCSnRrD3iKD7pz31CvudetfX_1678949188'),
-(31, NULL, NULL, NULL, NULL, NULL, 1, 1, 'Heather', '', 'Miranda', '', '2005-03-15', 'F', 'supervisor', 'NiMqkvUJL1-jlIOs3H7Ev6kWEiD4wFdw', '$2y$13$DVoW8H6dS.U6pVz//e4LGuUPr3c1Pxddt3Pk.tOL.v4O7lrNPW3L6', NULL, 'heather@gm.com', 912323232, '454-45454', 'Malolos, Bulacan', 10, 0, 0, '5VPdHej0dhW3AmqIg2uDyLaym6ktx8Wl_1678957717');
+(31, NULL, NULL, NULL, NULL, NULL, 1, 1, 'Chito', 'Parokya', 'Miranda', '', '2005-03-15', 'F', 'supervisor', 'NiMqkvUJL1-jlIOs3H7Ev6kWEiD4wFdw', '$2y$13$DVoW8H6dS.U6pVz//e4LGuUPr3c1Pxddt3Pk.tOL.v4O7lrNPW3L6', NULL, 'heather@gm.com', 912323232, '454-45454', 'Malolos, Bulacan', 10, 0, 0, '5VPdHej0dhW3AmqIg2uDyLaym6ktx8Wl_1678957717'),
+(32, NULL, NULL, NULL, NULL, NULL, 1, 5, 'La Bella', '', 'Supervisor', '', '2005-03-10', 'M', 'labellacp', 'QXmxsZQpwcOVx3aSJ8oY_5YV4jVVuaJC', '$2y$13$G2dnDGbxEVWyfPBtkrk3duZnkYDMbVeJY1tk3vD46ZTs6hKhx.0G2', NULL, 'labellacoor@gm.com', 912434343, '980-3434', 'Bgy, San Baraqueil, St. Valenzuela', 10, 0, 0, 'AWABYAlcjaRkp7-FA4NJ7VZZ_h3FmmRR_1679100523'),
+(34, NULL, NULL, NULL, NULL, NULL, 2, 3, 'Felix', '', 'Miguel', 'III', '2005-03-07', 'M', 'felix', 'a_VmgqNcHnYNg3RwKMn2mYN7SQnvQ8Wd', '$2y$13$gk9L3iFF3ZxNBrcWE7IY5.QRkEkoIYaCFDa6upkyuqSqR14VfFPKG', NULL, 'felix@gm.com', 923434343, '454-45454', 'Matalino St.', 10, 0, 0, 'MIO5YioffuOwBk-2_yYaOZ9AuHB0zLGH_1679378496');
 
 -- --------------------------------------------------------
 
@@ -605,16 +625,16 @@ CREATE TABLE `user_company` (
 --
 
 INSERT INTO `user_company` (`id`, `user_id`, `ref_company_id`) VALUES
-(1, 18, 19),
 (2, 20, 19),
 (3, 21, 18),
 (4, 22, 14),
 (5, 28, 17),
-(6, 29, 19),
 (7, 30, 19),
 (8, 15, 17),
 (9, 31, 19),
-(10, 24, NULL);
+(10, 24, NULL),
+(11, 32, 18),
+(13, 34, 19);
 
 -- --------------------------------------------------------
 
@@ -630,16 +650,25 @@ CREATE TABLE `user_timesheet` (
   `time_in_pm` time DEFAULT NULL,
   `time_out_pm` time DEFAULT NULL,
   `date` date DEFAULT NULL,
-  `remarks` varchar(50) DEFAULT NULL
+  `remarks` varchar(50) DEFAULT NULL,
+  `status` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `user_timesheet`
 --
 
-INSERT INTO `user_timesheet` (`id`, `user_id`, `time_in_am`, `time_out_am`, `time_in_pm`, `time_out_pm`, `date`, `remarks`) VALUES
-(12, 20, '08:00:00', '12:00:00', '14:48:13', '20:48:15', '2023-03-16', 'Sample remarks'),
-(14, 20, NULL, NULL, '17:58:55', '17:59:05', '2023-03-17', NULL);
+INSERT INTO `user_timesheet` (`id`, `user_id`, `time_in_am`, `time_out_am`, `time_in_pm`, `time_out_pm`, `date`, `remarks`, `status`) VALUES
+(12, 20, '08:00:00', '12:00:00', '14:48:13', '20:50:15', '2023-03-16', 'Sample remarks', 1),
+(14, 20, NULL, NULL, '13:14:43', '18:14:00', '2023-03-17', NULL, 1),
+(25, 20, NULL, NULL, '20:54:59', '20:55:21', '2022-03-18', NULL, 0),
+(45, 20, '08:00:00', '12:00:00', '12:30:00', '20:28:40', '2023-03-19', '', 1),
+(46, 20, '08:00:00', '10:00:00', '12:54:11', '13:00:00', '2023-01-19', NULL, 0),
+(47, 21, NULL, NULL, '14:27:47', '14:38:25', '2023-03-20', NULL, 0),
+(48, 20, '09:24:05', '12:00:00', '12:47:55', '17:00:00', '2023-03-21', '', 1),
+(52, 30, NULL, NULL, '12:00:10', NULL, '2023-03-22', NULL, 0),
+(53, 20, NULL, NULL, '14:45:06', '14:56:02', NULL, NULL, 0),
+(54, 20, NULL, NULL, '15:15:20', NULL, '2023-03-22', NULL, 0);
 
 --
 -- Indexes for dumped tables
@@ -838,7 +867,7 @@ ALTER TABLE `attendance`
 -- AUTO_INCREMENT for table `files`
 --
 ALTER TABLE `files`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `post`
@@ -856,7 +885,7 @@ ALTER TABLE `post_tags`
 -- AUTO_INCREMENT for table `ref_company`
 --
 ALTER TABLE `ref_company`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `ref_department`
@@ -898,19 +927,19 @@ ALTER TABLE `submission_thread`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `user_company`
 --
 ALTER TABLE `user_company`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `user_timesheet`
 --
 ALTER TABLE `user_timesheet`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
 -- Constraints for dumped tables

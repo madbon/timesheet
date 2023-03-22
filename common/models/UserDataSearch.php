@@ -116,7 +116,8 @@ class UserDataSearch extends UserData
             {
                 if($this->item_name == "CompanySupervisor")
                 {
-                    $query->andFilterWhere(['user_company.ref_company_id' => Yii::$app->getModule('admin')->GetCompanyBasedOnCourse()]);
+                    $query->andFilterWhere(['user_company.ref_company_id' => Yii::$app->getModule('admin')->GetCompanyBasedOnCourse()])
+                    ->andFilterWhere(['ref_department_id' => Yii::$app->getModule('admin')->GetDepartmentBasedOnCourse()]);
                 }
                 else if($this->item_name == "Trainee")
                 {
@@ -124,12 +125,9 @@ class UserDataSearch extends UserData
                 }
             }
 
-            
-
             $query->andFilterWhere(['like', 'auth_item.name', $this->item_name]);
 
             $query->andFilterWhere(['like','ref_company.name',$this->company]);
-
 
             // print_r($query->createCommand()->rawSql); exit;
 

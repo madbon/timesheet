@@ -29,11 +29,12 @@ class UserTimesheet extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
+    public $month,$month_id,$year;
     public function rules()
     {
         return [
             [['user_id'], 'integer'],
-            [['time_in_am', 'time_out_am', 'time_in_pm', 'time_out_pm', 'date'], 'safe'],
+            [['time_in_am', 'time_out_am', 'time_in_pm', 'time_out_pm', 'date','status'], 'safe'],
             [['remarks'], 'string', 'max' => 50],
         ];
     }
@@ -58,5 +59,11 @@ class UserTimesheet extends \yii\db\ActiveRecord
     public function getUser()
     {
         return $this->hasOne(UserData::class, ['id' => 'user_id']); 
+    }
+
+    public static function getModelByDate($date)
+    {
+        $model = static::findOne(['date' => $date]);
+        return $model;
     }
 }

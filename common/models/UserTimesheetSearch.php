@@ -15,11 +15,12 @@ class UserTimesheetSearch extends UserTimesheet
     /**
      * {@inheritdoc}
      */
+    public $month;
     public function rules()
     {
         return [
             [['id', 'user_id'], 'integer'],
-            [['time_in_am', 'time_out_am', 'time_in_pm', 'time_out_pm', 'date', 'remarks'], 'safe'],
+            [['time_in_am', 'time_out_am', 'time_in_pm', 'time_out_pm', 'date', 'remarks','month'], 'safe'],
         ];
     }
 
@@ -74,6 +75,8 @@ class UserTimesheetSearch extends UserTimesheet
         {
             $query->andFilterWhere(['user_id' => Yii::$app->user->identity->id]);
         }
+
+        // print_r($query->createCommand()->rawSql); exit;
 
         return $dataProvider;
     }

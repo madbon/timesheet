@@ -4,6 +4,7 @@ namespace common\modules\admin;
 use common\models\Files;
 use common\models\UserData;
 use common\models\UserCompany;
+use common\models\AuthAssignment;
 use Yii;
 
 /**
@@ -24,6 +25,54 @@ class Module extends \yii\base\Module
         parent::init();
 
         // custom initialization code goes here
+    }
+
+    public static function GetSupervisorByTraineeUserId($trainee_user_id)
+    {
+        // print_r($trainee_user_id); exit;
+        $getCompany = UserCompany::findOne(['user_id' => $trainee_user_id]);
+        $company = !empty($getCompany->ref_company_id) ? $getCompany->ref_company_id : NULL;
+
+        $getUserIdsInCompany = UserCompany::find()->where(['ref_company_id' => $company])->all();
+
+        $userIds = [];
+
+        foreach ($getUserIdsInCompany as $key => $row) {
+            $userIds[] = $row['user_id'];
+        }
+
+        $query = AuthAssignment::find()->where(['user_id' => $userIds, 'item_name' => 'CompanySupervisor'])->one();
+
+        $getSupervisorId = !empty($query->user_id) ? $query->user_id : null;
+
+        $user = UserData::findOne(['id' => $getSupervisorId]);
+
+        return !empty($user->getUserFullNameWithMiddleInitial()) ? $user->getUserFullNameWithMiddleInitial() : "NO COMPANY SUPERVISOR ASSIGNED";
+        
+    }
+
+    public static function GetSupervisorIdByTraineeUserId($trainee_user_id)
+    {
+        // print_r($trainee_user_id); exit;
+        $getCompany = UserCompany::findOne(['user_id' => $trainee_user_id]);
+        $company = !empty($getCompany->ref_company_id) ? $getCompany->ref_company_id : NULL;
+
+        $getUserIdsInCompany = UserCompany::find()->where(['ref_company_id' => $company])->all();
+
+        $userIds = [];
+
+        foreach ($getUserIdsInCompany as $key => $row) {
+            $userIds[] = $row['user_id'];
+        }
+
+        $query = AuthAssignment::find()->where(['user_id' => $userIds, 'item_name' => 'CompanySupervisor'])->one();
+
+        $getSupervisorId = !empty($query->user_id) ? $query->user_id : null;
+
+        $user = UserData::findOne(['id' => $getSupervisorId]);
+
+        return !empty($user->id) ? $user->id : null;
+        
     }
 
     public static function AssignedProgramTitle()
@@ -58,6 +107,19 @@ class Module extends \yii\base\Module
         $query = UserData::find()->where(['id' => Yii::$app->user->identity->id])->one();
 
         return !empty($query->ref_program_id) ? $query->ref_program_id : NULL;
+    }
+
+    public static function GetDepartmentBasedOnCourse()
+    {
+        $query = UserData::find()->where(['ref_program_id' => Yii::$app->getModule('admin')->GetAssignedProgram()])->all();
+
+        $departmentIds = [];
+
+        foreach ($query as $key => $row) {
+            $departmentIds[] = $row['ref_department_id'];
+        }
+
+        return $departmentIds;
     }
 
     public static function GetCompanyBasedOnCourse()
