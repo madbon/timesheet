@@ -2,6 +2,8 @@
 
 namespace frontend\controllers;
 
+use common\models\AuthAssignment;
+use common\models\AuthItemChild;
 use frontend\models\ResendVerificationEmailForm;
 use frontend\models\VerifyEmailForm;
 use Yii;
@@ -11,10 +13,13 @@ use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use common\models\LoginForm;
+use common\models\UserData;
+use common\models\UserTimesheet;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
+use frontend\controllers\UserTimesheetController as TimeSheet;
 
 /**
  * Site controller
@@ -68,7 +73,7 @@ class SiteController extends Controller
         ];
     }
 
-    /**
+     /**
      * Displays homepage.
      *
      * @return mixed
@@ -77,6 +82,270 @@ class SiteController extends Controller
     {
         return $this->render('index');
     }
+
+
+    /**
+     * Displays homepage.
+     *
+     * @return mixed
+     */
+    public function actionTimeInOut()
+    {
+        $model = new LoginForm();
+        if ($model->load(Yii::$app->request->post()) && $model->timein()) {
+
+            if(Yii::$app->user->can('Trainee'))
+            {
+                
+                if($this->actionRecordTime() == 3)
+                {
+                    \Yii::$app->getSession()->setFlash('danger', 'Action cannot be performed. Please wait until 1pm. Thank you!');
+                    // Yii::$app->user->logout();
+                    return $this->redirect('time-in-out');
+                    
+                }
+                else
+                {
+                    if($this->actionRecordTime() == 1 || $this->actionRecordTime() == 2)
+                    {
+                        
+                        \Yii::$app->getSession()->setFlash('success', 'Your TIME IN/OUT has been recorded');
+                        // Yii::$app->user->logout();
+                        return $this->redirect('time-in-out');
+                        
+                    }
+                    else
+                    {
+                        // Yii::$app->user->logout();
+                        return $this->redirect('time-in-out');
+                    }
+                }
+            }
+            else
+            {
+                // Yii::$app->user->logout();
+                return $this->redirect('time-in-out');
+                
+            }
+           
+            // return $this->redirect('time-in-out');
+            
+        }
+
+        // $model->password = '';
+
+        return $this->render('time_in_out', [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionRecordTime()
+    {
+        $model = new UserTimesheet();
+        date_default_timezone_set('Asia/Manila');
+        $user_id = Yii::$app->user->identity->id;
+        $date = date('Y-m-d');
+        $time = date('H:i:s');
+        $model->user_id = $user_id;
+        $model->date = $date;
+
+        if(UserTimesheet::find()->where(['user_id' => $user_id, 'date' => $date])->exists())
+        { 
+            $update = UserTimesheet::find()->where(['user_id' => $user_id, 'date' => $date])
+            ->orderBy(['id' => SORT_DESC])->one();
+            
+            if(time() < strtotime('08:00am'))
+            {
+                $update->time_out_am = $time;
+            }
+            else
+            {
+                if(time() >= strtotime('12:00pm') && time() < strtotime('01:00pm'))
+                {
+                    if(!empty($update->time_in_pm))
+                    {
+                        \Yii::$app->getSession()->setFlash('danger', 'Action cannot be performed. Please wait until 1pm. Thank you!');
+                        return 3;
+                    }
+                    
+                }
+
+                if (time() >= strtotime('08:00am') && time() <= strtotime('12:00pm')) {
+                    if(empty($update->time_out_am))
+                    {
+                        $update->time_out_am = $time;
+                    }
+                    else
+                    { // save another row in the same date
+                        // $model->time_in_am = $time;
+                        // $model->save();
+                    }
+                }
+                else
+                {
+                    if (time() > strtotime('12:00pm') && time() <= strtotime('05:00pm')) {
+                        if(empty($update->time_out_am))
+                        {
+                            if(empty($update->time_in_pm))
+                            {
+                                if(!empty($update->time_in_am))
+                                {
+                                    $update->time_out_am = "12:00:00";
+                                    $update->time_in_pm = $time;
+                                }
+                                else
+                                { // unnecessary code
+                                    $update->time_in_pm = $time;
+                                }
+                                
+                            }
+                            else
+                            {
+                                if(empty($update->time_out_pm))
+                                {
+                                    $update->time_out_pm = $time;
+                                }
+                                else
+                                { // save another row in the same date
+                                    // $model->time_in_pm = $time;
+                                    // $model->save();
+                                }
+                            }
+                            
+                        }
+                        else
+                        {
+                            if(empty($update->time_in_pm))
+                            {
+                                $update->time_in_pm = $time;
+                            }
+                            else
+                            {
+                                if(empty($update->time_out_pm))
+                                {
+                                    $update->time_out_pm = $time;
+                                }
+                                else
+                                {// save another row in the same date
+                                    // $model->time_in_pm = $time;
+                                    // $model->save();
+                                }
+                            }
+                        }
+                    } // 12:00pm to 5:00pm -end
+                    else
+                    { // after 5:00pm
+                        if(time() > strtotime('05:00pm'))
+                        {
+                            if(empty($update->time_out_am))
+                            {
+                                if(empty($update->time_in_pm))
+                                {
+                                    $update->time_out_am = "12:00:00";
+                                    $update->time_in_pm = "13:00:00";
+    
+                                    if(empty($update->time_out_pm))
+                                    {
+                                        $update->time_out_pm = $time;
+                                    }
+                                }
+                                else
+                                {
+                                    if(empty($update->time_out_pm))
+                                    {
+                                        $update->time_out_pm = $time;
+                                    }
+                                    else
+                                    { // save another row in the same date
+                                        // $model->time_in_pm = $time;
+                                        // $model->save();
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if(empty($update->time_in_pm))
+                                {
+                                    $update->time_in_pm = $time;
+                                }
+                                else
+                                {
+                                    if(empty($update->time_out_pm))
+                                    {
+                                        $update->time_out_pm = $time;
+                                    }
+                                    else
+                                    { // save another row in the same date
+                                        // $model->time_in_pm = $time;
+                                        // $model->save();
+                                    }
+                                }
+                            }
+                            
+                        }
+                    }
+    
+                }
+            }
+
+            
+            if($update->getOldAttributes() != $update->getAttributes())
+            {
+                if($update->save())
+                {
+                    \Yii::$app->getSession()->setFlash('success', 'Your TIME IN/OUT has been recorded');
+                    return 2;
+                }
+                else
+                {
+                    print_r($update->errors); exit;
+                }
+            }
+
+        }
+        else
+        { // NEW DATE TIME IN
+            
+            if(time() < strtotime('08:00am'))
+            {
+                $model->time_in_am = $time;
+            }
+            else
+            {
+                if (time() >= strtotime('08:00am') && time() <= strtotime('12:00pm')) {
+                    $model->time_in_am = $time;
+                }
+                else
+                {
+                    if (time() > strtotime('12:00pm') && time() <= strtotime('05:00pm')) {
+                        $model->time_in_pm = $time;
+                    }
+                    else
+                    {
+                        if(time() > strtotime('05:00pm'))
+                        {
+                            $model->time_in_pm = $time;
+                        }
+                    }
+                }
+            }
+
+            if(!$model->save())
+            {
+                print_r($model->errors); exit;
+            }
+            else
+            {
+                \Yii::$app->getSession()->setFlash('success', 'Your TIME IN/OUT has been recorded');
+                return 1;
+            }
+        }
+
+        
+        return 0;
+    }
+
+   
 
     /**
      * Logs in a user.

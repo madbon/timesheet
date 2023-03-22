@@ -72,6 +72,7 @@ date_default_timezone_set('Asia/Manila');
    
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
+    <?php if(!empty($model->user->id)){ ?>
     <div class="container">
         <div style="margin-top:20px; margin-bottom:20px;">
             <p>
@@ -104,8 +105,6 @@ date_default_timezone_set('Asia/Manila');
                     {
                         echo Html::a($mon['month'],['index','month' => $mon['month'], 'month_id' => $mon['month_id'],'year' => $year],['class' => 'btn btn-sm btn-outline-warning']);
                     }
-
-                    
                 }
             ?>
             </p>
@@ -121,8 +120,7 @@ date_default_timezone_set('Asia/Manila');
         <h1 style="text-align: center; font-size:30px; font-weight:bold;">DAILY TIME RECORD</h1>
 
         <p style="text-align: center;">
-            <?=  Yii::$app->user->can('record-time-in-out') ? Html::a("RECORD TIME IN/OUT", ['time-in'], ['class' => 'btn btn-outline-warning']) : "" ?>
-
+            <?= Yii::$app->user->can('record-time-in-out') ? Html::a("TIME IN/OUT", ['time-in'], ['class' => '']) : "" ?>
         </p>
 
         <table class="table-primary-details">
@@ -381,10 +379,10 @@ date_default_timezone_set('Asia/Manila');
                             {
                                 if($model->status)
                                 {
-                                    echo "<td>VALIDATED</td>";
+                                    echo "<td style='color:green;'>VALIDATED</td>";
                                 }
                                 else{
-                                    echo "<td>PENDING</td>";
+                                    echo "<td style='color:orange;'>PENDING</td>";
                                 }
                             }
                             
@@ -539,7 +537,13 @@ date_default_timezone_set('Asia/Manila');
             </tbody>
         </table>
     </div>
+    <?php } else{ ?>
 
+        <p style="text-align: center;">
+            <?=  Yii::$app->user->can('record-time-in-out') ? Html::a("RECORD TIME IN/OUT", ['time-in'], ['class' => 'btn btn-outline-warning']) : "" ?>
+        </p>
+
+    <?php } ?>
     
 
 
