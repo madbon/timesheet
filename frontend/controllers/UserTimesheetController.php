@@ -26,7 +26,7 @@ class UserTimesheetController extends Controller
                 // 'only' => ['logout', 'signup'],
                 'rules' => [
                     [
-                        'actions' => ['index','create','update','view','delete','time-in','preview-pdf'],
+                        'actions' => ['index','create','update','view','delete','time-in','preview-pdf','record'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -217,7 +217,7 @@ class UserTimesheetController extends Controller
         ->groupBy(['year'])
         ->all();
 
-        return $this->render('index', [
+        return $this->render('index2', [
             // 'searchModel' => $searchModel,
             // 'dataProvider' => $dataProvider,
             'timeInOut' => $timeInOut,
@@ -266,6 +266,62 @@ class UserTimesheetController extends Controller
         return $this->render('create', [
             'model' => $model,
         ]);
+    }
+
+    public function actionRecord()
+    {
+        date_default_timezone_set('Asia/Manila');
+        $user_id = Yii::$app->user->identity->id;
+        $date = date('Y-m-d');
+        $time = date('H:i:s');
+
+        $model = UserTimesheet::findOne(['user_id' => Yii::$app->user->id, 'date' => date('Y-m-d')]);
+        if (!$model) {
+            $model = new UserTimesheet();
+            $model->user_id = Yii::$app->user->id;
+            $model->date = date('Y-m-d');
+            $model->time_in_am = NULL;
+            $model->time_out_am = NULL;
+            $model->time_in_pm = NULL;
+            $model->time_out_pm = NULL;
+        }
+        
+        // if (Yii::$app->request->post()) {
+        //     $time = Yii::$app->request->post('time');
+            $timestamp = strtotime($time);
+            // $timeString = date('g:i:s', $timestamp) . date('a', $timestamp);
+            
+            // print_r(date('a', $timestamp)); exit;
+            // set time_out_am or time_out_pm based on the current time
+            if (date('a', $timestamp) === 'am') {
+                $model->time_out_am = date('H:i:s', $timestamp);
+            } else {
+                if($model->time_out_am)
+                {
+                    $model->time_out_am = NULL;
+                    $model->time_in_pm = NULL;
+                    $model->time_out_pm = date('H:i:s', $timestamp);
+                }
+                else
+                {
+                    $model->time_out_am = NULL;
+                    $model->time_out_pm = date('H:i:s', $timestamp);
+                }
+                
+            }
+            
+            // save the model
+            if ($model->save()) {
+                Yii::$app->session->setFlash('success', 'Time recorded successfully.');
+            } else {
+                Yii::$app->session->setFlash('error', 'Error recording time.');
+            }
+            
+            return $this->redirect(['index']);
+        // }
+        
+        // render the form with an HTML input field for selecting the time
+        return $this->render('index2', ['model' => $model]);
     }
 
     public function actionTimeIn()
