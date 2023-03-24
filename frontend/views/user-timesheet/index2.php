@@ -189,7 +189,8 @@ date_default_timezone_set('Asia/Manila');
             $totalMinutesRendered = 0;
             $totalSecondsRendered = 0;
             $countPendingRecord = 0;
-           
+            $total_minutes = 0;
+            $totalMinutesOvertime = 0;
 
             foreach ($date_range as $date) {
                 $models = UserTimesheet::findAll([
@@ -215,30 +216,34 @@ date_default_timezone_set('Asia/Manila');
                         $formatted_in_pm = !empty($model->time_in_pm) ? date('g:i:s A', strtotime($model->time_in_pm)) : "";
                         $formatted_out_pm = !empty($model->time_out_pm) ? date('g:i:s A', strtotime($model->time_out_pm)) : "";
 
-                        $start_time = !empty($model->time_in_am) ? new DateTime($model->time_in_am) : new DateTime($model->time_in_pm);
-                        $end_time = !empty($model->time_out_pm) ? new DateTime($model->time_out_pm) : new DateTime($model->time_out_am);
+                        $start_time = !empty($model->time_in_am) ? new DateTime($formatted_in_am) : new DateTime($formatted_in_pm);
+                        $end_time = !empty($model->time_out_pm) ? new DateTime($formatted_out_pm) : new DateTime($formatted_out_am);
                         
                         // Check if the start time is between 12:00 PM and 12:59 PM
-                        if ($start_time->format('g:i A') >= '12:00 PM' && $start_time->format('g:i A') <= '12:59 PM') {
+                        if (new DateTime($start_time->format('g:i A')) >= new DateTime('12:00 PM') && new DateTime( $start_time->format('g:i A')) <= new DateTime('12:59 PM')) {
                             $start_time = new DateTime('1:00 PM');
                         }
                         
                         // Check if the end time is between 12:00 PM and 12:59 PM
-                        if ($end_time->format('g:i A') >= '12:00 PM' && $end_time->format('g:i A') <= '12:59 PM') {
+                        if (new DateTime($end_time->format('g:i A')) >= new DateTime('12:00 PM') && new DateTime($end_time->format('g:i A')) <= new DateTime('12:59 PM')) {
                             $end_time = new DateTime('12:00 PM');
                         }
                         
                         // Check if the end time is greater than 1:00 PM
-                        if ($end_time->format('g:i A') > '1:00 PM') {
+                        // print_r($end_time->format('g:i A')); exit;
+                        if (new DateTime($end_time->format('g:i A')) >= new DateTime('01:00 PM')) {
                             // Subtract one hour from the end time
                             $end_time->modify('-1 hour');
+
                         }
                         
-                        // Calculate the difference between the two times
+                      
                         $interval = $end_time->diff($start_time);
-
+                       
                         // Calculate the total duration in minutes
                         $total_minutes = $interval->h * 60 + $interval->i;
+
+                        $totalMinutesRendered += $interval->h * 60 + $interval->i;
 
                         // Check if the total duration is greater than 8 hours
                         $overtime_hours = 0;
@@ -246,6 +251,7 @@ date_default_timezone_set('Asia/Manila');
                         if ($total_minutes > 8 * 60) {
                             // Calculate the overtime in minutes
                             $overtime_minutes = $total_minutes - 8 * 60;
+                            $totalMinutesOvertime += $total_minutes - 8 * 60;
                             
                             // Convert the overtime to hours and minutes
                             $overtime_hours = floor($overtime_minutes / 60);
@@ -261,8 +267,20 @@ date_default_timezone_set('Asia/Manila');
                             echo "<td>" . Html::encode($formatted_out_am) . "</td>";
                             echo "<td>" . Html::encode($formatted_in_pm) . "</td>";
                             echo "<td>" . Html::encode($formatted_out_pm) . "</td>";
-                            echo "<td>" . ($overtime_hours." hrs. ".$overtime_minutes." mins. ") . "</td>";
-                            echo "<td>" . ($interval->h. " hrs. ". $interval->i." mins. ") . "</td>";
+                            
+
+                            if(empty($model->time_out_am) && empty($model->time_out_pm))
+                            {
+                                echo "<td></td>";
+                                echo "<td></td>";
+                            }
+                            else
+                            {
+                                echo "<td>" . ($overtime_hours." hrs. ".$overtime_minutes." mins. ") . "</td>";
+                                echo "<td>" . ($interval->h. " hrs. ". $interval->i." mins. ") . "</td>";
+                            }
+                            
+
                             echo "<td>" . Html::encode($model->remarks) . "</td>";
 
                             if($model->time_in_am)
@@ -351,8 +369,24 @@ date_default_timezone_set('Asia/Manila');
                     echo "<td></td>";
                     echo "<td></td>";
                     echo "<td></td>";
+                    echo "</tr>";
                 }
             }
+
+            $total_hours_val = floor($totalMinutesRendered / 60);
+            $totalMinutesRendered = $totalMinutesRendered % 60;
+
+            $total_hours_ot = floor($totalMinutesOvertime / 60);
+            $totalMinutesOvertime = $totalMinutesOvertime % 60;
+
+            echo "<tr>";
+            echo "<td colspan='5' style='font-weight:bold; text-align:right; text-transform:uppercase;'> TOTAL NO. OF HOURS RENDERED FOR THE MONTH OF {$month}</td>";
+            echo "<td>".($total_hours_ot." hrs. ".$totalMinutesOvertime." mins.")."</td>";
+            echo "<td>".($total_hours_val." hrs. ".$totalMinutesRendered." mins.")."</td>";
+            echo "<td></td>";
+            echo "<td></td>";
+            echo "<td></td>";
+            echo "</tr>";
 
             echo "</tbody>";
             echo "</table>";

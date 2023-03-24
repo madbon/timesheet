@@ -89,7 +89,7 @@ class UserTimesheetController extends Controller
         $month_id = $month_id ? $month_id : date('m');
         $year = $year ? $year : date('Y');
 
-        $content = $this->renderPartial('_reportView',[
+        $content = $this->renderPartial('_reportView2',[
             'model' => $model,
             'month' => $month,
             'month_id' => $month_id,
@@ -274,25 +274,23 @@ class UserTimesheetController extends Controller
         $user_id = Yii::$app->user->identity->id;
         $date = date('Y-m-d');
         $time = date('H:i:s');
+        $timestamp = strtotime($time);
 
         $model = UserTimesheet::findOne(['user_id' => Yii::$app->user->id, 'date' => date('Y-m-d')]);
         if (!$model) {
             $model = new UserTimesheet();
             $model->user_id = Yii::$app->user->id;
             $model->date = date('Y-m-d');
-            $model->time_in_am = NULL;
-            $model->time_out_am = NULL;
-            $model->time_in_pm = NULL;
-            $model->time_out_pm = NULL;
+            if (date('a', $timestamp) === 'am') {
+                $model->time_in_am = date('H:i:s', $timestamp);
+            }
+            else
+            {
+                $model->time_in_pm = date('H:i:s', $timestamp);
+            }
         }
-        
-        // if (Yii::$app->request->post()) {
-        //     $time = Yii::$app->request->post('time');
-            $timestamp = strtotime($time);
-            // $timeString = date('g:i:s', $timestamp) . date('a', $timestamp);
-            
-            // print_r(date('a', $timestamp)); exit;
-            // set time_out_am or time_out_pm based on the current time
+        else
+        {
             if (date('a', $timestamp) === 'am') {
                 $model->time_out_am = date('H:i:s', $timestamp);
             } else {
@@ -307,8 +305,10 @@ class UserTimesheetController extends Controller
                     $model->time_out_am = NULL;
                     $model->time_out_pm = date('H:i:s', $timestamp);
                 }
-                
             }
+        }
+        
+            
             
             // save the model
             if ($model->save()) {
