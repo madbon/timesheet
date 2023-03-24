@@ -167,6 +167,24 @@ class UserTimesheetController extends Controller
                     padding: 0;  
                     text-transform: uppercase;
                 }
+
+                table.summary-details
+                {
+                    background: white;
+                    border:none;
+                }
+                table.summary-details tbody tr td
+                {
+                    border:1px solid black;
+                    padding:5px;
+                    background:#ffe28b;
+                    
+                }
+
+                table.summary-details tbody tr td:nth-child(1)
+                {
+                    font-weight:bold;
+                }
             ', 
             // set mPDF properties on the fly
             'options' => ['title' => 'Krajee Report Title'],

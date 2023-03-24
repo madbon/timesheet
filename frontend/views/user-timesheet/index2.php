@@ -64,6 +64,20 @@ date_default_timezone_set('Asia/Manila');
         text-transform: uppercase;
     }
 
+    /* TABLE SUMMARY DETAILS */
+    table.summary-details
+    {
+        background: white;
+    }
+    table.summary-details tbody tr td
+    {
+        border:1px solid black;
+        padding:5px;
+        background:#ffe28b;
+        
+    }
+    /* TABLE SUMMARY DETAILS_END */
+
 </style>
 
 <div class="user-timesheet-index">
@@ -233,8 +247,11 @@ date_default_timezone_set('Asia/Manila');
                         // print_r($end_time->format('g:i A')); exit;
                         if (new DateTime($end_time->format('g:i A')) >= new DateTime('01:00 PM')) {
                             // Subtract one hour from the end time
-                            $end_time->modify('-1 hour');
 
+                            if(!empty($model->time_in_am))
+                            {
+                                $end_time->modify('-1 hour');
+                            }
                         }
                         
                       
@@ -460,162 +477,201 @@ date_default_timezone_set('Asia/Manila');
 
     <?php } ?>
     
+   
+            <?php
+            $totalHoursRendered2 = 0;
+            $totalMinutesRendered2 = 0;
+            $totalSecondsRendered2 = 0;
+            $countPendingRecord2 = 0;
+            $total_minutes2 = 0;
+            $totalMinutesOvertime2 = 0;
+            $march_total = 0;
+            $april_total = 0;
+            $may_total = 0;
+            $june_total = 0;
+            $july_total = 0;
 
 
-    <?php 
-    // echo GridView::widget([
-    //     'dataProvider' => $dataProvider,
-    //     // 'filterModel' => $searchModel,
-    //     'columns' => [
-    //         // ['class' => 'yii\grid\SerialColumn'],
+                $querySummary = UserTimesheet::find()
+                ->select([
+                    '*',
+                    'YEAR(date) as year_val',
+                    'MONTH(date) as month_val',
+                ])
+                ->where([
+                    'user_id' => $model->user->id,
+                ])
+                ->andWhere(['YEAR(date)' => $year])
+                // ->andWhere(['MONTH(date)' => $month_id])
+                ->all();
+                // ->createCommand()->rawSql;
 
-    //         // 'id',
-    //         // 'user_id',
-    //         // [
-    //         //     'attribute' => 'user_id',
-    //         //     'value' => function($model)
-    //         //     {
-    //         //         return $model->user->fullName;
-    //         //     }
-    //         // ],
-    //         // 'date',
-    //         [
-    //             'attribute' => 'date',
-    //             'value' => function($model)
-    //             {
-    //                 return date('F j, Y', strtotime($model->date));
-    //             }
-    //         ],
-    //         // 'time_in_am',
-    //         // 'time_out_am',
-    //         [
-    //             'attribute' => 'time_in_am',
-    //             'value' => function($model)
-    //             {
-    //                 $time = $model->time_in_am;
-    //                 $formattedTime = date('g:i:s A', strtotime($time));
-    //                 return !empty($model->time_in_am) ? $formattedTime : "";
-    //             }
-    //         ],
-    //         [
-    //             'attribute' => 'time_out_am',
-    //             'value' => function($model)
-    //             {
-    //                 $time = $model->time_out_am;
-    //                 $formattedTime = date('g:i:s A', strtotime($time));
-    //                 return !empty($model->time_out_am) ? $formattedTime : "";
-    //             }
-    //         ],
-    //         // 'time_in_pm',
-    //         [
-    //             'attribute' => 'time_in_pm',
-    //             'value' => function($model)
-    //             {
-    //                 $time = $model->time_in_pm;
-    //                 $formattedTime = date('g:i:s A', strtotime($time));
-    //                 return !empty($model->time_in_pm) ? $formattedTime : "";
-    //             }
-    //         ],
-    //         [
-    //             'attribute' => 'time_out_pm',
-    //             'value' => function($model)
-    //             {
-    //                 $time = $model->time_out_pm;
-    //                 $formattedTime = date('g:i:s A', strtotime($time));
-    //                 return !empty($model->time_out_pm) ? $formattedTime : "";
-    //             }
-    //         ],
-    //         // 'time_out_pm',
-    //         [
-    //             'label' => 'Overtime',
-    //             'value' => function($model)
-    //             {
-    //                 $time1_am = strtotime($model->time_in_am);
-    //                 $time2_am = strtotime($model->time_out_am);
-    //                 $time1_pm = strtotime($model->time_in_pm);
-    //                 $time2_pm = strtotime($model->time_out_pm);
+                // print_r($querySummary); exit;
 
-    //                 // compute AM time difference
-    //                 $diffSecondsAM = $time2_am - $time1_am;
-    //                 $diffHoursAM = floor($diffSecondsAM / 3600);
-    //                 $diffMinutesAM = floor(($diffSecondsAM % 3600) / 60);
-    //                 $diffSecondsAM = $diffSecondsAM % 60;
+            ?>
 
-    //                 // compute PM time difference
-    //                 $diffSecondsPM = $time2_pm - $time1_pm;
-    //                 $diffHoursPM = floor($diffSecondsPM / 3600);
-    //                 $diffMinutesPM = floor(($diffSecondsPM % 3600) / 60);
-    //                 $diffSecondsPM = $diffSecondsPM % 60;
+            <?php foreach ($querySummary as $model2) { 
+               
+                ?>
+                <?php
+                    $formatted_in_am2 = !empty($model2->time_in_am) ? date('g:i:s A', strtotime($model2->time_in_am)) : "";
+                    $formatted_out_am2 = !empty($model2->time_out_am) ? date('g:i:s A', strtotime($model2->time_out_am)) : "";
+                    $formatted_in_pm2 = !empty($model2->time_in_pm) ? date('g:i:s A', strtotime($model2->time_in_pm)) : "";
+                    $formatted_out_pm2 = !empty($model2->time_out_pm) ? date('g:i:s A', strtotime($model2->time_out_pm)) : "";
 
-    //                 // compute total time difference
-    //                 $totalSeconds = $diffSecondsAM + $diffSecondsPM;
-    //                 $totalMinutes = $diffMinutesAM + $diffMinutesPM + floor($totalSeconds / 60);
-    //                 $totalHours = $diffHoursAM + $diffHoursPM + floor($totalMinutes / 60);
-    //                 $totalMinutes = $totalMinutes % 60;
-    //                 $totalSeconds = $totalSeconds % 60;
-
+                    $start_time2 = !empty($model2->time_in_am) ? new DateTime($formatted_in_am2) : new DateTime($formatted_in_pm2);
+                    $end_time2 = !empty($model2->time_out_pm) ? new DateTime($formatted_out_pm2) : new DateTime($formatted_out_am2);
                     
-    //                 // compute overtime
-    //                 if ($totalHours > 8) {
-    //                     $overtimeHours = $totalHours - 8;
-    //                     $returnVal = $overtimeHours . 'hrs ' . $totalMinutes . 'mins ' . $totalSeconds . ' secs';
-    //                 } else {
-    //                     $returnVal = '';
-    //                 }
+                    // Check if the start time is between 12:00 PM and 12:59 PM
+                    if (new DateTime($start_time2->format('g:i A')) >= new DateTime('12:00 PM') && new DateTime( $start_time2->format('g:i A')) <= new DateTime('12:59 PM')) {
+                        $start_time2 = new DateTime('1:00 PM');
+                    }
+                    
+                    // Check if the end time is between 12:00 PM and 12:59 PM
+                    if (new DateTime($end_time2->format('g:i A')) >= new DateTime('12:00 PM') && new DateTime($end_time2->format('g:i A')) <= new DateTime('12:59 PM')) {
+                        $end_time2 = new DateTime('12:00 PM');
+                    }
+                    
+                    // Check if the end time is greater than 1:00 PM
+                    // print_r($end_time->format('g:i A')); exit;
+                    if (new DateTime($end_time2->format('g:i A')) >= new DateTime('01:00 PM')) {
+                        // Subtract one hour from the end time
 
-    //                 return $returnVal;
+                        if(!empty($model2->time_in_am))
+                        {
+                            $end_time2->modify('-1 hour');
+                        }
+                    }
+                    
+                  
+                    $interval2 = $end_time2->diff($start_time2);
+                   
+                    // Calculate the total duration in minutes
+                    $total_minutes2 = $interval2->h * 60 + $interval->i;
 
-    //             }
-    //         ],
-    //         [
-    //             'attribute' => 'Remarks',
-    //             'value' => function($model)
-    //             {
-    //                 return !empty($model->remarks) ? $model->remarks : "";
-    //             }
-    //         ],
-    //         [
-    //             'label' => 'Total No. of Hours',
-    //             'value' => function($model)
-    //             {
-    //                 $time1_am = strtotime($model->time_in_am);
-    //                     $time2_am = strtotime($model->time_out_am);
-    //                     $time1_pm = strtotime($model->time_in_pm);
-    //                     $time2_pm = strtotime($model->time_out_pm);
+                    $totalMinutesRendered2 += $interval2->h * 60 + $interval2->i;
 
-    //                     // compute AM time difference
-    //                     $diffSecondsAM = $time2_am - $time1_am;
-    //                     $diffHoursAM = floor($diffSecondsAM / 3600);
-    //                     $diffMinutesAM = floor(($diffSecondsAM % 3600) / 60);
-    //                     $diffSecondsAM = $diffSecondsAM % 60;
-
-    //                     // compute PM time difference
-    //                     $diffSecondsPM = $time2_pm - $time1_pm;
-    //                     $diffHoursPM = floor($diffSecondsPM / 3600);
-    //                     $diffMinutesPM = floor(($diffSecondsPM % 3600) / 60);
-    //                     $diffSecondsPM = $diffSecondsPM % 60;
-
-    //                     // compute total time difference
-    //                     $totalSeconds = $diffSecondsAM + $diffSecondsPM;
-    //                     $totalMinutes = $diffMinutesAM + $diffMinutesPM + floor($totalSeconds / 60);
-    //                     $totalHours = $diffHoursAM + $diffHoursPM + floor($totalMinutes / 60);
-    //                     $totalMinutes = $totalMinutes % 60;
-    //                     $totalSeconds = $totalSeconds % 60;
-
-    //                     return ($totalHours > 0 ? $totalHours.' hrs ' : ''). ($totalMinutes > 0 ? $totalMinutes.' min ' : ''). ($totalSeconds > 0 ? $totalSeconds.' sec ' : '');
-    //             }
-    //         ],
+                    switch ($model2->month_val) {
+                        case '3':
+                            $march_total += $interval2->h * 60 + $interval2->i; 
+                        break;
+                        case '4':
+                            $april_total += $interval2->h * 60 + $interval2->i; 
+                        break;
+                        case '5':
+                            $may_total += $interval2->h * 60 + $interval2->i; 
+                        break;
+                        case '6':
+                            $june_total += $interval2->h * 60 + $interval2->i; 
+                        break;
+                        case '7':
+                            $july_total += $interval2->h * 60 + $interval2->i; 
+                        break;
+                        
+                        default:
+                            # code...
+                            break;
+                    }
+                    
+                    // Check if the total duration is greater than 8 hours
+                    $overtime_hours2 = 0;
+                    $overtime_minutes2 = 0;
+                    if ($total_minutes2 > 8 * 60) {
+                        // Calculate the overtime in minutes
+                        $overtime_minutes2 = $total_minutes2 - 8 * 60;
+                        $totalMinutesOvertime2 += $total_minutes2 - 8 * 60;
+                        
+                        // Convert the overtime to hours and minutes
+                        $overtime_hours2 = floor($overtime_minutes2 / 60);
+                        $overtime_minutes2 = $overtime_minutes2 % 60;
+                        
+                        // Output the overtime
+                        // echo "\nYou have {$overtime_hours} hours and {$overtime_minutes} minutes of overtime.";
+                    }
+                ?>
+                
+            <?php } ?>
+            <?php
             
-    //         [
-    //             'class' => ActionColumn::className(),
-    //             'template' => '{update}',
-    //             'urlCreator' => function ($action, UserTimesheet $model, $key, $index, $column) {
-    //                 return Url::toRoute([$action, 'id' => $model->id]);
-    //              }
-    //         ],
-    //     ],
-    // ]); 
-    ?>
+                 $total_hours_val2 = floor($totalMinutesRendered2 / 60);
+                 $totalMinutesRendered2 = $totalMinutesRendered2 % 60;
+     
+                 $total_hours_ot2 = floor($totalMinutesOvertime2 / 60);
+                 $totalMinutesOvertime2 = $totalMinutesOvertime2 % 60;
 
+                 $totalMarch = floor($march_total / 60);
+                 $march_total = $march_total % 60;
+
+                 $totalApril = floor($april_total / 60);
+                 $april_total = $april_total % 60;
+
+                 $totalMay = floor($may_total / 60);
+                 $may_total = $may_total % 60;
+
+                 $totalJune = floor($june_total / 60);
+                 $june_total = $june_total % 60;
+
+                 $totalJuly = floor($july_total / 60);
+                 $july_total = $july_total % 60;
+            ?>
+        
+    <hr/>
+    <div style="background:white;">
+    <h6 style="text-align: center; font-weight:bold;">INTERNSHIP SUMMARY BOARD</h6>
+    <table class="table table-bordered summary-details">
+        <tbody>
+            <tr>
+                <td colspan="5" style="border-top:none; border-left:none; border-right:none; font-weight:bold;">SUMMARY OF HOURS RENDERED</td>
+            </tr>
+            <tr>
+                <td>MARCH</td>
+                <td><?= $totalMarch; ?></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>APRIL</td>
+                <td><?= $totalApril; ?></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>MAY</td>
+                <td><?= $totalMay; ?></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>JUNE</td>
+                <td><?= $totalJune; ?></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>JULY</td>
+                <td><?= $totalJuly; ?></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>TOTAL HOURS REQUIRED</td>
+                <td style="font-weight:bold;">486</td>
+            </tr>
+            <tr>
+                <td>TOTAL HOURS RENDERED</td>
+                <td style="font-weight:bold;"><?= $total_hours_val2; ?></td>
+            </tr>
+            <tr>
+                <td>TOTAL HOURS REMAINED</td>
+                <td style="font-weight:bold;"><?= (486 - (int)$total_hours_val2) ?></td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
 
 </div>

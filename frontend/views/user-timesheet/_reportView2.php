@@ -108,7 +108,10 @@ use common\models\UserTimesheet;
                         // print_r($end_time->format('g:i A')); exit;
                         if (new DateTime($end_time->format('g:i A')) >= new DateTime('01:00 PM')) {
                             // Subtract one hour from the end time
-                            $end_time->modify('-1 hour');
+                            if(!empty($model->time_in_am))
+                            {
+                                $end_time->modify('-1 hour');
+                            }
 
                         }
                         
@@ -298,3 +301,199 @@ use common\models\UserTimesheet;
         </tr>
     </tbody>
 </table>
+
+<!-- INTERNSHIP SUMMARY BOARD -->
+<?php
+            $totalHoursRendered2 = 0;
+            $totalMinutesRendered2 = 0;
+            $totalSecondsRendered2 = 0;
+            $countPendingRecord2 = 0;
+            $total_minutes2 = 0;
+            $totalMinutesOvertime2 = 0;
+            $march_total = 0;
+            $april_total = 0;
+            $may_total = 0;
+            $june_total = 0;
+            $july_total = 0;
+
+
+                $querySummary = UserTimesheet::find()
+                ->select([
+                    '*',
+                    'YEAR(date) as year_val',
+                    'MONTH(date) as month_val',
+                ])
+                ->where([
+                    'user_id' => $model->user->id,
+                ])
+                ->andWhere(['YEAR(date)' => $year])
+                // ->andWhere(['MONTH(date)' => $month_id])
+                ->all();
+                // ->createCommand()->rawSql;
+
+                // print_r($querySummary); exit;
+
+            ?>
+
+            <?php foreach ($querySummary as $model2) { 
+               
+                ?>
+                <?php
+                    $formatted_in_am2 = !empty($model2->time_in_am) ? date('g:i:s A', strtotime($model2->time_in_am)) : "";
+                    $formatted_out_am2 = !empty($model2->time_out_am) ? date('g:i:s A', strtotime($model2->time_out_am)) : "";
+                    $formatted_in_pm2 = !empty($model2->time_in_pm) ? date('g:i:s A', strtotime($model2->time_in_pm)) : "";
+                    $formatted_out_pm2 = !empty($model2->time_out_pm) ? date('g:i:s A', strtotime($model2->time_out_pm)) : "";
+
+                    $start_time2 = !empty($model2->time_in_am) ? new DateTime($formatted_in_am2) : new DateTime($formatted_in_pm2);
+                    $end_time2 = !empty($model2->time_out_pm) ? new DateTime($formatted_out_pm2) : new DateTime($formatted_out_am2);
+                    
+                    // Check if the start time is between 12:00 PM and 12:59 PM
+                    if (new DateTime($start_time2->format('g:i A')) >= new DateTime('12:00 PM') && new DateTime( $start_time2->format('g:i A')) <= new DateTime('12:59 PM')) {
+                        $start_time2 = new DateTime('1:00 PM');
+                    }
+                    
+                    // Check if the end time is between 12:00 PM and 12:59 PM
+                    if (new DateTime($end_time2->format('g:i A')) >= new DateTime('12:00 PM') && new DateTime($end_time2->format('g:i A')) <= new DateTime('12:59 PM')) {
+                        $end_time2 = new DateTime('12:00 PM');
+                    }
+                    
+                    // Check if the end time is greater than 1:00 PM
+                    // print_r($end_time->format('g:i A')); exit;
+                    if (new DateTime($end_time2->format('g:i A')) >= new DateTime('01:00 PM')) {
+                        // Subtract one hour from the end time
+
+                        if(!empty($model2->time_in_am))
+                        {
+                            $end_time2->modify('-1 hour');
+                        }
+                    }
+                    
+                  
+                    $interval2 = $end_time2->diff($start_time2);
+                   
+                    // Calculate the total duration in minutes
+                    $total_minutes2 = $interval2->h * 60 + $interval->i;
+
+                    $totalMinutesRendered2 += $interval2->h * 60 + $interval2->i;
+
+                    switch ($model2->month_val) {
+                        case '3':
+                            $march_total += $interval2->h * 60 + $interval2->i; 
+                        break;
+                        case '4':
+                            $april_total += $interval2->h * 60 + $interval2->i; 
+                        break;
+                        case '5':
+                            $may_total += $interval2->h * 60 + $interval2->i; 
+                        break;
+                        case '6':
+                            $june_total += $interval2->h * 60 + $interval2->i; 
+                        break;
+                        case '7':
+                            $july_total += $interval2->h * 60 + $interval2->i; 
+                        break;
+                        
+                        default:
+                            # code...
+                            break;
+                    }
+                    
+                    // Check if the total duration is greater than 8 hours
+                    $overtime_hours2 = 0;
+                    $overtime_minutes2 = 0;
+                    if ($total_minutes2 > 8 * 60) {
+                        // Calculate the overtime in minutes
+                        $overtime_minutes2 = $total_minutes2 - 8 * 60;
+                        $totalMinutesOvertime2 += $total_minutes2 - 8 * 60;
+                        
+                        // Convert the overtime to hours and minutes
+                        $overtime_hours2 = floor($overtime_minutes2 / 60);
+                        $overtime_minutes2 = $overtime_minutes2 % 60;
+                        
+                        // Output the overtime
+                        // echo "\nYou have {$overtime_hours} hours and {$overtime_minutes} minutes of overtime.";
+                    }
+                ?>
+                
+            <?php } ?>
+            <?php
+            
+                 $total_hours_val2 = floor($totalMinutesRendered2 / 60);
+                 $totalMinutesRendered2 = $totalMinutesRendered2 % 60;
+     
+                 $total_hours_ot2 = floor($totalMinutesOvertime2 / 60);
+                 $totalMinutesOvertime2 = $totalMinutesOvertime2 % 60;
+
+                 $totalMarch = floor($march_total / 60);
+                 $march_total = $march_total % 60;
+
+                 $totalApril = floor($april_total / 60);
+                 $april_total = $april_total % 60;
+
+                 $totalMay = floor($may_total / 60);
+                 $may_total = $may_total % 60;
+
+                 $totalJune = floor($june_total / 60);
+                 $june_total = $june_total % 60;
+
+                 $totalJuly = floor($july_total / 60);
+                 $july_total = $july_total % 60;
+            ?>
+        
+    <div style="background:white;">
+    <h6 style="text-align: center; font-weight:bold;">INTERNSHIP SUMMARY BOARD</h6>
+    <table class="table table-bordered summary-details">
+        <tbody>
+            <tr>
+                <td colspan="5" style="border-top:none; border-left:none; border-right:none; font-weight:bold;">SUMMARY OF HOURS RENDERED</td>
+            </tr>
+            <tr>
+                <td>MARCH</td>
+                <td><?= $totalMarch; ?></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>APRIL</td>
+                <td><?= $totalApril; ?></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>MAY</td>
+                <td><?= $totalMay; ?></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>JUNE</td>
+                <td><?= $totalJune; ?></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>JULY</td>
+                <td><?= $totalJuly; ?></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>TOTAL HOURS REQUIRED</td>
+                <td style="font-weight:bold;">486</td>
+            </tr>
+            <tr>
+                <td>TOTAL HOURS RENDERED</td>
+                <td style="font-weight:bold;"><?= $total_hours_val2; ?></td>
+            </tr>
+            <tr>
+                <td>TOTAL HOURS REMAINED</td>
+                <td style="font-weight:bold;"><?= (486 - (int)$total_hours_val2) ?></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
