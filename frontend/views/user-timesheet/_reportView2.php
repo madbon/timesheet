@@ -484,7 +484,7 @@ use common\models\UserTimesheet;
             </tr>
             <tr>
                 <td>TOTAL HOURS REQUIRED</td>
-                <td style="font-weight:bold;">486</td>
+                <td style="font-weight:bold;"><?= $model->user->program->required_hours ?></td>
             </tr>
             <tr>
                 <td>TOTAL HOURS RENDERED</td>
@@ -492,7 +492,7 @@ use common\models\UserTimesheet;
             </tr>
             <tr>
                 <td>TOTAL HOURS REMAINED</td>
-                <td style="font-weight:bold;"><?= (486 - (int)$total_hours_val2) ?></td>
+                <td style="font-weight:bold;"><?= ($model->user->program->required_hours - (int)$total_hours_val2) ?></td>
             </tr>
         </tbody>
     </table>

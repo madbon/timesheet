@@ -45,7 +45,7 @@ ul li a:hover
                         <?= Yii::$app->user->can('settings-list-suffix') ?  "<li>".Html::a('List of Suffix',['/suffix']) ."</li>" : "" ?>
                         <?=  Yii::$app->user->can('settings-list-student-year') ?  "<li>".Html::a('List of Student Year',['/student-year']) ."</li>" : ""  ?>
                         <?=  Yii::$app->user->can('settings-list-student-section') ?  "<li>".Html::a('List of Student Section',['/student-section']) ."</li>" : ""  ?>
-                        <?=  Yii::$app->user->can('settings-list-program-course') ?  "<li>".Html::a('List of Program/Course',['/ref-program']) ."</li>" : ""  ?>
+                        <?=  Yii::$app->user->can('settings-list-program-course') ?  "<li>".Html::a('List of Program/Course & Total Required Hours',['/ref-program']) ."</li>" : ""  ?>
                         <?=  Yii::$app->user->can('settings-list-majors') ?  "<li>".Html::a('List of Program/Course Majors',['/program-major']) ."</li>" : ""  ?>
                         <?=  Yii::$app->user->can('settings-list-positions') ?  "<li>".Html::a('List of Positions',['/position']) ."</li>" : ""  ?>
                         <?=  Yii::$app->user->can('settings-list-departments') ?  "<li>".Html::a('List of Departments',['/department']) ."</li>" : ""  ?>
