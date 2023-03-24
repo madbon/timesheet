@@ -32,6 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'title',
             'abbreviation',
+            'required_hours',
             [
                 'class' => ActionColumn::className(),
                 'urlCreator' => function ($action, RefProgram $model, $key, $index, $column) {

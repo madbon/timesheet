@@ -16,6 +16,8 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'abbreviation')->textInput(['maxlength' => true]) ?>
 
+    <?= $form->field($model, 'required_hours')->textInput(['type' => 'number']) ?>
+
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
     </div>

@@ -32,6 +32,8 @@ class RefProgram extends \yii\db\ActiveRecord
         return [
             [['title'], 'string', 'max' => 250],
             [['abbreviation'], 'string', 'max' => 20],
+            [['required_hours'],'integer'],
+            [['title','required_hours'],'required'],
         ];
     }
 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 22, 2023 at 12:55 PM
+-- Generation Time: Mar 24, 2023 at 03:06 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -430,19 +430,20 @@ INSERT INTO `ref_position` (`id`, `position`) VALUES
 CREATE TABLE `ref_program` (
   `id` int(11) NOT NULL,
   `title` varchar(250) DEFAULT NULL,
-  `abbreviation` varchar(20) DEFAULT NULL
+  `abbreviation` varchar(20) DEFAULT NULL,
+  `required_hours` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `ref_program`
 --
 
-INSERT INTO `ref_program` (`id`, `title`, `abbreviation`) VALUES
-(1, 'Bachelor of Science in Information Technology', 'BSIT'),
-(2, 'Bachelor of Science in Computer Science', 'BSCS'),
-(3, 'Bachelor of Science in Computer Engineering', 'BSCE'),
-(4, 'Bachelor of Science in Electronics Engineering', 'BSECE'),
-(5, 'Bachelor of Science in Entrepreneurship Management', 'BSEM');
+INSERT INTO `ref_program` (`id`, `title`, `abbreviation`, `required_hours`) VALUES
+(1, 'Bachelor of Science in Information Technology', 'BSIT', 486),
+(2, 'Bachelor of Science in Computer Science', 'BSCS', 162),
+(3, 'Bachelor of Science in Computer Engineering', 'BSCE', 0),
+(4, 'Bachelor of Science in Electronics Engineering', 'BSECE', 0),
+(5, 'Bachelor of Science in Entrepreneurship Management', 'BSEM', 0);
 
 -- --------------------------------------------------------
 
@@ -659,16 +660,12 @@ CREATE TABLE `user_timesheet` (
 --
 
 INSERT INTO `user_timesheet` (`id`, `user_id`, `time_in_am`, `time_out_am`, `time_in_pm`, `time_out_pm`, `date`, `remarks`, `status`) VALUES
-(12, 20, '08:00:00', '12:00:00', '14:48:13', '20:50:15', '2023-03-16', 'Sample remarks', 1),
-(14, 20, NULL, NULL, '13:14:43', '18:14:00', '2023-03-17', NULL, 1),
-(25, 20, NULL, NULL, '20:54:59', '20:55:21', '2022-03-18', NULL, 0),
-(45, 20, '08:00:00', '12:00:00', '12:30:00', '20:28:40', '2023-03-19', '', 1),
-(46, 20, '08:00:00', '10:00:00', '12:54:11', '13:00:00', '2023-01-19', NULL, 0),
-(47, 21, NULL, NULL, '14:27:47', '14:38:25', '2023-03-20', NULL, 0),
-(48, 20, '09:24:05', '12:00:00', '12:47:55', '17:00:00', '2023-03-21', '', 1),
-(52, 30, NULL, NULL, '12:00:10', NULL, '2023-03-22', NULL, 0),
-(53, 20, NULL, NULL, '14:45:06', '14:56:02', NULL, NULL, 0),
-(54, 20, NULL, NULL, '15:15:20', NULL, '2023-03-22', NULL, 0);
+(55, 20, '08:00:00', NULL, NULL, '22:00:00', '2023-03-23', NULL, 0),
+(58, 20, NULL, NULL, '12:50:59', '20:00:00', '2023-03-24', NULL, 0),
+(59, 20, '08:00:00', NULL, NULL, '13:45:00', '2023-04-25', NULL, 0),
+(60, 20, '08:00:00', NULL, NULL, '13:45:00', '2023-05-25', NULL, 0),
+(61, 20, '08:00:00', NULL, NULL, '13:45:00', '2023-06-25', NULL, 0),
+(62, 20, '08:00:00', NULL, NULL, '13:45:00', '2023-07-25', NULL, 0);
 
 --
 -- Indexes for dumped tables
@@ -939,7 +936,7 @@ ALTER TABLE `user_company`
 -- AUTO_INCREMENT for table `user_timesheet`
 --
 ALTER TABLE `user_timesheet`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
 
 --
 -- Constraints for dumped tables

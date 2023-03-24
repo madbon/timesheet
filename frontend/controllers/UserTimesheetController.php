@@ -26,7 +26,7 @@ class UserTimesheetController extends Controller
                 // 'only' => ['logout', 'signup'],
                 'rules' => [
                     [
-                        'actions' => ['index','create','update','view','delete','time-in','preview-pdf'],
+                        'actions' => ['index','create','update','view','delete','time-in','preview-pdf','record'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -89,7 +89,7 @@ class UserTimesheetController extends Controller
         $month_id = $month_id ? $month_id : date('m');
         $year = $year ? $year : date('Y');
 
-        $content = $this->renderPartial('_reportView',[
+        $content = $this->renderPartial('_reportView2',[
             'model' => $model,
             'month' => $month,
             'month_id' => $month_id,
@@ -167,6 +167,24 @@ class UserTimesheetController extends Controller
                     padding: 0;  
                     text-transform: uppercase;
                 }
+
+                table.summary-details
+                {
+                    background: white;
+                    border:none;
+                }
+                table.summary-details tbody tr td
+                {
+                    border:1px solid black;
+                    padding:5px;
+                    background:#ffe28b;
+                    
+                }
+
+                table.summary-details tbody tr td:nth-child(1)
+                {
+                    font-weight:bold;
+                }
             ', 
             // set mPDF properties on the fly
             'options' => ['title' => 'Krajee Report Title'],
@@ -217,7 +235,7 @@ class UserTimesheetController extends Controller
         ->groupBy(['year'])
         ->all();
 
-        return $this->render('index', [
+        return $this->render('index2', [
             // 'searchModel' => $searchModel,
             // 'dataProvider' => $dataProvider,
             'timeInOut' => $timeInOut,
@@ -266,6 +284,62 @@ class UserTimesheetController extends Controller
         return $this->render('create', [
             'model' => $model,
         ]);
+    }
+
+    public function actionRecord()
+    {
+        date_default_timezone_set('Asia/Manila');
+        $user_id = Yii::$app->user->identity->id;
+        $date = date('Y-m-d');
+        $time = date('H:i:s');
+        $timestamp = strtotime($time);
+
+        $model = UserTimesheet::findOne(['user_id' => Yii::$app->user->id, 'date' => date('Y-m-d')]);
+        if (!$model) {
+            $model = new UserTimesheet();
+            $model->user_id = Yii::$app->user->id;
+            $model->date = date('Y-m-d');
+            if (date('a', $timestamp) === 'am') {
+                $model->time_in_am = date('H:i:s', $timestamp);
+            }
+            else
+            {
+                $model->time_in_pm = date('H:i:s', $timestamp);
+            }
+        }
+        else
+        {
+            if (date('a', $timestamp) === 'am') {
+                $model->time_out_am = date('H:i:s', $timestamp);
+            } else {
+                if($model->time_out_am)
+                {
+                    $model->time_out_am = NULL;
+                    $model->time_in_pm = NULL;
+                    $model->time_out_pm = date('H:i:s', $timestamp);
+                }
+                else
+                {
+                    $model->time_out_am = NULL;
+                    $model->time_out_pm = date('H:i:s', $timestamp);
+                }
+            }
+        }
+        
+            
+            
+            // save the model
+            if ($model->save()) {
+                Yii::$app->session->setFlash('success', 'Time recorded successfully.');
+            } else {
+                Yii::$app->session->setFlash('error', 'Error recording time.');
+            }
+            
+            return $this->redirect(['index']);
+        // }
+        
+        // render the form with an HTML input field for selecting the time
+        return $this->render('index2', ['model' => $model]);
     }
 
     public function actionTimeIn()
