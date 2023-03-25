@@ -109,7 +109,7 @@ $this->registerJs(<<<JS
             e.preventDefault();
 
             if (!capturedImage) {
-                alert('Please capture an image before logging in');
+                alert('Please capture an image before recording your time in/out');
                 return;
             }
 
@@ -125,7 +125,7 @@ $this->registerJs(<<<JS
                 if (data.success) {
                     window.location.href = 'site/index?user_id=' + data.user_id;
                 } else {
-                    alert(data.message || 'Login failed');
+                    alert(data.message || 'Time in/out failed');
                 }
             })
             .catch(err => {
