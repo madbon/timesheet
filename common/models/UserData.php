@@ -57,6 +57,7 @@ class UserData extends \yii\db\ActiveRecord
             [['mobile_no','tel_no','suffix','item_name'],'safe'],
             // [['username', 'password_hash', 'password_reset_token', 'email', 'verification_token'], 'string', 'max' => 255],
             // [['auth_key'], 'string', 'max' => 32],
+            [['student_idno'], 'unique'],
             [['username'], 'unique'],
             [['email'], 'unique'],
             ['email', 'email'],

@@ -49,7 +49,7 @@ use yii\web\JsExpression;
                                 ]); ?>
                                 
 
-                                    <?= $form->field($model, 'username')->textInput(['autofocus' => true]) ?>
+                                    <?= $form->field($model, 'username')->textInput(['autofocus' => true, 'placeholder' => 'Username, student ID, or email']) ?>
 
                                     <?= $form->field($model, 'password')->textInput() ?>
 

@@ -471,13 +471,14 @@ date_default_timezone_set('Asia/Manila');
     </div>
     <?php } else{ ?>
 
-        <p style="text-align: center;">
-            <?=  Yii::$app->user->can('record-time-in-out') ? Html::a("RECORD TIME IN/OUT", ['time-in'], ['class' => 'btn btn-outline-warning']) : "" ?>
-        </p>
+        <h3 style="text-align: center;">
+            You have no record of time in/out
+                <?php //  Yii::$app->user->can('record-time-in-out') ? Html::a("RECORD TIME IN/OUT", ['time-in'], ['class' => 'btn btn-outline-warning']) : "" ?>
+        </h3>
 
     <?php } ?>
     
-   
+   <?php if(!empty($model->user->id)){ ?>
             <?php
             $totalHoursRendered2 = 0;
             $totalMinutesRendered2 = 0;
@@ -673,5 +674,6 @@ date_default_timezone_set('Asia/Manila');
         </tbody>
     </table>
     </div>
+    <?php } ?>
 
 </div>

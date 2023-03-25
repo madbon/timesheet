@@ -80,7 +80,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             
                             <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>
 
-                                <?= $form->field($model, 'username')->textInput(['autofocus' => true, 'placeholder' => 'Username'])->label(false) ?>
+                                <?= $form->field($model, 'username')->textInput(['autofocus' => true, 'placeholder' => 'Username, student ID, or email'])->label(false) ?>
 
                                 <?= $form->field($model, 'password')->passwordInput(['placeholder' => 'Password'])->label(false) ?>
 
