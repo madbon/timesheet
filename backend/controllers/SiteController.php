@@ -11,6 +11,7 @@ use yii\web\Response;
 use yii\web\View;
 use yii\helpers\Json;
 use common\models\UserTimesheet;
+use common\models\Files;
 
 /**
  * Site controller
@@ -27,7 +28,7 @@ class SiteController extends Controller
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['timein', 'error'],
+                        'actions' => ['error','capture','login-with-image'],
                         'allow' => true,
                     ],
                     [
@@ -78,6 +79,136 @@ class SiteController extends Controller
         ]);
     }
 
+    public function actionUpload()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $image = Yii::$app->request->post('image');
+        $filename = Yii::getAlias('@backend/web/uploads/') . uniqid() . '.jpg';
+
+        if (file_put_contents($filename, base64_decode($image))) {
+            return ['success' => true, 'filename' => $filename];
+        } else {
+            return ['success' => false];
+        }
+    }
+
+    public function actionLoginWithImage()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $model = new LoginForm();
+        $model->load(Yii::$app->request->post());
+
+        $imageData = Yii::$app->request->post('imageData');
+        $imagePath = null;
+
+        if ($imageData) {
+            $imagePath = $this->saveCapturedImage($imageData);
+        }
+
+        if ($model->login()) {
+
+            if(!Yii::$app->user->can('time-in-out'))
+            {
+                Yii::$app->user->logout();
+                // Yii::$app->session->setFlash('error', 'Error recording time.');
+                return [
+                    'success' => false,
+                    'message' => 'You have no access to this portal',
+                ];
+            }
+
+            // TIMESHEET RECORDING_START
+            date_default_timezone_set('Asia/Manila');
+            $user_id = Yii::$app->user->identity->id;
+            $date = date('Y-m-d');
+            $time = date('H:i:s');
+            $timestamp = strtotime($time);
+
+            $model = UserTimesheet::findOne(['user_id' => Yii::$app->user->id, 'date' => date('Y-m-d')]);
+            if (!$model) {
+                $model = new UserTimesheet();
+                $model->user_id = Yii::$app->user->id;
+                $model->date = date('Y-m-d');
+                if (date('a', $timestamp) === 'am') {
+                    $model->time_in_am = date('H:i:s', $timestamp);
+                }
+                else
+                {
+                    $model->time_in_pm = date('H:i:s', $timestamp);
+                }
+            }
+            else
+            {
+                if (date('a', $timestamp) === 'am') {
+                    $model->time_out_am = date('H:i:s', $timestamp);
+                } else {
+                    if($model->time_out_am)
+                    {
+                        $model->time_out_am = NULL;
+                        $model->time_in_pm = NULL;
+                        $model->time_out_pm = date('H:i:s', $timestamp);
+                    }
+                    else
+                    {
+                        $model->time_out_am = NULL;
+                        $model->time_out_pm = date('H:i:s', $timestamp);
+                    }
+                }
+            }
+            
+                
+                
+            // save the model
+            if ($model->save()) {
+                // If you need to do something with the image path, you can do it here
+                // For example: save the image path to the user's profile
+                if ($imagePath) {
+                    date_default_timezone_set('Asia/Manila');
+                    // Save the captured image data to the table_file
+                    $file = new Files();
+                    $file->model_name = "UserTimesheet";
+                    $file->file_name = basename($imagePath);
+                    $file->extension = pathinfo($imagePath, PATHINFO_EXTENSION);
+                    $file->file_hash = basename($imagePath);
+                    $file->user_id = $user_id;
+                    $file->model_id = $model->id;
+                    $file->created_at = time();
+                    $file->save();
+                }
+            }
+            // TIMESHEET RECORDING_END
+
+
+            return [
+                'success' => true,
+                'user_id' => $user_id, // Return the user_id
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => 'Invalid username or password.',
+            ];
+        }
+    }
+
+
+    private function saveCapturedImage($imageData)
+    {
+        $data = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $imageData));
+        $imageName = uniqid() . '.png';
+        $imagePath = Yii::getAlias('@backend/web/uploads/') . $imageName;
+        file_put_contents($imagePath, $data);
+        return $imagePath;
+    }
+
+    public function actionCapture()
+    {
+        $model = new LoginForm();
+        return $this->render('capture',['model' => $model]);
+    }
+
     /**
      * Login action.
      *
@@ -94,6 +225,7 @@ class SiteController extends Controller
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
+
             date_default_timezone_set('Asia/Manila');
             $user_id = Yii::$app->user->identity->id;
             $date = date('Y-m-d');
@@ -184,6 +316,6 @@ class SiteController extends Controller
     {
         Yii::$app->user->logout();
 
-        return $this->goHome();
+        return $this->redirect(['capture']);
     }
 }

@@ -41,6 +41,8 @@ return [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                'capture' => 'site/capture',
+                'login-with-image' => 'site/login-with-image', // Add this line
             ],
         ],
     ],
