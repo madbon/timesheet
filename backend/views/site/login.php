@@ -7,26 +7,33 @@
 use yii\bootstrap5\ActiveForm;
 use yii\bootstrap5\Html;
 
-$this->title = 'Login';
+$this->title = 'RECORD YOUR TIME IN & TIME OUT';
 ?>
 <div class="site-login">
+
     <div class="mt-5 offset-lg-3 col-lg-6">
-        <h1><?= Html::encode($this->title) ?></h1>
+        <h3 style="text-align:center;"><?= Html::encode($this->title) ?></h1>
 
-        <p>Please fill out the following fields to login:</p>
+        <?php $form = ActiveForm::begin(['id' => 'timein-form', 'options' => ['autocomplete' => 'off'],]); ?>
 
-        <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>
+            <?= $form->field($model, 'username')->textInput(['autofocus' => true, 'autocomplete' => 'off']) ?>
 
-            <?= $form->field($model, 'username')->textInput(['autofocus' => true]) ?>
+            <?= $form->field($model, 'password')->passwordInput(['autocomplete' => 'off']) ?>
 
-            <?= $form->field($model, 'password')->passwordInput() ?>
+            <?php // $form->field($model, 'rememberMe')->checkbox() ?>
 
-            <?= $form->field($model, 'rememberMe')->checkbox() ?>
+            <?php
+                $this->registerJs('
+                    $("#loginform-username").val("uname");
+                    $("#loginform-password").val("");
+                ');
+            ?>
 
-            <div class="form-group">
-                <?= Html::submitButton('Login', ['class' => 'btn btn-primary btn-block', 'name' => 'login-button']) ?>
+            <div class="form-group" style="text-align: center;">
+                <?= Html::submitButton('Click here to record your time: '.'<span style="font-weight:bold;" id="clock"></span>', ['class' => 'btn btn-outline-success btn-block', 'name' => 'login-button']) ?>
             </div>
 
         <?php ActiveForm::end(); ?>
+        
     </div>
 </div>
