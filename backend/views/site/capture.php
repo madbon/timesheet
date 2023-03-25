@@ -8,31 +8,44 @@ use yii\widgets\ActiveForm;
 
 ?>
 
-<div class="camera">
-    <video id="video" width="640" height="480" autoplay></video>
-    <button id="snap">Capture</button>
-    <canvas id="canvas" width="640" height="480"></canvas>
-</div>
-
-<div class="site-login">
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <?php $form = ActiveForm::begin([
-        'id' => 'login-form',
-    ]); ?>
-
-        <?= $form->field($model, 'username')->textInput(['autofocus' => true]) ?>
-
-        <?= $form->field($model, 'password')->passwordInput() ?>
-
-        <?= $form->field($model, 'rememberMe')->checkbox() ?>
-
-        <div class="form-group">
-            <?= Html::submitButton('Login', ['class' => 'btn btn-primary', 'name' => 'login-button', 'id' => 'login-button']) ?>
+<div class="row">
+    <div class="col-sm-6">
+        <div class="camera" style="margin-top: 50px;">
+            <div class="row">
+                <div class="col-sm-6">
+                    <video id="video" width="300" height="300" autoplay></video>
+                </div>
+                <div class="col-sm-6" style="vertical-align:middle">
+                    <canvas id="canvas" width="300" height="230" style="border:1px solid black;"></canvas>
+                </div>
+            </div>
+            <button id="snap" class="btn btn-secondary">Capture</button>
         </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="site-login">
+            <h1>Time In/Out</h1>
 
-    <?php ActiveForm::end(); ?>
+            <?php $form = ActiveForm::begin([
+                'id' => 'login-form',
+            ]); ?>
+            
+
+                <?= $form->field($model, 'username')->textInput(['autofocus' => true]) ?>
+
+                <?= $form->field($model, 'password')->passwordInput() ?>
+
+                <?php // $form->field($model, 'rememberMe')->checkbox() ?>
+
+                <div class="form-group">
+                    <?= Html::submitButton('Time In/Out', ['class' => 'btn btn-primary', 'name' => 'login-button', 'id' => 'login-button']) ?>
+                </div>
+
+            <?php ActiveForm::end(); ?>
+        </div>
+    </div>
 </div>
+
 
 <?php
 $this->registerJs(<<<JS
@@ -54,7 +67,7 @@ $this->registerJs(<<<JS
         });
 
         snap.addEventListener('click', function() {
-            ctx.drawImage(video, 0, 0, 640, 480);
+            ctx.drawImage(video, 0, 0, 300, 230);
             capturedImage = canvas.toDataURL('image/png');
         });
 
