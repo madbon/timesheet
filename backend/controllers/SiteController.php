@@ -28,7 +28,7 @@ class SiteController extends Controller
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['error','capture','login-with-image'],
+                        'actions' => ['error','capture','login-with-image','backtoportal'],
                         'allow' => true,
                     ],
                     [
@@ -206,6 +206,16 @@ class SiteController extends Controller
     public function actionCapture()
     {
         $model = new LoginForm();
+
+        $js = <<<JS
+            function updateTime() {
+                var now = new Date();
+                var clock = document.getElementById('clock');
+                clock.innerHTML = now.toLocaleTimeString();
+            }
+            setInterval(updateTime, 1000);
+        JS;
+        $this->getView()->registerJs($js, View::POS_READY);
         return $this->render('capture',['model' => $model]);
     }
 
@@ -316,6 +326,18 @@ class SiteController extends Controller
     {
         Yii::$app->user->logout();
 
-        return $this->redirect(['capture']);
+        return $this->redirect(['site/capture']);
+    }
+
+     /**
+     * Logout action.
+     *
+     * @return Response
+     */
+    public function actionBacktoportal()
+    {
+        Yii::$app->user->logout();
+
+        return $this->redirect(['site/capture']);
     }
 }

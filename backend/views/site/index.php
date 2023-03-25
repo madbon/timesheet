@@ -39,12 +39,15 @@ table.student-details tbody tr td
 
         <p class="lead">You have successfully recorded your time in/out. You can check it below.</p>
         <div style="text-align: center;">
-                    <?php echo Html::beginForm(['/site/logout'], 'post', ['class' => ''])
-                . Html::submitButton(
-                    'BACK TO TIME IN/OUT PORTAL',
-                    ['class' => 'btn btn-outline-primary btn-lg', 'style' => 'text-align:center']
-                )
-                . Html::endForm(); ?>
+                    <?php 
+                //     echo Html::beginForm(['/site/logout'], 'post', ['class' => ''])
+                // . Html::submitButton(
+                //     'BACK TO TIME IN/OUT PORTAL',
+                //     ['class' => 'btn btn-outline-primary btn-lg', 'style' => 'text-align:center']
+                // )
+                // . Html::endForm(); 
+                echo Html::a('Back to Portal',['/site/backtoportal']);
+                ?>
                 </div>
 
     </div>

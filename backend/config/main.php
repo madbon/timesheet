@@ -46,5 +46,6 @@ return [
             ],
         ],
     ],
+    'defaultRoute' => 'site/capture',
     'params' => $params,
 ];

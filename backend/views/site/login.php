@@ -13,8 +13,6 @@ $this->title = 'Time In/Out Portal';
 <div class="site-login">
 
     <div class="mt-5 offset-lg-3 col-lg-6">
-        
-
         <div style="margin-bottom:20px;">
             <div class="d-flex justify-content-center align-items-center">
                 <?php  
@@ -34,11 +32,11 @@ $this->title = 'Time In/Out Portal';
             <?= $form->field($model, 'password')->passwordInput() ?>
 
             
-<div class="camera">
-    <video id="video" width="640" height="480" autoplay></video>
-    <button id="snap">Capture</button>
-    <canvas id="canvas" width="640" height="480"></canvas>
-</div>
+            <div class="camera">
+                <video id="video" width="640" height="480" autoplay></video>
+                <button id="snap">Capture</button>
+                <canvas id="canvas" width="640" height="480"></canvas>
+            </div>
             
 
             <?php // $form->field($model, 'rememberMe')->checkbox() ?>
