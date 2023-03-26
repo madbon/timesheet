@@ -5,9 +5,9 @@ use yii\helpers\Html;
 /** @var yii\web\View $this */
 /** @var common\models\SubmissionThread $model */
 
-$this->title = 'Update Thread: ' . $model->id;
+$this->title = 'Update Thread/Activity ';
 $this->params['breadcrumbs'][] = ['label' => 'Threads/Activities', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = ['label' => 'Details', 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Update';
 ?>
 <div class="submission-thread-update">

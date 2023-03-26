@@ -9,7 +9,7 @@ use yii\helpers\Url;
 
 $this->title = $model->id;
 $this->params['breadcrumbs'][] = ['label' => 'Threads/Activities', 'url' => ['index']];
-// $this->params['breadcrumbs'][] = $this->title;
+$this->params['breadcrumbs'][] = "Details";
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="submission-thread-view">

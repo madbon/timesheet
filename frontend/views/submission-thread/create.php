@@ -5,7 +5,7 @@ use yii\helpers\Html;
 /** @var yii\web\View $this */
 /** @var common\models\SubmissionThread $model */
 
-$this->title = 'Create Thread';
+$this->title = 'Create Thread/Activity';
 $this->params['breadcrumbs'][] = ['label' => 'Threads/Activities', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
