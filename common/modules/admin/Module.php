@@ -122,6 +122,17 @@ class Module extends \yii\base\Module
         return $departmentIds;
     }
 
+    public static function truncateText($text, $limit = 25, $ellipsis = '...') {
+        $words = explode(' ', $text);
+    
+        if (count($words) > $limit) {
+            $truncatedWords = array_slice($words, 0, $limit);
+            $text = implode(' ', $truncatedWords) . $ellipsis;
+        }
+    
+        return $text;
+    }
+
     public static function GetCompanyBasedOnCourse()
     {
         $query = UserData::find()->where(['ref_program_id' => Yii::$app->getModule('admin')->GetAssignedProgram()])->all();

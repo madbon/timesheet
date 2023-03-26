@@ -13,7 +13,7 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin([
         'id' => 'user-management-form',
-        'enableAjaxValidation' => true,
+        // 'enableAjaxValidation' => true,
         // ... other options ...
     ]); ?>
     
@@ -94,51 +94,51 @@ use yii\widgets\ActiveForm;
 
             <?php
             // JavaScript
-            $script = <<< JS
-            $(function() {
-                var timer;
-                var delay = 500; // 500 milliseconds delay after last input
+            // $script = <<< JS
+            // $(function() {
+            //     var timer;
+            //     var delay = 500; // 500 milliseconds delay after last input
 
-                function fetchCompanies(query, callback) {
-                    $.ajax({
-                        url: "company-json",
-                        dataType: "json",
-                        data: {
-                            q: query.term
-                        },
-                        success: function(data) {
-                            var results = [];
-                            $.each(data, function(index, item) {
-                                results.push({
-                                    id: item.id,
-                                    text: item.name + ' (ADDRESS: ' +item.address+')'
-                                });
-                            });
+            //     function fetchCompanies(query, callback) {
+            //         $.ajax({
+            //             url: "company-json",
+            //             dataType: "json",
+            //             data: {
+            //                 q: query.term
+            //             },
+            //             success: function(data) {
+            //                 var results = [];
+            //                 $.each(data, function(index, item) {
+            //                     results.push({
+            //                         id: item.id,
+            //                         text: item.name + ' (ADDRESS: ' +item.address+')'
+            //                     });
+            //                 });
 
-                            callback({
-                                results: results
-                            });
-                        }
-                    });
-                }
+            //                 callback({
+            //                     results: results
+            //                 });
+            //             }
+            //         });
+            //     }
 
-                $('#company-dropdown').select2({
-                    placeholder: 'Search company',
-                    minimumInputLength: 3,
-                    ajax: {
-                        delay: delay,
-                        transport: function(params, success, failure) {
-                            clearTimeout(timer);
-                            timer = setTimeout(function() {
-                                fetchCompanies(params.data, success);
-                            }, delay);
-                        }
-                    }
-                });
-            });
-            JS;
+            //     $('#company-dropdown').select2({
+            //         placeholder: 'Search company',
+            //         minimumInputLength: 3,
+            //         ajax: {
+            //             delay: delay,
+            //             transport: function(params, success, failure) {
+            //                 clearTimeout(timer);
+            //                 timer = setTimeout(function() {
+            //                     fetchCompanies(params.data, success);
+            //                 }, delay);
+            //             }
+            //         }
+            //     });
+            // });
+            // JS;
 
-            $this->registerJs($script);
+            // $this->registerJs($script);
             ?>
         <!-- </div>
     </div> -->
@@ -285,7 +285,7 @@ use yii\widgets\ActiveForm;
     </div>
 
     <div class="form-group" style="margin-top: 10px;">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'type' => 'button']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

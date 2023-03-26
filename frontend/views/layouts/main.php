@@ -273,6 +273,10 @@ AppAsset::register($this);
                 'label' => 'Map Markers', 'url' => ['/user-company/google-map'], 'active' => Yii::$app->controller->action->id == "google-map" ? true : false,
                 'visible' => Yii::$app->user->can('menu-map-markers'),
             ],
+            [
+                'label' => 'Submission', 'url' => ['/submission-thread/index'], 'active' => Yii::$app->controller->id == "submission-thread" ? true : false,
+                'visible' => Yii::$app->user->can('menu-submission'),
+            ],
             ['label' => 'Settings', 'url' => ['/settings'], 'active' => in_array(Yii::$app->controller->id,[
                 'settings',
                 'auth-item',
@@ -285,6 +289,7 @@ AppAsset::register($this);
                 'position',
                 'department',
                 'company',
+                'document-type',
                 ]) ? true : false,
                 'visible' => Yii::$app->user->can('menu-settings'),
             ],

@@ -39,20 +39,163 @@ $this->params['breadcrumbs'][] = $this->title;
                     return !empty($model->authAssignment->itemName->name) ? '<span style="padding-left:10px; padding-right:10px; border-radius:5px; color:white; background:#6262ff;">'.$model->authAssignment->itemName->name.'</span>' : '<span style="color:red;">NO ASSIGNED ROLE</span>';
                 }
             ],
-            'fname',
-            'mname',
-            'sname',
-            'bday',
-            'sex',
+            [
+                'label' => $model->authAssignment->item_name == 'OjtCoordinator' ? 'Assigned Program/Course' : 'Program/Course',
+                'format' => 'raw',
+                'attribute' => 'ref_program_id',
+                'value' => function ($model) {
+                    return !empty($model->program->title) ? "<span style='color:#af4343; text-transform:uppercase;'>".$model->program->title."</span>" : "";
+                },
+                'filter' => \yii\helpers\ArrayHelper::map(\common\models\RefProgram::find()->asArray()->all(), 'id', 'title'),
+                'visible' => in_array($model->authAssignment->item_name,['Trainee','OjtCoordinator',NULL,'']) ? true : false,
+            ],
+            [
+                'attribute' => 'ref_program_major_id',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return !empty($model->programMajor->title) ? "<span style='color:#af4343;'>".$model->programMajor->title."</span>" : "";
+                },
+                'filter' => \yii\helpers\ArrayHelper::map(\common\models\ProgramMajor::find()->asArray()->all(), 'id', 'title'),
+                'visible' => in_array($model->authAssignment->item_name,['Trainee',NULL,'']) ? true : false,
+            ],
+            [
+                'attribute' => 'student_year',
+                'value' => function ($model) {
+                    return !empty($model->student_year) ? $model->student_year : "";
+                },
+                'filter' => \yii\helpers\ArrayHelper::map(\common\models\StudentYear::find()->asArray()->all(), 'year', 'title'),
+                'visible' => in_array($model->authAssignment->item_name,['Trainee',NULL,'']) ? true : false,
+                
+            ],
+            [
+                'attribute' => 'student_section',
+                'value' => function ($model) {
+                    return !empty($model->student_section) ? $model->student_section : "";
+                },
+                'filter' => \yii\helpers\ArrayHelper::map(\common\models\StudentSection::find()->asArray()->all(), 'section', 'section'),
+                'visible' => in_array($model->authAssignment->item_name,['Trainee',NULL,'']) ? true : false,
+            ],
+            [
+                'attribute' => 'company',
+                'format' => 'raw',
+                'visible' => in_array($model->authAssignment->item_name,['Trainee','CompanySupervisor',NULL,'']) ? true : false,
+                'value' => function ($model) {
+                    return !empty($model->userCompany->company->name) ? "<span style='color:#af4343; text-transform:uppercase;'>".$model->userCompany->company->name."</span>" : "---";
+                },
+            ],
+            [
+                'attribute' => 'ref_department_id',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return !empty($model->department->title) ? "<span style='color:#af4343; font-style:italic;'>".$model->department->title."</span>" : "";
+                },
+                'filter' => \yii\helpers\ArrayHelper::map(\common\models\Department::find()->asArray()->all(), 'id', 'title'),
+                'visible' => in_array($model->authAssignment->item_name,['Trainee','CompanySupervisor',NULL,'']) ? true : false,
+            ],
+            [
+                'attribute' => 'student_idno',
+                'visible' => in_array($model->authAssignment->item_name,['Trainee',NULL,'']) ? true : false,
+            ],
+            // 'fname',
+            [
+                'attribute' => 'fname',
+                'format' => 'raw',
+                'value' => function($model)
+                {
+                    return !empty($model->fname) ? '<span style=" text-transform:uppercase;">'. $model->fname.'</span>' : "";
+                }
+            ],
+            [
+                'attribute' => 'mname',
+                'format' => 'raw',
+                'value' => function($model)
+                {
+                    return !empty($model->mname) ? '<span style=" text-transform:uppercase;">'. $model->mname.'</span>' : "";
+                }
+            ],
+            [
+                'attribute' => 'sname',
+                'format' => 'raw',
+                'value' => function($model)
+                {
+                    return !empty($model->sname) ? '<span style=" text-transform:uppercase;">'. $model->sname.'</span>' : "";
+                }
+            ],
+            [
+                'attribute' => 'suffix',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return !empty($model->suffix) ? '<span style=" text-transform:uppercase;">'.$model->suffix.'</span>' : "";
+                },
+                'filter' => \yii\helpers\ArrayHelper::map(\common\models\Suffix::find()->asArray()->all(), 'title', 'title'),
+            ],
+            
+            // 'mname',
+            // 'sname',
+            // 'bday',
+            [
+                'attribute' => 'bday',
+                'value' => function($model)
+                {
+                    return Yii::$app->formatter->asDate($model->bday, 'MMMM j, Y');
+                }
+            ],
+            [
+                'attribute' => 'sex',
+                'value' => function ($model) {
+                    return $model->sex === 'M' ? 'Male' : 'Female';
+                },
+                'filter' => [
+                    'M' => 'Male',
+                    'F' => 'Female',
+                ],
+            ],
+            
+            [
+                'attribute' => 'ref_position_id',
+                'value' => function ($model) {
+                    return !empty($model->position->position) ? $model->position->position : "";
+                },
+                'filter' => \yii\helpers\ArrayHelper::map(\common\models\Position::find()->asArray()->all(), 'id', 'position'),
+                'visible' => in_array($model->authAssignment->item_name,['CompanySupervisor']) ? true : false,
+            ],
             'username',
-            // 'auth_key',
-            // 'password_hash',
-            // 'password_reset_token',
+            //'auth_key',
+            //'password_hash',
+            //'password_reset_token',
             'email:email',
+            'mobile_no',
+            'tel_no',
             // 'status',
-            // 'created_at',
-            // 'updated_at',
-            // 'verification_token',
+            //'created_at',
+            //'updated_at',
+            //'verification_token',
+            'address',
+            [   
+                'format' => 'raw',
+                'label' => 'Has e-Signature?',
+                'visible' => !Yii::$app->user->can('upload-others-esig'),
+                'value' => function($model)
+                {
+                    $buttons = "";
+                    if(in_array($model->authAssignment->item_name,['CompanySupervisor','Trainee']))
+                    {
+                        $findFile = Yii::$app->getModule('admin')->FileExistsByQuery('UserData',$model->id);
+
+                        if($findFile)
+                        {
+                            $buttons .= "<span style='font-size:11px; color:white; background:#198754; padding-left:10px; padding-right:10px; border-radius:25px;'>YES</span>";
+                        }
+                        else
+                        {
+                            $buttons .= "<span style='font-size:11px; color:white; background:gray; padding-left:10px; padding-right:10px; border-radius:25px;'>NO</span>";
+                        }
+                    }
+
+                    return $buttons;
+                    
+                }
+            ],
         ],
     ]) ?>
 
