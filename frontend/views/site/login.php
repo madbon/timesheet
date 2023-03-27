@@ -52,14 +52,14 @@ $this->params['breadcrumbs'][] = $this->title;
     }
 </style>
 
-<div class="site-login">
+<div class="site-login" >
     <div class="container d-flex justify-content-center align-items-center">
         <!-- <div class="card" >
             <div class="card-body" style="padding:0;"> -->
                 <div>
                 
                 
-                <div style="padding:10px;">
+                <div style="padding:10px; ">
                     <div style="margin-bottom:20px;">
                         <div class="d-flex justify-content-center align-items-center">
                             <?php  
@@ -72,24 +72,15 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     
                     
-                    <div style="border:1px solid #ddd; padding:10px; padding-top:0px;">
+                    <div style="border:1px solid #ddd; padding:10px; padding-top:0px; border-radius:5px;">
 
-                        <div class="row" style="margin-bottom:20px;">
-                            <div class="col-sm-6 col-xs-6 col-md-6 col-lg-6 active-link">
-                                <?= Html::a('Login',['login'],['style' => 'width:100%;','class' => 'btn btn-outline-light']); ?>
-                            </div>
-                            <div class="col-sm-6 col-xs-6 col-md-6 col-lg-6">
-                                <?= Html::a('Time In/Out',['time-in-out'],['style' => 'width:100%; text-decoration:none;', 'class' => 'btn btn-outline-light']); ?>
-                            </div>
-                        </div>
-
-                        <p style="text-align: center; font-weight:normal; font-size:15px; color:#ae0505; padding:5px; padding-right:50px; padding-left:50px; margin-bottom:0; margin-bottom:20px;">Timesheet Monitoring System for CICT Trainees</p>
+                        <p style="text-align: center; font-weight:normal; font-size:15px; color:#ae0505; padding:5px; padding-right:50px; padding-left:50px; padding-top:30px; padding-bottom:30px;">Timesheet Monitoring System for CICT Trainees</p>
                         
                         <div class="card-body">
                             
                             <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>
 
-                                <?= $form->field($model, 'username')->textInput(['autofocus' => true, 'placeholder' => 'Username'])->label(false) ?>
+                                <?= $form->field($model, 'username')->textInput(['autofocus' => true, 'placeholder' => 'Username, student ID, or email'])->label(false) ?>
 
                                 <?= $form->field($model, 'password')->passwordInput(['placeholder' => 'Password'])->label(false) ?>
 

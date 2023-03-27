@@ -98,11 +98,11 @@ date_default_timezone_set('Asia/Manila');
                     foreach ($queryYear as $keyear => $yearval) {
                         if($yearval['year'] == $year)
                         {
-                            echo Html::a($yearval['year'],['index','month' => $month, 'month_id' => $month_id, 'year' => $yearval['year']],['class' => 'btn btn-sm btn-warning']);
+                            echo Html::a($yearval['year'],['index','month' => $month, 'month_id' => $month_id, 'year' => $yearval['year'],'trainee_user_id' => $model->user->id],['class' => 'btn btn-sm btn-warning']);
                         }
                         else
                         {
-                            echo Html::a($yearval['year'],['index','month' => $month, 'month_id' => $month_id, 'year' => $yearval['year']],['class' => 'btn btn-sm btn-outline-warning']);
+                            echo Html::a($yearval['year'],['index','month' => $month, 'month_id' => $month_id, 'year' => $yearval['year'],'trainee_user_id' => $model->user->id],['class' => 'btn btn-sm btn-outline-warning']);
                         }
                     }
                 }
@@ -113,11 +113,11 @@ date_default_timezone_set('Asia/Manila');
                     
                     if($mon['month'] == $month)
                     {
-                        echo Html::a($mon['month'],['index','month' => $mon['month'], 'month_id' => $mon['month_id'], 'year' => $year],['class' => 'btn btn-sm btn-warning']);
+                        echo Html::a($mon['month'],['index','month' => $mon['month'], 'month_id' => $mon['month_id'], 'year' => $year,'trainee_user_id' => $model->user->id],['class' => 'btn btn-sm btn-warning']);
                     }
                     else
                     {
-                        echo Html::a($mon['month'],['index','month' => $mon['month'], 'month_id' => $mon['month_id'],'year' => $year],['class' => 'btn btn-sm btn-outline-warning']);
+                        echo Html::a($mon['month'],['index','month' => $mon['month'], 'month_id' => $mon['month_id'],'year' => $year, 'trainee_user_id' => $model->user->id],['class' => 'btn btn-sm btn-outline-warning']);
                     }
                 }
             ?>
@@ -134,7 +134,7 @@ date_default_timezone_set('Asia/Manila');
         <h1 style="text-align: center; font-size:30px; font-weight:bold;">DAILY TIME RECORD</h1>
 
         <p style="text-align: center;">
-            <?= Yii::$app->user->can('record-time-in-out') ? Html::a("RECORD TIME", ['record'], ['class' => '']) : "" ?>
+            <?php // Yii::$app->user->can('record-time-in-out') ? Html::a("RECORD TIME", ['record'], ['class' => '']) : "" ?>
         </p>
 
         <table class="table-primary-details">
@@ -385,7 +385,7 @@ date_default_timezone_set('Asia/Manila');
                     echo "<td></td>";
                     echo "<td></td>";
                     echo "<td></td>";
-                    echo "<td></td>";
+                    // echo "<td></td>";
                     echo "</tr>";
                 }
             }
@@ -402,7 +402,7 @@ date_default_timezone_set('Asia/Manila');
             echo "<td>".($total_hours_val." hrs. ".$totalMinutesRendered." mins.")."</td>";
             echo "<td></td>";
             echo "<td></td>";
-            echo "<td></td>";
+            // echo "<td></td>";
             echo "</tr>";
 
             echo "</tbody>";
@@ -471,13 +471,14 @@ date_default_timezone_set('Asia/Manila');
     </div>
     <?php } else{ ?>
 
-        <p style="text-align: center;">
-            <?=  Yii::$app->user->can('record-time-in-out') ? Html::a("RECORD TIME IN/OUT", ['time-in'], ['class' => 'btn btn-outline-warning']) : "" ?>
-        </p>
+        <h3 style="text-align: center;">
+            You have no record of time in/out for this month
+                <?php //  Yii::$app->user->can('record-time-in-out') ? Html::a("RECORD TIME IN/OUT", ['time-in'], ['class' => 'btn btn-outline-warning']) : "" ?>
+        </h3>
 
     <?php } ?>
     
-   
+   <?php if(!empty($model->user->id)){ ?>
             <?php
             $totalHoursRendered2 = 0;
             $totalMinutesRendered2 = 0;
@@ -673,5 +674,6 @@ date_default_timezone_set('Asia/Manila');
         </tbody>
     </table>
     </div>
+    <?php } ?>
 
 </div>

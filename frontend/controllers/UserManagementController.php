@@ -393,6 +393,10 @@ class UserManagementController extends Controller
             {
                 \Yii::$app->getSession()->setFlash('success', 'Changes has been saved');
             }
+            else
+            {
+                // print_r($model->errors); exit;
+            }
 
             // print_r($model->company); exit;
 
