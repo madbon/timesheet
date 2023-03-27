@@ -16,7 +16,7 @@ use yii\widgets\ActiveForm;
         <div class="col-sm-6">
             <?= $form->field($model, 'user_id')->hiddenInput()->label(false) ?>
 
-            <?= $form->field($model, 'ref_document_type_id')->dropDownList($documentType, ['prompt' => '-I want to submit/create-', 'class' => 'form-control'])->label("Submit/Create") ?>
+            <?= $form->field($model, 'ref_document_type_id')->dropDownList($documentType, ['prompt' => 'Select transaction type', 'class' => 'form-control'])->label("Type of Transaction") ?>
 
             <?= $form->field($model, 'subject')->textInput() ?>
 

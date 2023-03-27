@@ -5,6 +5,7 @@ namespace common\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use common\models\SubmissionThread;
+use common\models\DocumentType;
 
 /**
  * SubmissionThreadSearch represents the model behind the search form of `common\models\SubmissionThread`.
@@ -14,11 +15,12 @@ class SubmissionThreadSearch extends SubmissionThread
     /**
      * {@inheritdoc}
      */
+    public $type;
     public function rules()
     {
         return [
             [['id', 'user_id', 'ref_document_type_id', 'created_at'], 'integer'],
-            [['remarks'], 'safe'],
+            [['remarks','type'], 'safe'],
         ];
     }
 
@@ -40,7 +42,8 @@ class SubmissionThreadSearch extends SubmissionThread
      */
     public function search($params)
     {
-        $query = SubmissionThread::find();
+        $query = SubmissionThread::find()
+        ->joinWith('documentType');
 
         // add conditions that should always apply here
 
@@ -56,6 +59,16 @@ class SubmissionThreadSearch extends SubmissionThread
             return $dataProvider;
         }
 
+        $user_id = \Yii::$app->user->identity->id;
+
+        $authAssignment = AuthAssignment::find()->where(['user_id' => $user_id])->one();
+
+        // print_r(DocumentType::find()->where(['auth_item_name' => $authAssignment->item_name, 'type' => 'SENDER'])->createCommand()->rawSql); exit;
+
+        $documentTypeSubmitted = DocumentType::find()->where(['auth_item_name' => $authAssignment->item_name])->one();
+
+        $this->ref_document_type_id = !empty($this->ref_document_type_id) ? $this->ref_document_type_id : $documentTypeSubmitted->id;
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
@@ -65,6 +78,10 @@ class SubmissionThreadSearch extends SubmissionThread
         ]);
 
         $query->andFilterWhere(['like', 'remarks', $this->remarks]);
+
+        // $query->andFilterWhere(['=', 'ref_document_type.id', $this->type]);
+
+        // print_r($query->createCommand()->rawSql); exit;
 
         return $dataProvider;
     }

@@ -20,6 +20,8 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'auth_item_name')->dropDownList($authItem, ['prompt' => '-','class' => 'form-control'])->label("ROLE") ?>
 
+    <?= $form->field($model, 'required_uploading')->dropDownList(['YES' => 'YES', 'NO' => 'NO'], ['prompt' => '-','class' => 'form-control'])->label("Required Uploading of Files?") ?>
+
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
     </div>

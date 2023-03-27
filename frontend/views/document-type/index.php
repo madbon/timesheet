@@ -33,6 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'title',
             'type',
             'auth_item_name',
+            'required_uploading',
             [
                 'class' => ActionColumn::className(),
                 'urlCreator' => function ($action, DocumentType $model, $key, $index, $column) {

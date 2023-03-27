@@ -30,6 +30,7 @@ class DocumentType extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['title','type','auth_item_name','required_uploading'],'required'],
             [['title'], 'string'],
             [['type'], 'string', 'max' => 10],
             [['auth_item_name'], 'string', 'max' => 50],
@@ -46,7 +47,7 @@ class DocumentType extends \yii\db\ActiveRecord
             'id' => 'ID',
             'title' => 'Title',
             'type' => 'Type',
-            'auth_item_name' => 'Auth Item Name',
+            'auth_item_name' => 'Role',
         ];
     }
 

@@ -49,9 +49,22 @@ class SubmissionThreadController extends Controller
         $searchModel = new SubmissionThreadSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
+        $user_id = \Yii::$app->user->identity->id;
+
+        $authAssignment = AuthAssignment::find()->where(['user_id' => $user_id])->one();
+
+        // print_r(DocumentType::find()->where(['auth_item_name' => $authAssignment->item_name, 'type' => 'SENDER'])->createCommand()->rawSql); exit;
+
+        $documentTypeSubmitted = DocumentType::find()->where(['auth_item_name' => $authAssignment->item_name, 'type' => 'SENDER'])->all();
+
+        $documentTypeReceived = DocumentType::find()->where(['auth_item_name' => $authAssignment->item_name, 'type' => 'RECEIVER'])->all();
+
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'documentTypeSubmitted' => $documentTypeSubmitted,
+            'documentTypeReceived' => $documentTypeReceived,
         ]);
     }
 

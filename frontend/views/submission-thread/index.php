@@ -11,7 +11,7 @@ use common\models\Files;
 /** @var common\models\SubmissionThreadSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
-$this->title = 'Threads/Activities';
+$this->title = 'Transactions';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="submission-thread-index">
@@ -19,7 +19,42 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Thread/Activity', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Yii::$app->user->can('create-transaction') ? Html::a('Create Transaction', ['create'], ['class' => 'btn btn-success']) : "" ?>
+    </p>
+
+
+    <p style="text-align: center;">
+        <?php
+        if($documentTypeSubmitted)
+        {
+            foreach ($documentTypeSubmitted as $docSub) {
+                if($docSub->id == $searchModel->ref_document_type_id)
+                {
+                    echo Html::a($docSub->title,['index','SubmissionThreadSearch[ref_document_type_id]' => $docSub->id],['class' => 'btn btn-dark btn-sm', 'style' => 'border-radius:25px;']);
+                }
+                else
+                {
+                    echo Html::a($docSub->title,['index','SubmissionThreadSearch[ref_document_type_id]' => $docSub->id],['class' => 'btn btn-outline-dark btn-sm', 'style' => 'border-radius:25px;']);
+                }
+                
+            }
+        }
+
+        if($documentTypeReceived)
+        {
+            foreach ($documentTypeReceived as $docRec) {
+                if($docRec->id == $searchModel->ref_document_type_id)
+                {
+                    echo Html::a($docRec->title,['index','SubmissionThreadSearch[ref_document_type_id]' => $docRec->id],['class' => 'btn btn-dark btn-sm', 'style' => 'border-radius:25px;']);
+                }
+                else
+                {
+                    echo Html::a($docRec->title,['index','SubmissionThreadSearch[ref_document_type_id]' => $docRec->id],['class' => 'btn btn-outline-dark btn-sm', 'style' => 'border-radius:25px;']);
+                }
+                
+            }
+        }
+        ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
@@ -35,24 +70,24 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'ref_document_type_id',
             // 'remarks:ntext',
             [
-                'label' => false,
+                'label' => "CREATED BY",
                 'format' => 'raw',
                 'value' => function($model)
                 {
                     return $model->user->userFullName;
                 }
             ],
+            // [
+            //     'label' => "TRANSACTION TYPE",
+            //     'format' => 'raw',
+            //     'value' => function($model)
+            //     {
+            //         $type = "<label style='background:#e4e4e4; border:1px solid #d4d4d4; border-radius:5px; padding:2px;'>".$model->documentType->title."</label>";
+            //         return $type;
+            //     }
+            // ],
             [
-                'label' => false,
-                'format' => 'raw',
-                'value' => function($model)
-                {
-                    $type = "<label style='background:#e4e4e4; border:1px solid #d4d4d4; border-radius:5px; padding:2px;'>".$model->documentType->title."</label>";
-                    return $type;
-                }
-            ],
-            [
-                'label' => false,
+                'label' => "SUBJECT",
                 'format' => 'raw',
                 'value' => function($model)
                 {
@@ -61,7 +96,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
             [
-                'label' => false,
+                'label' => "REMARKS",
                 'format' => 'raw',
                 'value' => function($model)
                 {

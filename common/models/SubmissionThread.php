@@ -53,7 +53,7 @@ class SubmissionThread extends \yii\db\ActiveRecord
             'id' => 'ID',
             'user_id' => 'User ID',
             'remarks' => 'Remarks',
-            'ref_document_type_id' => 'Type',
+            'ref_document_type_id' => 'Type of Transaction',
             'created_at' => 'Created At',
         ];
     }
