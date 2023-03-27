@@ -30,11 +30,11 @@ $this->params['breadcrumbs'][] = $this->title;
             foreach ($documentTypeSubmitted as $docSub) {
                 if($docSub->id == $searchModel->ref_document_type_id)
                 {
-                    echo Html::a($docSub->title,['index','SubmissionThreadSearch[ref_document_type_id]' => $docSub->id],['class' => 'btn btn-dark btn-sm', 'style' => 'border-radius:25px;']);
+                    echo Html::a($docSub->title,['index','SubmissionThreadSearch[ref_document_type_id]' => $docSub->id],['class' => 'btn btn-dark btn-sm', 'style' => 'border-radius:25px; margin:2px;']);
                 }
                 else
                 {
-                    echo Html::a($docSub->title,['index','SubmissionThreadSearch[ref_document_type_id]' => $docSub->id],['class' => 'btn btn-outline-dark btn-sm', 'style' => 'border-radius:25px;']);
+                    echo Html::a($docSub->title,['index','SubmissionThreadSearch[ref_document_type_id]' => $docSub->id],['class' => 'btn btn-outline-dark btn-sm', 'style' => 'border-radius:25px;margin:2px;']);
                 }
                 
             }
@@ -45,11 +45,11 @@ $this->params['breadcrumbs'][] = $this->title;
             foreach ($documentTypeReceived as $docRec) {
                 if($docRec->id == $searchModel->ref_document_type_id)
                 {
-                    echo Html::a($docRec->title,['index','SubmissionThreadSearch[ref_document_type_id]' => $docRec->id],['class' => 'btn btn-dark btn-sm', 'style' => 'border-radius:25px;']);
+                    echo Html::a($docRec->title,['index','SubmissionThreadSearch[ref_document_type_id]' => $docRec->id],['class' => 'btn btn-dark btn-sm', 'style' => 'border-radius:25px;margin:2px;']);
                 }
                 else
                 {
-                    echo Html::a($docRec->title,['index','SubmissionThreadSearch[ref_document_type_id]' => $docRec->id],['class' => 'btn btn-outline-dark btn-sm', 'style' => 'border-radius:25px;']);
+                    echo Html::a($docRec->title,['index','SubmissionThreadSearch[ref_document_type_id]' => $docRec->id],['class' => 'btn btn-outline-dark btn-sm', 'style' => 'border-radius:25px;margin:2px;']);
                 }
                 
             }
