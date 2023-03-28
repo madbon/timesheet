@@ -4,12 +4,12 @@ namespace common\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use common\models\DocumentType;
+use common\models\DocumentAssignment;
 
 /**
- * DocumentTypeSearch represents the model behind the search form of `common\models\DocumentType`.
+ * DocumentAssignmentSearch represents the model behind the search form of `common\models\DocumentAssignment`.
  */
-class DocumentTypeSearch extends DocumentType
+class DocumentAssignmentSearch extends DocumentAssignment
 {
     /**
      * {@inheritdoc}
@@ -17,8 +17,8 @@ class DocumentTypeSearch extends DocumentType
     public function rules()
     {
         return [
-            [['id'], 'integer'],
-            [['title'], 'safe'],
+            [['id', 'ref_document_type_id'], 'integer'],
+            [['auth_item', 'type'], 'safe'],
         ];
     }
 
@@ -40,7 +40,7 @@ class DocumentTypeSearch extends DocumentType
      */
     public function search($params)
     {
-        $query = DocumentType::find();
+        $query = DocumentAssignment::find();
 
         // add conditions that should always apply here
 
@@ -59,9 +59,11 @@ class DocumentTypeSearch extends DocumentType
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
+            'ref_document_type_id' => $this->ref_document_type_id,
         ]);
 
-        $query->andFilterWhere(['like', 'title', $this->title]);
+        $query->andFilterWhere(['like', 'auth_item', $this->auth_item])
+            ->andFilterWhere(['like', 'type', $this->type]);
 
         return $dataProvider;
     }

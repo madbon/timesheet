@@ -4,11 +4,11 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 /** @var yii\web\View $this */
-/** @var common\models\DocumentTypeSearch $model */
+/** @var common\models\DocumentAssignmentSearch $model */
 /** @var yii\widgets\ActiveForm $form */
 ?>
 
-<div class="document-type-search">
+<div class="document-assignment-search">
 
     <?php $form = ActiveForm::begin([
         'action' => ['index'],
@@ -17,7 +17,11 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'id') ?>
 
-    <?= $form->field($model, 'title') ?>
+    <?= $form->field($model, 'ref_document_type_id') ?>
+
+    <?= $form->field($model, 'auth_item') ?>
+
+    <?= $form->field($model, 'type') ?>
 
     <div class="form-group">
         <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>

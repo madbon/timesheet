@@ -10,6 +10,7 @@ use yii\filters\VerbFilter;
 use common\models\DocumentType;
 use yii\helpers\ArrayHelper;
 use common\models\AuthAssignment;
+use common\models\DocumentAssignment;
 use frontend\models\UploadMultipleForm;
 use yii\web\UploadedFile;
 use common\models\Files;
@@ -49,22 +50,18 @@ class SubmissionThreadController extends Controller
         $searchModel = new SubmissionThreadSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
-        $user_id = \Yii::$app->user->identity->id;
-
-        $authAssignment = AuthAssignment::find()->where(['user_id' => $user_id])->one();
-
-        // print_r(DocumentType::find()->where(['auth_item_name' => $authAssignment->item_name, 'type' => 'SENDER'])->createCommand()->rawSql); exit;
-
-        $documentTypeSubmitted = DocumentType::find()->where(['auth_item_name' => $authAssignment->item_name, 'type' => 'SENDER'])->all();
-
-        $documentTypeReceived = DocumentType::find()->where(['auth_item_name' => $authAssignment->item_name, 'type' => 'RECEIVER'])->all();
-
+        $documentAss = DocumentAssignment::find()
+        ->select(["*",'ref_document_type.title as title'])
+        ->joinWith('documentType')
+        ->where(['auth_item' => Yii::$app->getModule('admin')->getLoggedInUserRoles()])
+        ->all();
+        // ->createCommand()->rawSql;
+        
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'documentTypeSubmitted' => $documentTypeSubmitted,
-            'documentTypeReceived' => $documentTypeReceived,
+            'documentAss' => $documentAss,
         ]);
     }
 
@@ -131,18 +128,37 @@ class SubmissionThreadController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
-    public function actionCreate()
+    public function actionCreate($transaction_type=null)
     {
         $model = new SubmissionThread();
 
-        $user_id = \Yii::$app->user->identity->id;
+        $user_id = Yii::$app->user->identity->id;
         $model->user_id = $user_id;
 
         $authAssignment = AuthAssignment::find()->where(['user_id' => $user_id])->one();
 
-        // print_r(DocumentType::find()->where(['auth_item_name' => $authAssignment->item_name, 'type' => 'SENDER'])->createCommand()->rawSql); exit;
+        $queryDocAss = DocumentAssignment::find()->where(['auth_item' => Yii::$app->getModule('admin')->getLoggedInUserRoles()])->all();
 
-        $documentType = ArrayHelper::map(DocumentType::find()->where(['auth_item_name' => $authAssignment->item_name, 'type' => 'SENDER'])->all(),'id','title');
+        $docAss = [];
+        foreach ($queryDocAss as $key => $row) {
+            $docAss[] = $row['ref_document_type_id'];
+        }
+
+        if($transaction_type == "ACTIVITY_REMINDER")
+        {
+            $model->ref_document_type_id = 5;
+            $documentType = ArrayHelper::map(DocumentType::find()->where(['id' => $docAss])
+            ->andWhere(['id' => 5]) // ACTIVITY REMINDEr
+            ->all(),'id','title');
+        }
+        else
+        {
+            $documentType = ArrayHelper::map(DocumentType::find()
+            ->where(['id' => $docAss])
+            ->andWhere(['NOT',['id' => 5]]) // NOT ACTIVITY REMINDEr
+            ->all(),'id','title');
+        }
+       
 
         // UPLOAD FILE
         $modelUpload = new UploadMultipleForm();
@@ -165,7 +181,7 @@ class SubmissionThreadController extends Controller
                  $modelUpload->imageFiles = UploadedFile::getInstances($modelUpload, 'imageFiles');
                  if ($modelUpload->uploadMultiple()) {
                      // file is uploaded successfully
-                     \Yii::$app->getSession()->setFlash('success', 'Thread/Activity has been created');
+                     \Yii::$app->getSession()->setFlash('success', 'Transaction has been created');
                     //  return $this->redirect(['upload-file', 'id' => $model_id]);
                  }
                  else
@@ -184,6 +200,7 @@ class SubmissionThreadController extends Controller
             'model' => $model,
             'documentType' => $documentType,
             'modelUpload' => $modelUpload,
+            'documentType' => $documentType,
         ]);
     }
 
@@ -198,11 +215,7 @@ class SubmissionThreadController extends Controller
     {
         $model = $this->findModel($id);
 
-        $authAssignment = AuthAssignment::find()->where(['user_id' => $model->user_id])->one();
-
-        // print_r(DocumentType::find()->where(['auth_item_name' => $authAssignment->item_name, 'type' => 'SENDER'])->createCommand()->rawSql); exit;
-
-        $documentType = ArrayHelper::map(DocumentType::find()->where(['auth_item_name' => $authAssignment->item_name, 'type' => 'SENDER'])->all(),'id','title');
+        $documentType = ArrayHelper::map(DocumentType::find()->all(),'id','title');
 
         $modelUpload = new UploadMultipleForm();
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save() && $modelUpload->load($this->request->post())) {
@@ -214,7 +227,7 @@ class SubmissionThreadController extends Controller
             $modelUpload->imageFiles = UploadedFile::getInstances($modelUpload, 'imageFiles');
             if ($modelUpload->uploadMultiple()) {
                 // file is uploaded successfully
-                \Yii::$app->getSession()->setFlash('success', 'Thread/Activity has been changed');
+                \Yii::$app->getSession()->setFlash('success', 'Transaction has been changed');
             //  return $this->redirect(['upload-file', 'id' => $model_id]);
             }
             else
@@ -243,7 +256,7 @@ class SubmissionThreadController extends Controller
     {
         $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+        return $this->redirect(Yii::$app->request->referrer);
     }
 
     /**

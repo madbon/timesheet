@@ -50,6 +50,7 @@ ul li a:hover
                         <?=  Yii::$app->user->can('settings-list-positions') ?  "<li>".Html::a('List of Positions',['/position']) ."</li>" : ""  ?>
                         <?=  Yii::$app->user->can('settings-list-departments') ?  "<li>".Html::a('List of Departments',['/department']) ."</li>" : ""  ?>
                         <?=  Yii::$app->user->can('settings-list-document-type') ?  "<li>".Html::a('List of Document Types',['/document-type']) ."</li>" : ""  ?>
+                        <?=  Yii::$app->user->can('settings-list-document-type') ?  "<li>".Html::a('List of Document Assignments',['/document-assignment']) ."</li>" : ""  ?>
                     </ul>
                 </p>
             </div>

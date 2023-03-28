@@ -6,6 +6,8 @@ use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use common\models\SubmissionThread;
 use common\models\DocumentType;
+use common\models\DocumentAssignment;
+use Yii;
 
 /**
  * SubmissionThreadSearch represents the model behind the search form of `common\models\SubmissionThread`.
@@ -16,11 +18,13 @@ class SubmissionThreadSearch extends SubmissionThread
      * {@inheritdoc}
      */
     public $type;
+    public $program,$company,$department;
     public function rules()
     {
         return [
-            [['id', 'user_id', 'ref_document_type_id', 'created_at'], 'integer'],
-            [['remarks','type'], 'safe'],
+            [['id', 'ref_document_type_id', 'created_at'], 'integer'],
+            [['remarks','type','subject','date_time','user_id','program','company','department'], 'safe'],
+            [['date_time'], 'date', 'format' => 'php:Y-m-d'],
         ];
     }
 
@@ -43,7 +47,9 @@ class SubmissionThreadSearch extends SubmissionThread
     public function search($params)
     {
         $query = SubmissionThread::find()
-        ->joinWith('documentType');
+        ->joinWith('documentType')
+        ->joinWith('user')
+        ->joinWith('userCompany');
 
         // add conditions that should always apply here
 
@@ -59,25 +65,73 @@ class SubmissionThreadSearch extends SubmissionThread
             return $dataProvider;
         }
 
-        $user_id = \Yii::$app->user->identity->id;
+       
+        $queryDocAss = DocumentAssignment::find()->where(['auth_item' => Yii::$app->getModule('admin')->getLoggedInUserRoles()])->all();
 
-        $authAssignment = AuthAssignment::find()->where(['user_id' => $user_id])->one();
+        $docAss = [];
+        foreach ($queryDocAss as $key => $row) {
+            $docAss[] = $row['ref_document_type_id'];
+        }
 
-        // print_r(DocumentType::find()->where(['auth_item_name' => $authAssignment->item_name, 'type' => 'SENDER'])->createCommand()->rawSql); exit;
-
-        $documentTypeSubmitted = DocumentType::find()->where(['auth_item_name' => $authAssignment->item_name])->one();
-
-        $this->ref_document_type_id = !empty($this->ref_document_type_id) ? $this->ref_document_type_id : $documentTypeSubmitted->id;
+        $this->ref_document_type_id = !empty($this->ref_document_type_id) ? $this->ref_document_type_id : "X";
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
-            'user_id' => $this->user_id,
+            // 'id' => $this->id,
+            // 'user_id' => $this->user_id,
             'ref_document_type_id' => $this->ref_document_type_id,
-            'created_at' => $this->created_at,
         ]);
 
+        $query->andFilterWhere(['ref_document_type_id' => $docAss]);
+
         $query->andFilterWhere(['like', 'remarks', $this->remarks]);
+
+        $query->andFilterWhere(['like', 'subject', $this->subject]);
+
+        $query->andFilterWhere(['like', 'date_time', $this->date_time]);
+
+        if (!is_null($this->user_id)) {
+            $searchArray = explode(' ', $this->user_id);
+            foreach($searchArray as $info):
+                $query->andFilterWhere(['or', 
+                    ['like', 'user.fname', $info], 
+                    ['like', 'user.mname', $info], 
+                    ['like', 'user.sname', $info],
+                ]);
+            endforeach;
+        }
+
+        if(Yii::$app->user->can('Trainee'))
+        {
+            if($this->ref_document_type_id == 3) // ACCOMPLISHMENT REPORT
+            {
+                $query->andFilterWhere(['user.id' => Yii::$app->user->identity->id]);
+            }
+        }
+
+        if($this->ref_document_type_id == 3) // ACCOMPLISHMENT REPORT
+        {
+            $query->andFilterWhere(['user.ref_program_id' => Yii::$app->getModule('admin')->GetAssignedProgram()]);
+        }
+
+        if($this->ref_document_type_id == 5) // ACTIVITY REMINDERS
+        {
+            $query->andFilterWhere(['user.ref_department_id' => Yii::$app->getModule('admin')->GetAssignedDepartment()]);
+            $query->andFilterWhere(['user_company.ref_company_id'=> Yii::$app->getModule('admin')->GetAssignedCompany()]);
+        }
+
+
+        if(Yii::$app->user->can('OjtCoordinator'))
+        {
+            $query->andFilterWhere(['user_company.ref_company_id' => Yii::$app->getModule('admin')->GetCompanyBasedOnCourse()])->andFilterWhere(['ref_department_id' => Yii::$app->getModule('admin')->GetDepartmentBasedOnCourse()]);
+        }
+
+
+        $query->andFilterWhere(['user.ref_program_id' => $this->program]);
+        $query->andFilterWhere(['user_company.ref_company_id' => $this->company]);
+        $query->andFilterWhere(['user.ref_department_id' => $this->department]);
+
+        $query->orderBy(['id' => SORT_DESC]);
 
         // $query->andFilterWhere(['=', 'ref_document_type.id', $this->type]);
 

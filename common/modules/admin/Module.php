@@ -5,6 +5,7 @@ use common\models\Files;
 use common\models\UserData;
 use common\models\UserCompany;
 use common\models\AuthAssignment;
+use common\models\DocumentType;
 use Yii;
 
 /**
@@ -25,6 +26,21 @@ class Module extends \yii\base\Module
         parent::init();
 
         // custom initialization code goes here
+    }
+
+    public static function getLoggedInUserRoles() {
+        $roles = [];
+    
+        if (!Yii::$app->user->isGuest) {
+            $authManager = Yii::$app->authManager;
+            $userRoles = $authManager->getRolesByUser(Yii::$app->user->id);
+    
+            if (!empty($userRoles)) {
+                $roles = \yii\helpers\ArrayHelper::getColumn($userRoles, 'name');
+            }
+        }
+    
+        return $roles;
     }
 
     public static function GetSupervisorByTraineeUserId($trainee_user_id)

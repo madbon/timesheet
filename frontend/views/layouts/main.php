@@ -290,6 +290,7 @@ AppAsset::register($this);
                 'department',
                 'company',
                 'document-type',
+                'document-assignment',
                 ]) ? true : false,
                 'visible' => Yii::$app->user->can('menu-settings'),
             ],
