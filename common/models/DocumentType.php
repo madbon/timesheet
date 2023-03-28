@@ -28,7 +28,8 @@ class DocumentType extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['title'], 'string', 'max' => 150],
+            [['title','action_title'], 'string', 'max' => 150],
+            [['required_uploading','enable_tagging'],'integer'],
         ];
     }
 

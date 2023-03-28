@@ -31,6 +31,21 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'id',
             'title',
+            'action_title',
+            [
+                'label' => 'Required Uploading of Files?',
+                'value' => function($model)
+                {
+                    return $model->required_uploading ? "YES" : "NO";
+                }
+            ],
+            [
+                'label' => 'Enabled Tagging?',
+                'value' => function($model)
+                {
+                    return $model->enable_tagging ? "YES" : "NO";
+                }
+            ],
             [
                 'class' => ActionColumn::className(),
                 'urlCreator' => function ($action, DocumentType $model, $key, $index, $column) {

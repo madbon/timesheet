@@ -274,8 +274,8 @@ AppAsset::register($this);
                 'visible' => Yii::$app->user->can('menu-map-markers'),
             ],
             [
-                'label' => 'Transaction', 'url' => ['/submission-thread/index'], 'active' => Yii::$app->controller->id == "submission-thread" ? true : false,
-                'visible' => Yii::$app->user->can('menu-transaction'),
+                'label' => 'Tasks', 'url' => ['/submission-thread/index'], 'active' => Yii::$app->controller->id == "submission-thread" ? true : false,
+                'visible' => Yii::$app->user->can('menu-tasks'),
             ],
             ['label' => 'Settings', 'url' => ['/settings'], 'active' => in_array(Yii::$app->controller->id,[
                 'settings',

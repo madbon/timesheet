@@ -11,17 +11,24 @@ use common\models\Files;
 /** @var common\models\SubmissionThreadSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
-$this->title = 'Transactions';
+$this->title = 'Tasks';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="submission-thread-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <!-- <h1><?= Html::encode($this->title) ?></h1> -->
 
     <p>
-        <?= Yii::$app->user->can('create-transaction') ? Html::a('Submit Document', ['create'], ['class' => 'btn btn-outline-primary']) : "" ?>
+        <!-- <?= Yii::$app->user->can('create-transaction') ? Html::a('Submit Document', ['create'], ['class' => 'btn btn-outline-primary']) : "" ?>
 
-        <?= Yii::$app->user->can('create-activity-reminder') ? Html::a('Create Activity Reminder', ['create','transaction_type' => 'ACTIVITY_REMINDER'], ['class' => 'btn btn-outline-primary']) : "" ?>
+        <?= Yii::$app->user->can('create-activity-reminder') ? Html::a('Create Activity Reminder', ['create','transaction_type' => 'ACTIVITY_REMINDER'], ['class' => 'btn btn-outline-primary']) : "" ?> -->
+
+        <?php foreach ($documentSender as $key2 => $row2) { ?>
+            <?= Html::a($row2['action_title'], ['create',
+            'ref_document_type_id' => $row2['ref_document_type_id'],
+            'required_uploading' => $row2['required_uploading'],
+            ], ['class' => 'btn btn-warning', 'style' => 'border-radius:10px;']) ?>
+        <?php } ?>
     </p>
 
     <p style="text-align: center;">
@@ -34,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'SubmissionThreadSearch[ref_document_type_id]' => $row['ref_document_type_id'],
             ],
             [
-                'class' => 'btn btn-danger',
+                'class' => 'btn btn-danger btn-sm',
                 'style' => 'border-radius:25px;',
                 ]
             ); 
@@ -45,7 +52,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'SubmissionThreadSearch[ref_document_type_id]' => $row['ref_document_type_id'],
             ],
             [
-                'class' => 'btn btn-outline-danger',
+                'class' => 'btn btn-outline-danger btn-sm',
                 'style' => 'border-radius:25px;',
                 ]
             ); 
@@ -70,42 +77,6 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'ref_document_type_id',
             // 'remarks:ntext',
             [
-                'label' => "CREATED BY",
-                'attribute' => 'user_id',
-                'format' => 'raw',
-                'value' => function($model)
-                {
-                    return $model->user->userFullName;
-                }
-            ],
-            [
-                'label' => 'PROGRAM/COURSE',
-                'attribute' => 'program',
-                'format' => 'raw',
-                'value' => function($model)
-                {
-                    $major = !empty($model->user->programMajor->title) ? $model->user->programMajor->title : "";
-                    return (!empty($model->user->program->title) ? $model->user->program->title : "")."<br/>".$major;
-                },
-                'filter' => \yii\helpers\ArrayHelper::map((\common\models\RefProgram::find()->all()), 'id', 'title'),
-            ],
-            [
-                'label' => 'COMPANY',
-                'attribute' => 'company',
-                'value' => function($model)
-                {
-                    return !empty($model->user->userCompany->company->name) ? $model->user->userCompany->company->name : "";
-                }
-            ],
-            [
-                'label' => 'DEPARTMENT',
-                'attribute' => 'department',
-                'value' => function($model)
-                {
-                    return !empty($model->user->department->title) ? $model->user->department->title : "";
-                }
-            ],
-            [
                 'label' => "TRANSACTION TYPE",
                 'attribute' => 'ref_document_type_id',
                 'format' => 'raw',
@@ -117,15 +88,85 @@ $this->params['breadcrumbs'][] = $this->title;
                 'filter' => \yii\helpers\ArrayHelper::map((\common\models\DocumentType::find()->all()), 'id', 'title'),
             ],
             [
-                'label' => "SUBJECT",
-                'format' => 'raw',
-                'attribute' => 'subject',
-                'value' => function($model)
+                'label' => 'Trainee',
+                'attribute' => 'tagged_user_id',
+                'visible' => Yii::$app->getModule('admin')->documentTypeAttrib($searchModel->ref_document_type_id,'enable_tagging') ? true : false,
+                'value' => function($model) use($searchModel)
                 {
-                    $subject = "<strong>".$model->subject."</strong>";
-                    return $subject;
+                    return $model->taggedUser->userFullName;
                 }
             ],
+            [
+                'label' => 'PROGRAM/COURSE',
+                'attribute' => 'program',
+                'format' => 'raw',
+                'visible' => Yii::$app->user->can('OjtCoordinator') || Yii::$app->getModule('admin')->documentTypeAttrib($searchModel->ref_document_type_id,'enable_tagging'),
+                'value' => function($model) use($searchModel)
+                {
+                    if(Yii::$app->getModule('admin')->documentTypeAttrib($searchModel->ref_document_type_id,'enable_tagging'))
+                    {
+                        $major = !empty($model->taggedUser->programMajor->title) ? "<code> > </code>"."Major in ".$model->taggedUser->programMajor->title : "";
+                        $program = (!empty($model->taggedUser->program->title) ? "<code> > </code>".$model->taggedUser->program->title : "");
+    
+                    }
+                    else
+                    {
+                        $major = !empty($model->user->programMajor->title) ? "<code> > </code>"."Major in ".$model->user->programMajor->title : "";
+                        $program = (!empty($model->user->program->title) ? "<code> > </code>".$model->user->program->title : "");
+    
+                    }
+                   
+                    return $program."<br/>".$major;
+                },
+                'filter' => \yii\helpers\ArrayHelper::map((\common\models\RefProgram::find()->all()), 'id', 'title'),
+            ],
+            [
+                'label' => 'COMPANY',
+                'attribute' => 'company',
+                'visible' => Yii::$app->user->can('OjtCoordinator'),
+                'value' => function($model) use($searchModel)
+                {
+                    if(Yii::$app->getModule('admin')->documentTypeAttrib($searchModel->ref_document_type_id,'enable_tagging'))
+                    {
+                        return !empty($model->taggedUser->userCompany->company->name) ? $model->taggedUser->userCompany->company->name : "";
+                    }
+                    else
+                    {
+                        return !empty($model->user->userCompany->company->name) ? $model->user->userCompany->company->name : "";
+                    }
+                    
+                },
+                'filter' => \yii\helpers\ArrayHelper::map((\common\models\Company::find()->all()), 'id', 'name'),
+            ],
+            [
+                'label' => 'DEPARTMENT',
+                'attribute' => 'department',
+                'visible' => Yii::$app->user->can('OjtCoordinator'),
+                'value' => function($model) use($searchModel)
+                {
+                    if(Yii::$app->getModule('admin')->documentTypeAttrib($searchModel->ref_document_type_id,'enable_tagging'))
+                    {
+                        return !empty($model->taggedUser->department->title) ? $model->user->department->title : "";
+                    }
+                    else
+                    {
+                        return !empty($model->user->department->title) ? $model->user->department->title : "";
+                    }
+                    
+                },
+                'filter' => \yii\helpers\ArrayHelper::map((\common\models\Department::find()->all()), 'id', 'title'),
+            ],
+            
+            // [
+            //     'label' => "SUBJECT",
+            //     'format' => 'raw',
+            //     'attribute' => 'subject',
+            //     'value' => function($model)
+            //     {
+            //         $subject = "<strong>".$model->subject."</strong>";
+            //         return $subject;
+            //     }
+            // ],
             [
                 'label' => "REMARKS",
                 'attribute' => 'remarks',
@@ -157,7 +198,17 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
             ],
             [
+                'label' => "CREATED BY",
+                'attribute' => Yii::$app->getModule('admin')->documentTypeAttrib($searchModel->ref_document_type_id,'enable_tagging') ? false : 'user_id',
+                'format' => 'raw',
+                'value' => function($model)
+                {
+                    return "<p style='text-transform:uppercase;'>".$model->user->userFullName."<p>";
+                }
+            ],
+            [
                 'class' => ActionColumn::className(),
+                'template' => Yii::$app->getModule('admin')->documentAssignedAttrib($searchModel->ref_document_type_id,'SENDER') ?  '{view} {update} {delete}' : '{view}',
                 'urlCreator' => function ($action, SubmissionThread $model, $key, $index, $column) {
                     return Url::toRoute([$action, 'id' => $model->id]);
                  }

@@ -5,6 +5,7 @@ use common\models\Files;
 use common\models\UserData;
 use common\models\UserCompany;
 use common\models\AuthAssignment;
+use common\models\DocumentAssignment;
 use common\models\DocumentType;
 use Yii;
 
@@ -26,6 +27,22 @@ class Module extends \yii\base\Module
         parent::init();
 
         // custom initialization code goes here
+    }
+
+    public static function documentTypeAttrib($id,$attrib)
+    {
+        $query = DocumentType::findOne(['id' => $id]);
+
+        return !empty($query[$attrib]) ? $query[$attrib] : null;
+    }
+
+    public static function documentAssignedAttrib($id,$type)
+    {
+        $query = DocumentAssignment::find()->where(['ref_document_type_id' => $id, 'auth_item' => Yii::$app->getModule('admin')->getLoggedInUserRoles(), 'type' => $type])->one();
+
+        // print_r($query); exit;
+
+        return !empty($query->type) ? $query->type : null;
     }
 
     public static function getLoggedInUserRoles() {

@@ -51,9 +51,16 @@ class SubmissionThreadController extends Controller
         $dataProvider = $searchModel->search($this->request->queryParams);
 
         $documentAss = DocumentAssignment::find()
-        ->select(["*",'ref_document_type.title as title'])
+        ->select(["*",'ref_document_type.title as title','ref_document_type.action_title'])
         ->joinWith('documentType')
         ->where(['auth_item' => Yii::$app->getModule('admin')->getLoggedInUserRoles()])
+        ->all();
+
+        $documentSender = DocumentAssignment::find()
+        ->select(['ref_document_type.action_title','ref_document_type_id','ref_document_type.required_uploading'])
+        ->joinWith('documentType')
+        ->where(['auth_item' => Yii::$app->getModule('admin')->getLoggedInUserRoles()])
+        ->andWhere(['type' => 'SENDER'])
         ->all();
         // ->createCommand()->rawSql;
         
@@ -62,6 +69,7 @@ class SubmissionThreadController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'documentAss' => $documentAss,
+            'documentSender' => $documentSender,
         ]);
     }
 
@@ -128,7 +136,7 @@ class SubmissionThreadController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
-    public function actionCreate($transaction_type=null)
+    public function actionCreate($ref_document_type_id=null,$required_uploading=null)
     {
         $model = new SubmissionThread();
 
@@ -144,20 +152,22 @@ class SubmissionThreadController extends Controller
             $docAss[] = $row['ref_document_type_id'];
         }
 
-        if($transaction_type == "ACTIVITY_REMINDER")
-        {
-            $model->ref_document_type_id = 5;
-            $documentType = ArrayHelper::map(DocumentType::find()->where(['id' => $docAss])
-            ->andWhere(['id' => 5]) // ACTIVITY REMINDEr
-            ->all(),'id','title');
-        }
-        else
-        {
-            $documentType = ArrayHelper::map(DocumentType::find()
-            ->where(['id' => $docAss])
-            ->andWhere(['NOT',['id' => 5]]) // NOT ACTIVITY REMINDEr
-            ->all(),'id','title');
-        }
+        // if($transaction_type == "ACTIVITY_REMINDER")
+        // {
+            
+        // }
+        // else
+        // {
+        //     $documentType = ArrayHelper::map(DocumentType::find()
+        //     ->where(['id' => $docAss])
+        //     ->andWhere(['NOT',['id' => 5]]) // NOT ACTIVITY REMINDEr
+        //     ->all(),'id','title');
+        // }
+
+        $model->ref_document_type_id = $ref_document_type_id;
+        $documentType = ArrayHelper::map(DocumentType::find()->where(['id' => $docAss])
+        ->andWhere(['id' => $ref_document_type_id]) // ACTIVITY REMINDEr
+            ->all(),'id','action_title');
        
 
         // UPLOAD FILE

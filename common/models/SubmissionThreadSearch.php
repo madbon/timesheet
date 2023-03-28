@@ -23,7 +23,7 @@ class SubmissionThreadSearch extends SubmissionThread
     {
         return [
             [['id', 'ref_document_type_id', 'created_at'], 'integer'],
-            [['remarks','type','subject','date_time','user_id','program','company','department'], 'safe'],
+            [['remarks','type','subject','date_time','user_id','program','company','department','tagged_user_id'], 'safe'],
             [['date_time'], 'date', 'format' => 'php:Y-m-d'],
         ];
     }
@@ -46,10 +46,22 @@ class SubmissionThreadSearch extends SubmissionThread
      */
     public function search($params)
     {
-        $query = SubmissionThread::find()
-        ->joinWith('documentType')
-        ->joinWith('user')
-        ->joinWith('userCompany');
+        $this->load($params);
+
+        if(Yii::$app->getModule('admin')->documentTypeAttrib($this->ref_document_type_id,'enable_tagging'))
+        {
+            $query = SubmissionThread::find()
+            ->joinWith('documentType')
+            ->joinWith('taggedUser')
+            ->joinWith('userCompany');
+        }
+        else
+        {
+            $query = SubmissionThread::find()
+            ->joinWith('documentType')
+            ->joinWith('user')
+            ->joinWith('userCompany');
+        }
 
         // add conditions that should always apply here
 
@@ -57,7 +69,7 @@ class SubmissionThreadSearch extends SubmissionThread
             'query' => $query,
         ]);
 
-        $this->load($params);
+        
 
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
@@ -97,6 +109,17 @@ class SubmissionThreadSearch extends SubmissionThread
                     ['like', 'user.fname', $info], 
                     ['like', 'user.mname', $info], 
                     ['like', 'user.sname', $info],
+                ]);
+            endforeach;
+        }
+
+        if (!is_null($this->tagged_user_id)) {
+            $searchArray2 = explode(' ', $this->tagged_user_id);
+            foreach($searchArray2 as $info2):
+                $query->andFilterWhere(['or', 
+                    ['like', 'user.fname', $info2], 
+                    ['like', 'user.mname', $info2], 
+                    ['like', 'user.sname', $info2],
                 ]);
             endforeach;
         }
