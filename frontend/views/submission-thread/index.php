@@ -180,7 +180,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     $fileContent = "";
                     foreach ($files as $file)
                     {
-                        $fileContent .= Html::a(Html::encode($file->file_name . '.' . $file->extension), Url::to(['download', 'id' => $file->id]), ['class' => 'btn btn-outline-secondary', 'style' => 'border-radius:25px;']);
+                        $fileContent .= Html::a(Html::encode($file->file_name . '.' . $file->extension), Url::to(['download', 'id' => $file->id]), ['class' => 'btn btn-outline-warning', 'style' => 'border-radius:25px;']);
                     }
                     return $remarks.$fileContent;
                 }
