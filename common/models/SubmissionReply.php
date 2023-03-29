@@ -32,6 +32,7 @@ class SubmissionReply extends \yii\db\ActiveRecord
             [['submission_thread_id', 'user_id'], 'integer'],
             [['message'], 'string'],
             [['date_time'], 'safe'],
+            [['message'],'required'],
         ];
     }
 
