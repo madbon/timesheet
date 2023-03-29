@@ -77,23 +77,41 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'ref_document_type_id',
             // 'remarks:ntext',
             [
-                'label' => "TRANSACTION TYPE",
+                'label' => "TASK TYPE",
                 'attribute' => 'ref_document_type_id',
                 'format' => 'raw',
                 'value' => function($model)
                 {
-                    $type = "<label style='background:#e4e4e4; border:1px solid #d4d4d4; border-radius:5px; padding:2px;'>".$model->documentType->title."</label>";
+                    $type = "<label style='background:#dc3545; color:white; border:1px solid #dc3545; border-radius:25px; padding:2px; padding-left:7px; padding-right:7px;'>".$model->documentType->title."</label>";
                     return $type;
                 },
                 'filter' => \yii\helpers\ArrayHelper::map((\common\models\DocumentType::find()->all()), 'id', 'title'),
             ],
             [
+                'label' => "CREATED BY",
+                'attribute' => Yii::$app->getModule('admin')->documentTypeAttrib($searchModel->ref_document_type_id,'enable_tagging') ? false : 'user_id',
+                'format' => 'raw',
+                'value' => function($model)
+                {
+                    $role = !empty($model->user->authAssignment->item_name) ? "<br/><code> > </code>".$model->user->authAssignment->item_name : "";
+                    if($model->user->authAssignment->item_name == "CompanySupervisor")
+                    {
+                        return "<span style='text-transform:uppercase;'> <code> > </code>".$model->user->userFullName."</span>".$role;
+                    }
+                    else
+                    {
+                        return "<span style='color:#dc3545; font-size:10px; text-transform:uppercase; font-weight:bold;'>".$model->user->userFullName."</span>".$role;
+                    }
+                }
+            ],
+            [
                 'label' => 'Trainee',
                 'attribute' => 'tagged_user_id',
+                'format' => 'raw',
                 'visible' => Yii::$app->getModule('admin')->documentTypeAttrib($searchModel->ref_document_type_id,'enable_tagging') ? true : false,
                 'value' => function($model) use($searchModel)
                 {
-                    return $model->taggedUser->userFullName;
+                    return "<span style='color:#dc3545; font-size:10px; text-transform:uppercase; font-weight:bold;'>".$model->taggedUser->userFullName."</span>";
                 }
             ],
             [
@@ -173,14 +191,57 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'raw',
                 'value' => function($model)
                 {
-                    $remarks = !empty($model->remarks) ? "<p style='white-space:pre-line;'>".(Yii::$app->getModule('admin')->truncateText($model->remarks))."</p>" : "";
+                    $remarks = !empty($model->remarks) ? "<p style='white-space:pre-line; font-style:italic;'><code> - </code>".($model->remarks)."</p>" : "";
 
                     $files = Files::find()->where(['model_id' => $model->id, 'model_name' => 'SubmissionThread'])->all();
 
                     $fileContent = "";
                     foreach ($files as $file)
                     {
-                        $fileContent .= Html::a(Html::encode($file->file_name . '.' . $file->extension), Url::to(['download', 'id' => $file->id]), ['class' => 'btn btn-outline-warning', 'style' => 'border-radius:25px;']);
+                        $filePath = 'uploads/' . $file->file_hash . '.' . $file->extension;
+                        if (file_exists($filePath)) {
+                            if (in_array($file->extension, ['png', 'jpg', 'jpeg', 'gif', 'pdf']))
+                            {
+                                if($file->user_id == Yii::$app->user->identity->id)
+                                {
+                                    $fileContent .= Html::a(Html::encode($file->file_name . '.' . $file->extension), Url::to(['preview', 'id' => $file->id]), ['class' => 'btn btn-outline-warning', 'style' => 'border-radius:25px 0px 0px 25px;','target' => '_blank']).Html::a('X', Url::to(['delete-file', 'id' => $file->id]), [
+                                        'class' => 'btn btn-warning',
+                                        'style' => 'border-radius:0px 25px 25px 0px;',
+                                        'data' => [
+                                            'confirm' => 'Are you sure you want to delete this file?',
+                                            'method' => 'post',
+                                        ],
+                                    ]);
+                                }
+                                else
+                                {
+                                    $fileContent .= Html::a(Html::encode($file->file_name . '.' . $file->extension), Url::to(['preview', 'id' => $file->id]), ['class' => 'btn btn-outline-warning', 'style' => 'border-radius:25px;','target' => '_blank']);
+                                }
+                                
+                            }
+                            else
+                            {
+                                if($file->user_id == Yii::$app->user->identity->id)
+                                {
+                                    $fileContent .= Html::a(Html::encode($file->file_name . '.' . $file->extension), Url::to(['download', 'id' => $file->id]), ['class' => 'btn btn-outline-warning', 'style' => 'border-radius:25px 0px 0px 25px;','target' => '_blank']).Html::a('X', Url::to(['delete-file', 'id' => $file->id]), [
+                                        'class' => 'btn btn-warning',
+                                        'style' => 'border-radius:0px 25px 25px 0px;',
+                                        'data' => [
+                                            'confirm' => 'Are you sure you want to delete this file?',
+                                            'method' => 'post',
+                                        ],
+                                    ]);
+                                }
+                                else
+                                {
+                                    $fileContent .= Html::a(Html::encode($file->file_name . '.' . $file->extension), Url::to(['download', 'id' => $file->id]), ['class' => 'btn btn-outline-warning', 'style' => 'border-radius:25px;','target' => '_blank']);
+                                }
+                            }
+                        }
+                        // else
+                        // {
+                        //     $fileContent = "<button type='button' class='btn btn-outline-dark btn-sm' style='font-size:10px; border-radius:25px;'> The file was not uploaded properly. Please upload again.</button>";
+                        // }
                     }
                     return $remarks.$fileContent;
                 }
@@ -196,15 +257,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     $dateTime = date('F j, Y h:i a',strtotime($model->date_time));
                     return $dateTime;
                 },
-            ],
-            [
-                'label' => "CREATED BY",
-                'attribute' => Yii::$app->getModule('admin')->documentTypeAttrib($searchModel->ref_document_type_id,'enable_tagging') ? false : 'user_id',
-                'format' => 'raw',
-                'value' => function($model)
-                {
-                    return "<p style='text-transform:uppercase;'>".$model->user->userFullName."<p>";
-                }
             ],
             [
                 'class' => ActionColumn::className(),

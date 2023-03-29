@@ -113,6 +113,28 @@ class SubmissionThreadController extends Controller
         }
     }
 
+    public function actionDeleteFile($id)
+    {
+        $file = Files::findOne(['id' => $id]);
+
+        if ($file !== null) {
+            $filePath = 'uploads/' . $file->file_hash . '.' . $file->extension;
+
+            if ($file->delete()) {
+                if (file_exists($filePath)) {
+                    @unlink($filePath);
+                }
+                Yii::$app->session->setFlash('success', 'File deleted successfully.');
+            } else {
+                Yii::$app->session->setFlash('error', 'Error deleting file. Please try again.');
+            }
+        } else {
+            throw new \yii\web\NotFoundHttpException('File not found.');
+        }
+
+        return $this->redirect(Yii::$app->request->referrer);
+    }
+
 
 
     /**
