@@ -16,7 +16,7 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'action_title')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'required_uploading')->dropDownList([0 => 'NO', 1 => 'YES'], ['prompt' => '-','class' => 'form-control'])->label("Transaction Type") ?>
+    <?= $form->field($model, 'required_uploading')->dropDownList([0 => 'NO', 1 => 'YES'], ['prompt' => '-','class' => 'form-control'])->label("Required Uploading?") ?>
 
     <?= $form->field($model, 'enable_tagging')->dropDownList([0 => 'NO', 1 => 'YES'], ['prompt' => '-','class' => 'form-control'])->label("Enable Tagging?") ?>
 
