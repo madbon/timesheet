@@ -5,7 +5,7 @@ use yii\helpers\Html;
 /** @var yii\web\View $this */
 /** @var common\models\DocumentType $model */
 
-$this->title = 'Update Document Type: ' . $model->title;
+$this->title = 'Update Task Type: ' . $model->title;
 $this->params['breadcrumbs'][] = ['label' => 'Document Types', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->title, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Update';

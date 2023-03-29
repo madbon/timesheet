@@ -7,7 +7,7 @@ use yii\widgets\DetailView;
 /** @var common\models\DocumentType $model */
 
 $this->title = $model->title;
-$this->params['breadcrumbs'][] = ['label' => 'Document Types', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Task Types', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>

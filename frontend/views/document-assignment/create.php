@@ -5,8 +5,8 @@ use yii\helpers\Html;
 /** @var yii\web\View $this */
 /** @var common\models\DocumentAssignment $model */
 
-$this->title = 'Create Document Assignment';
-$this->params['breadcrumbs'][] = ['label' => 'Document Assignments', 'url' => ['index']];
+$this->title = 'Create Task Assignment';
+$this->params['breadcrumbs'][] = ['label' => 'Task Assignments', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="document-assignment-create">

@@ -10,7 +10,7 @@ use yii\grid\GridView;
 /** @var common\models\DocumentAssignmentSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
-$this->title = 'Document Assignments';
+$this->title = 'Task Assignments';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="document-assignment-index">
@@ -18,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Document Assignment', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Task Assignment', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>

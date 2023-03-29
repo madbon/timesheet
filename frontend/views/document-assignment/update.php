@@ -5,8 +5,8 @@ use yii\helpers\Html;
 /** @var yii\web\View $this */
 /** @var common\models\DocumentAssignment $model */
 
-$this->title = 'Update Document Assignment: ' . $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Document Assignments', 'url' => ['index']];
+$this->title = 'Update Task Assignment: ' . $model->id;
+$this->params['breadcrumbs'][] = ['label' => 'Task Assignments', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Update';
 ?>

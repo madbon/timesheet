@@ -20,6 +20,9 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'enable_tagging')->dropDownList([0 => 'NO', 1 => 'YES'], ['prompt' => '-','class' => 'form-control'])->label("Enable Tagging?") ?>
 
+    <?= $form->field($model, 'enable_commenting')->dropDownList([0 => 'NO', 1 => 'YES'], ['prompt' => '-','class' => 'form-control'])->label("Enable Commenting?") ?>
+
+
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
     </div>
