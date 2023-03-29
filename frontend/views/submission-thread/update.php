@@ -5,7 +5,7 @@ use yii\helpers\Html;
 /** @var yii\web\View $this */
 /** @var common\models\SubmissionThread $model */
 
-$this->title = 'Update: '.$model->documentType->title;
+$this->title = 'Edit Remarks / Add Attachment: '.$model->documentType->title;
 $this->params['breadcrumbs'][] = ['label' => 'Tasks', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => 'Details', 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Update';

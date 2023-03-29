@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 use yii\helpers\Url;
 use common\models\Files;
+use yii\widgets\ActiveForm;
 
 /** @var yii\web\View $this */
 /** @var common\models\SubmissionThread $model */
@@ -19,24 +20,75 @@ table.table tbody tr th
     text-transform: uppercase;
     font-size:12px;
 }
+
+card {
+    /* background-color: #f2f2f2; */
+    border-radius: 20px;
+    padding: 10px;
+    margin: 10px;
+    /* max-width: 70%; */
+    position: relative;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+.card:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    border-top: 20px solid transparent;
+    border-bottom: 20px solid transparent;
+    /* background: black; */
+    /* box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); */
+}
+.left-card:before {
+    left: -20px;
+    top:2px;
+    border-right: 20px solid #f2f2f2;
+}
+.right-card:before {
+    right: -20px;
+    top:2px;
+    border-left: 20px solid #ffc107;
+}
+.left-card {
+    float: left;
+    margin-bottom: 20px;
+    background-color: #f2f2f2;
+    max-width: 90%;
+    padding:10px;
+}
+.right-card {
+    float: right;
+    margin-bottom: 20px;
+    background-color: #ffc107;
+    max-width: 92%;
+    padding:10px;
+}
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}
 </style>
 <div class="submission-thread-view">
 
     <!-- <h1><?= Html::encode($this->title) ?></h1> -->
 
-    <p>
-        <!-- <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?> -->
-    </p>
-
     <div style="width:80%; margin-right:10%; margin-left:auto;">
-       
+    <p>
+        <?= Html::a('Edit Remarks / Add Attachment', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?php 
+        // Html::a('Delete', ['delete', 'id' => $model->id], [
+        //     'class' => 'btn btn-danger',
+        //     'data' => [
+        //         'confirm' => 'Are you sure you want to delete this item?',
+        //         'method' => 'post',
+        //     ],
+        // ]) 
+        ?>
+    </p>
         <?php 
         echo DetailView::widget([
             'model' => $model,
@@ -256,3 +308,126 @@ table.table tbody tr th
     </div> -->
 
 </div>
+
+<?php if($replyQuery){ ?>
+<div style="width:80%; margin-left:10%; margin-right:auto;  background:#ffe9a7;  margin-top:20px; border:1px solid #ffc107;">
+    <div class="thread-div" style="width:70%; margin-right:15%; margin-left:auto; padding-top:20px;">
+        <?php foreach ($replyQuery as $row) { ?>
+            <?php
+                $files = Files::find()->where(['model_id' => $row->id, 'model_name' => 'SubmissionReply'])->all();
+
+                $fileContent = "";
+                foreach ($files as $file)
+                {
+                    $filePath = 'uploads/' . $file->file_hash . '.' . $file->extension;
+                    if (file_exists($filePath)) {
+                        if (in_array($file->extension, ['png', 'jpg', 'jpeg', 'gif', 'pdf']))
+                        {
+                            if($file->user_id == Yii::$app->user->identity->id)
+                            {
+                                $fileContent .= Html::a(Html::encode($file->file_name . '.' . $file->extension), Url::to(['preview', 'id' => $file->id]), ['class' => 'btn btn-outline-dark btn-sm', 'style' => 'border-radius:25px;','target' => '_blank']);
+                                
+                                // Html::a('X', Url::to(['delete-file', 'id' => $file->id]), [
+                                //     'class' => 'btn btn-light',
+                                //     'style' => 'border-radius:0px 25px 25px 0px;',
+                                //     'data' => [
+                                //         'confirm' => 'Are you sure you want to delete this file?',
+                                //         'method' => 'post',
+                                //     ],
+                                // ]);
+                            }
+                            else
+                            {
+                                $fileContent .= Html::a(Html::encode($file->file_name . '.' . $file->extension), Url::to(['preview', 'id' => $file->id]), ['class' => 'btn btn-outline-dark btn-sm', 'style' => 'border-radius:25px;','target' => '_blank']);
+                            }
+                            
+                        }
+                        else
+                        {
+                            if($file->user_id == Yii::$app->user->identity->id)
+                            {
+                                $fileContent .= Html::a(Html::encode($file->file_name . '.' . $file->extension), Url::to(['download', 'id' => $file->id]), ['class' => 'btn btn-outline-dark btn-sm', 'style' => 'border-radius:25;','target' => '_blank']);
+                                
+                                // Html::a('X', Url::to(['delete-file', 'id' => $file->id]), [
+                                //     'class' => 'btn btn-light',
+                                //     'style' => 'border-radius:0px 25px 25px 0px;',
+                                //     'data' => [
+                                //         'confirm' => 'Are you sure you want to delete this file?',
+                                //         'method' => 'post',
+                                //     ],
+                                // ]);
+                            }
+                            else
+                            {
+                                $fileContent .= Html::a(Html::encode($file->file_name . '.' . $file->extension), Url::to(['download', 'id' => $file->id]), ['class' => 'btn btn-outline-dark btn-sm', 'style' => 'border-radius:25px;','target' => '_blank']);
+                            }
+                        }
+                    }
+                }
+                // echo $fileContent;
+            ?>
+
+            <?php if($row->user_id == Yii::$app->user->identity->id){ ?>
+
+                <div class="card right-card">
+                    <p>
+                        <?= $row->message ?>
+                    </p>
+
+                    <p><?= $fileContent ?></p>
+
+                    <span style="font-size:10px;"><?= $row->user->userFullName; ?>
+                        <code>-</code> 
+                        <span><?= date('F j, Y h:i a',strtotime($row->date_time)) ?></span>
+                    </span>
+
+                    
+                </div>
+                <div class="clearfix"></div>
+
+            <?php }else{ ?>
+
+                <div class="card left-card">
+                    <p><?= $row->message ?></p>
+
+                    <p><?= $fileContent ?></p>
+
+                    <span style="font-size:10px;"><?= $row->user->userFullName; ?>
+                        <code>-</code> 
+                        <span><?= date('F j, Y h:i a',strtotime($row->date_time)) ?></span>
+                    </span>
+                </div>
+                <div class="clearfix"></div>
+
+            <?php } ?>
+        <?php } ?>
+        
+        
+       
+    </div>
+</div>
+<?php } ?>
+
+<?php if($model->documentType->enable_commenting){ ?>
+<div class="submission-reply-form"  style="width:80%; margin-right:10%; margin-left:auto;">
+
+    <?php $form = ActiveForm::begin(); ?>
+
+    <?= $form->field($replyModel, 'submission_thread_id')->hiddenInput()->label(false) ?>
+
+    <?= $form->field($replyModel, 'user_id')->hiddenInput()->label(false) ?>
+
+    <?= $form->field($replyModel, 'message')->textarea(['rows' => 2])->label('Comment/Remarks') ?>
+
+    <?= $form->field($modelUpload, 'imageFiles[]')->fileInput(['multiple' => true]) ?>
+
+    <?php // $form->field($replyModel, 'date_time')->textInput() ?>
+
+    <div class="form-group">
+        <?= Html::submitButton('REPLY', ['class' => 'btn btn-warning']) ?>
+    </div>
+
+    <?php ActiveForm::end(); ?>
+
+</div>
+<?php } ?>

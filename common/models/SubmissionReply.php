@@ -48,4 +48,14 @@ class SubmissionReply extends \yii\db\ActiveRecord
             'date_time' => 'Date Time',
         ];
     }
+
+    /**
+     * Gets query for [[User]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUser()
+    {
+        return $this->hasOne(UserData::class, ['id' => 'user_id']);
+    }
 }

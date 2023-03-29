@@ -4,6 +4,7 @@ namespace frontend\controllers;
 
 use common\models\SubmissionThread;
 use common\models\SubmissionThreadSearch;
+use common\models\SubmissionReply;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -147,9 +148,49 @@ class SubmissionThreadController extends Controller
     {
         $files = Files::find()->where(['model_id' => $id, 'model_name' => 'SubmissionThread'])->all();
 
+        $replyModel = new SubmissionReply();
+
+        $replyModel->submission_thread_id = $id;
+        $replyModel->user_id = Yii::$app->user->identity->id;
+
+         // UPLOAD FILE
+         $modelUpload = new UploadMultipleForm();
+        if ($this->request->isPost) {
+
+            date_default_timezone_set('Asia/Manila');
+            $replyModel->date_time = date('Y-m-d H:i:s');
+
+            if ($replyModel->load($this->request->post()) && $modelUpload->load($this->request->post()) && $replyModel->save()) {
+
+                $modelUpload->model_name = "SubmissionReply";
+                $modelUpload->model_id = $replyModel->id;
+
+                 $modelUpload->imageFiles = UploadedFile::getInstances($modelUpload, 'imageFiles');
+                 if ($modelUpload->uploadMultiple()) {
+                     // file is uploaded successfully
+                    //  \Yii::$app->getSession()->setFlash('success', 'Created successfully');
+                    //  return $this->redirect(['upload-file', 'id' => $model_id]);
+                 }
+                 else
+                 {
+                    print_r($modelUpload->errors); exit;
+                 }
+
+                Yii::$app->session->setFlash('success', 'Comment/Remarks has been added.');
+                return $this->redirect(Yii::$app->request->referrer);
+            }
+        } else {
+            $replyModel->loadDefaultValues();
+        }
+
+        $replyQuery = SubmissionReply::find()->where(['submission_thread_id' => $id])->all();
+
         return $this->render('view', [
             'model' => $this->findModel($id),
             'files' => $files,
+            'replyModel' => $replyModel,
+            'replyQuery' => $replyQuery,
+            'modelUpload' => $modelUpload,
         ]);
     }
 
@@ -213,7 +254,7 @@ class SubmissionThreadController extends Controller
                  $modelUpload->imageFiles = UploadedFile::getInstances($modelUpload, 'imageFiles');
                  if ($modelUpload->uploadMultiple()) {
                      // file is uploaded successfully
-                     \Yii::$app->getSession()->setFlash('success', 'Transaction has been created');
+                     \Yii::$app->getSession()->setFlash('success', 'Created successfully');
                     //  return $this->redirect(['upload-file', 'id' => $model_id]);
                  }
                  else
@@ -259,7 +300,7 @@ class SubmissionThreadController extends Controller
             $modelUpload->imageFiles = UploadedFile::getInstances($modelUpload, 'imageFiles');
             if ($modelUpload->uploadMultiple()) {
                 // file is uploaded successfully
-                \Yii::$app->getSession()->setFlash('success', 'Transaction has been changed');
+                \Yii::$app->getSession()->setFlash('success', 'Changed successfully');
             //  return $this->redirect(['upload-file', 'id' => $model_id]);
             }
             else
