@@ -5,6 +5,7 @@ namespace frontend\models;
 use yii\base\Model;
 use yii\web\UploadedFile;
 use common\models\Files;
+use yii\validators\FileValidator;
 use Yii;
 
 class UploadMultipleForm extends Model
@@ -15,10 +16,13 @@ class UploadMultipleForm extends Model
     // public $imageFile;
     public $model_name,$model_id,$file_name,$extension,$file_hash,$remarks,$created_at;
     public $imageFiles;
+    // public $ref_document_type_id;
     public function rules()
     {
         return [
-            [['imageFiles'], 'file', 'skipOnEmpty' => Yii::$app->controller->action->id == "update" ? true : false, 'extensions' => 'png, jpg, jpeg, gif, pdf, docx, xlsx, xls', 'maxFiles' => 10,'maxSize' => 5 * 1024 * 1024, 'tooBig' => 'Maximum file size is less than 5MB'],
+            // Yii::$app->controller->action->id == "update" ? true : false
+            [['imageFiles'], 'file', 'skipOnEmpty' => Yii::$app->controller->action->id == "update" || Yii::$app->request->get('required_uploading') != "1" ? true : false, 'extensions' => 'png, jpg, jpeg, gif, pdf, docx, xlsx, xls', 'maxFiles' => 10,'maxSize' => 5 * 1024 * 1024, 'tooBig' => 'Maximum file size is less than 5MB'],
+            // ['imageFiles','validateImageFiles'],
             [['model_name','model_id','file_name','extension','file_hash','remarks','created_at'],'safe'],
             [['model_name','file_name','extension','file_hash','remarks'],'safe'],
             [['model_name','file_name','extension','file_hash','remarks'],'string'],
@@ -63,5 +67,19 @@ class UploadMultipleForm extends Model
             return false;
         }
     }
+
+    // public function validateImageFiles($attribute, $params, $validator)
+    // {
+    //     $fileValidation = new FileValidator([
+    //         'skipOnEmpty' => $this->ref_document_type_id == 1 ? false : true,
+    //         'extensions' => 'png, jpg, jpeg, gif, pdf, docx, xlsx, xls',
+    //         'maxFiles' => 10,
+    //         'maxSize' => 5 * 1024 * 1024,
+    //         'tooBig' => 'Maximum file size is less than 5MB',
+    //     ]);
+
+    //     $fileValidation->validateAttribute($this, $attribute);
+    // }
+
 
 }

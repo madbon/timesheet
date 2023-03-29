@@ -12,15 +12,16 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'title')->textInput() ?>
+    <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
 
-    <?php // $form->field($model, 'type')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'action_title')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'type')->dropDownList(['RECEIVER' => 'RECEIVER', 'SENDER' => 'SENDER'], ['prompt' => '-','class' => 'form-control'])->label("TYPE") ?>
+    <?= $form->field($model, 'required_uploading')->dropDownList([0 => 'NO', 1 => 'YES'], ['prompt' => '-','class' => 'form-control'])->label("Required Uploading?") ?>
 
-    <?= $form->field($model, 'auth_item_name')->dropDownList($authItem, ['prompt' => '-','class' => 'form-control'])->label("ROLE") ?>
+    <?= $form->field($model, 'enable_tagging')->dropDownList([0 => 'NO', 1 => 'YES'], ['prompt' => '-','class' => 'form-control'])->label("Enable Tagging?") ?>
 
-    <?= $form->field($model, 'required_uploading')->dropDownList(['YES' => 'YES', 'NO' => 'NO'], ['prompt' => '-','class' => 'form-control'])->label("Required Uploading of Files?") ?>
+    <?= $form->field($model, 'enable_commenting')->dropDownList([0 => 'NO', 1 => 'YES'], ['prompt' => '-','class' => 'form-control'])->label("Enable Commenting?") ?>
+
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

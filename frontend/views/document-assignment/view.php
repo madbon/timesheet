@@ -4,14 +4,14 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /** @var yii\web\View $this */
-/** @var common\models\DocumentType $model */
+/** @var common\models\DocumentAssignment $model */
 
-$this->title = $model->title;
-$this->params['breadcrumbs'][] = ['label' => 'Task Types', 'url' => ['index']];
+$this->title = $model->id;
+$this->params['breadcrumbs'][] = ['label' => 'Task Assignments', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="document-type-view">
+<div class="document-assignment-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -30,7 +30,9 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'id',
-            'title',
+            'ref_document_type_id',
+            'auth_item',
+            'type',
         ],
     ]) ?>
 

@@ -32,6 +32,7 @@ class SubmissionReply extends \yii\db\ActiveRecord
             [['submission_thread_id', 'user_id'], 'integer'],
             [['message'], 'string'],
             [['date_time'], 'safe'],
+            [['message'],'required'],
         ];
     }
 
@@ -47,5 +48,15 @@ class SubmissionReply extends \yii\db\ActiveRecord
             'message' => 'Message',
             'date_time' => 'Date Time',
         ];
+    }
+
+    /**
+     * Gets query for [[User]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUser()
+    {
+        return $this->hasOne(UserData::class, ['id' => 'user_id']);
     }
 }

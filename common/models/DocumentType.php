@@ -8,9 +8,7 @@ use Yii;
  * This is the model class for table "ref_document_type".
  *
  * @property int $id
- * @property int|null $title
- * @property string|null $type Receiver or Sender
- * @property string|null $auth_item_name
+ * @property string|null $title
  *
  * @property SubmissionThread[] $submissionThreads
  */
@@ -30,11 +28,8 @@ class DocumentType extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['title','type','auth_item_name','required_uploading'],'required'],
-            [['title'], 'string'],
-            [['type'], 'string', 'max' => 10],
-            [['auth_item_name'], 'string', 'max' => 50],
-            [['auth_item_name','type','title'],'unique','targetAttribute' => ['auth_item_name','type','title']],
+            [['title','action_title'], 'string', 'max' => 150],
+            [['required_uploading','enable_tagging','enable_commenting'],'integer'],
         ];
     }
 
@@ -46,8 +41,6 @@ class DocumentType extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'title' => 'Title',
-            'type' => 'Type',
-            'auth_item_name' => 'Role',
         ];
     }
 

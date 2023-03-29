@@ -2,16 +2,19 @@
 
 namespace frontend\controllers;
 
-use common\models\DocumentType;
-use common\models\DocumentTypeSearch;
+use common\models\DocumentAssignment;
+use common\models\DocumentAssignmentSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-
+use common\models\AuthAssignment;
+use common\models\AuthItem;
+use yii\helpers\ArrayHelper;
+use common\models\DocumentType;
 /**
- * DocumentTypeController implements the CRUD actions for DocumentType model.
+ * DocumentAssignmentController implements the CRUD actions for DocumentAssignment model.
  */
-class DocumentTypeController extends Controller
+class DocumentAssignmentController extends Controller
 {
     /**
      * @inheritDoc
@@ -32,13 +35,13 @@ class DocumentTypeController extends Controller
     }
 
     /**
-     * Lists all DocumentType models.
+     * Lists all DocumentAssignment models.
      *
      * @return string
      */
     public function actionIndex()
     {
-        $searchModel = new DocumentTypeSearch();
+        $searchModel = new DocumentAssignmentSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
         return $this->render('index', [
@@ -48,7 +51,7 @@ class DocumentTypeController extends Controller
     }
 
     /**
-     * Displays a single DocumentType model.
+     * Displays a single DocumentAssignment model.
      * @param int $id ID
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
@@ -61,13 +64,19 @@ class DocumentTypeController extends Controller
     }
 
     /**
-     * Creates a new DocumentType model.
+     * Creates a new DocumentAssignment model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
     public function actionCreate()
     {
-        $model = new DocumentType();
+        $model = new DocumentAssignment();
+
+        $auth_item = AuthItem::find()->where(['type' => 1])->all();
+        $qryDocumentType = DocumentType::find()->all();
+
+        $authItem = ArrayHelper::map($auth_item,'name','name');
+        $documentType = ArrayHelper::map($qryDocumentType,'id','title');
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
@@ -79,11 +88,13 @@ class DocumentTypeController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'authItem' => $authItem,
+            'documentType' => $documentType,
         ]);
     }
 
     /**
-     * Updates an existing DocumentType model.
+     * Updates an existing DocumentAssignment model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param int $id ID
      * @return string|\yii\web\Response
@@ -93,17 +104,25 @@ class DocumentTypeController extends Controller
     {
         $model = $this->findModel($id);
 
+        $auth_item = AuthItem::find()->where(['type' => 1])->all();
+        $qryDocumentType = DocumentType::find()->all();
+
+        $authItem = ArrayHelper::map($auth_item,'name','name');
+        $documentType = ArrayHelper::map($qryDocumentType,'id','title');
+
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('update', [
             'model' => $model,
+            'authItem' => $authItem,
+            'documentType' => $documentType,
         ]);
     }
 
     /**
-     * Deletes an existing DocumentType model.
+     * Deletes an existing DocumentAssignment model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param int $id ID
      * @return \yii\web\Response
@@ -117,15 +136,15 @@ class DocumentTypeController extends Controller
     }
 
     /**
-     * Finds the DocumentType model based on its primary key value.
+     * Finds the DocumentAssignment model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param int $id ID
-     * @return DocumentType the loaded model
+     * @return DocumentAssignment the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = DocumentType::findOne(['id' => $id])) !== null) {
+        if (($model = DocumentAssignment::findOne(['id' => $id])) !== null) {
             return $model;
         }
 

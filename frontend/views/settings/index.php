@@ -49,7 +49,6 @@ ul li a:hover
                         <?=  Yii::$app->user->can('settings-list-majors') ?  "<li>".Html::a('List of Program/Course Majors',['/program-major']) ."</li>" : ""  ?>
                         <?=  Yii::$app->user->can('settings-list-positions') ?  "<li>".Html::a('List of Positions',['/position']) ."</li>" : ""  ?>
                         <?=  Yii::$app->user->can('settings-list-departments') ?  "<li>".Html::a('List of Departments',['/department']) ."</li>" : ""  ?>
-                        <?=  Yii::$app->user->can('settings-list-document-type') ?  "<li>".Html::a('List of Document Types',['/document-type']) ."</li>" : ""  ?>
                     </ul>
                 </p>
             </div>
@@ -70,5 +69,21 @@ ul li a:hover
             </div>
         </div>
     </div>
+    <?php } ?>
+
+    <?php  if(Yii::$app->user->can('settings-task-container')){ ?>
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Task Settings</h5>
+                    <p class="card-text">
+                        <ul>
+                            <?=  Yii::$app->user->can('settings-list-task-type') ?  "<li>".Html::a('List of Task Types',['/document-type']) ."</li>" : ""  ?>
+                            <?=  Yii::$app->user->can('settings-list-task-type') ?  "<li>".Html::a('List of Task Assignments',['/document-assignment']) ."</li>" : ""  ?>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+        </div>
     <?php } ?>
 </div>

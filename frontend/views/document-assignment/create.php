@@ -3,20 +3,20 @@
 use yii\helpers\Html;
 
 /** @var yii\web\View $this */
-/** @var common\models\SubmissionThread $model */
+/** @var common\models\DocumentAssignment $model */
 
-$this->title = "";
-$this->params['breadcrumbs'][] = ['label' => 'Tasks', 'url' => ['index']];
+$this->title = 'Create Task Assignment';
+$this->params['breadcrumbs'][] = ['label' => 'Task Assignments', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="submission-thread-create">
+<div class="document-assignment-create">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
     <?= $this->render('_form', [
         'model' => $model,
+        'authItem' => $authItem,
         'documentType' => $documentType,
-        'modelUpload' => $modelUpload,
     ]) ?>
 
 </div>

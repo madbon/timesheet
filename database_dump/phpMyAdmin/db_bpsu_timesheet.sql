@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 24, 2023 at 03:06 PM
+-- Generation Time: Mar 29, 2023 at 03:10 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -104,16 +104,22 @@ INSERT INTO `auth_item` (`name`, `type`, `description`, `rule_name`, `data`, `cr
 ('access-trainee-index', 2, '', NULL, NULL, NULL, NULL),
 ('Administrator', 1, '', NULL, NULL, NULL, NULL),
 ('CompanySupervisor', 1, '', NULL, NULL, NULL, NULL),
+('create-activity-reminder', 2, '', NULL, NULL, NULL, NULL),
 ('create-button-administrator', 2, '', NULL, NULL, NULL, NULL),
 ('create-button-company-supervisor', 2, '', NULL, NULL, NULL, NULL),
 ('create-button-ojt-coordinator', 2, '', NULL, NULL, NULL, NULL),
 ('create-button-trainee', 2, '', NULL, NULL, NULL, NULL),
+('create-transaction', 2, '', NULL, NULL, NULL, NULL),
 ('edit-time', 2, '', NULL, NULL, NULL, NULL),
 ('menu-map-markers', 2, '', NULL, NULL, NULL, NULL),
 ('menu-settings', 2, '', NULL, NULL, NULL, NULL),
+('menu-tasks', 2, '', NULL, NULL, NULL, NULL),
 ('menu-timesheet', 2, '', NULL, NULL, NULL, NULL),
 ('menu-user-management', 2, '', NULL, NULL, NULL, NULL),
 ('OjtCoordinator', 1, '', NULL, NULL, NULL, NULL),
+('receive_accomplishment_report', 2, 'Permission to Receive accomplishment report', NULL, NULL, NULL, NULL),
+('receive_trainees_activity', 2, '', NULL, NULL, NULL, NULL),
+('receive_trainees_evaluation', 2, '', NULL, NULL, NULL, NULL),
 ('record-time-in-out', 2, '', NULL, NULL, NULL, NULL),
 ('SETTINGS', 2, 'SETTINGS MODULE', NULL, NULL, NULL, NULL),
 ('settings-index', 2, '', NULL, NULL, NULL, NULL),
@@ -125,12 +131,17 @@ INSERT INTO `auth_item` (`name`, `type`, `description`, `rule_name`, `data`, `cr
 ('settings-list-student-section', 2, '', NULL, NULL, NULL, NULL),
 ('settings-list-student-year', 2, '', NULL, NULL, NULL, NULL),
 ('settings-list-suffix', 2, '', NULL, NULL, NULL, NULL),
+('settings-list-task-type', 2, '', NULL, NULL, NULL, NULL),
 ('settings-mapping-tagging-container', 2, '', NULL, NULL, NULL, NULL),
 ('settings-permissions', 2, '', NULL, NULL, NULL, NULL),
 ('settings-role-assignments', 2, '', NULL, NULL, NULL, NULL),
 ('settings-roles', 2, '', NULL, NULL, NULL, NULL),
 ('settings-roles-permission-container', 2, '', NULL, NULL, NULL, NULL),
+('settings-task-container', 2, '', NULL, NULL, NULL, NULL),
 ('settings-user-accounts-form-reference-container', 2, '', NULL, NULL, NULL, NULL),
+('submit_accomplishment_report', 2, 'Permission to Submit Accomplishment Report', NULL, NULL, NULL, NULL),
+('submit_trainees_activity', 2, 'Permission to Remind Trainees about the Activity', NULL, NULL, NULL, NULL),
+('submit_trainees_evaluation', 2, 'Permission to Submit Evaluation of Trainees', NULL, NULL, NULL, NULL),
 ('time-in-out', 2, '', NULL, NULL, NULL, NULL),
 ('timesheet-remarks', 2, '', NULL, NULL, NULL, NULL),
 ('Trainee', 1, '', NULL, NULL, NULL, NULL),
@@ -185,17 +196,22 @@ INSERT INTO `auth_item_child` (`parent`, `child`) VALUES
 ('Administrator', 'settings-list-student-section'),
 ('Administrator', 'settings-list-student-year'),
 ('Administrator', 'settings-list-suffix'),
+('Administrator', 'settings-list-task-type'),
 ('Administrator', 'settings-mapping-tagging-container'),
 ('Administrator', 'settings-permissions'),
 ('Administrator', 'settings-role-assignments'),
 ('Administrator', 'settings-roles'),
 ('Administrator', 'settings-roles-permission-container'),
+('Administrator', 'settings-task-container'),
 ('Administrator', 'settings-user-accounts-form-reference-container'),
 ('Administrator', 'upload-others-esig'),
 ('Administrator', 'USER-MANAGEMENT-MODULE'),
 ('Administrator', 'view-other-timesheet'),
 ('CompanySupervisor', 'access-trainee-index'),
+('CompanySupervisor', 'create-activity-reminder'),
+('CompanySupervisor', 'create-transaction'),
 ('CompanySupervisor', 'edit-time'),
+('CompanySupervisor', 'menu-tasks'),
 ('CompanySupervisor', 'menu-user-management'),
 ('CompanySupervisor', 'SETTINGS'),
 ('CompanySupervisor', 'settings-index'),
@@ -210,6 +226,7 @@ INSERT INTO `auth_item_child` (`parent`, `child`) VALUES
 ('OjtCoordinator', 'create-button-trainee'),
 ('OjtCoordinator', 'menu-map-markers'),
 ('OjtCoordinator', 'menu-settings'),
+('OjtCoordinator', 'menu-tasks'),
 ('OjtCoordinator', 'menu-user-management'),
 ('OjtCoordinator', 'SETTINGS'),
 ('OjtCoordinator', 'settings-index'),
@@ -230,6 +247,8 @@ INSERT INTO `auth_item_child` (`parent`, `child`) VALUES
 ('OjtCoordinator', 'view-other-timesheet'),
 ('SETTINGS', 'settings-index'),
 ('SETTINGS', 'settings-list-positions'),
+('Trainee', 'create-transaction'),
+('Trainee', 'menu-tasks'),
 ('Trainee', 'menu-timesheet'),
 ('Trainee', 'record-time-in-out'),
 ('Trainee', 'time-in-out'),
@@ -287,7 +306,59 @@ INSERT INTO `files` (`id`, `user_id`, `model_name`, `model_id`, `file_name`, `ex
 (8, 2, 'UserData', 12, 'esig3', 'png', '66a9e2ea397cbbbf4f9a4b160796a596', NULL, 1678348171),
 (9, 2, 'UserData', 28, 'esig4', 'png', '47e2d40cf57a1028c173b4c50eb61bf7', NULL, 1678957490),
 (10, 31, 'UserData', 31, 'esig1', 'png', '787c4cbba8e7efd94fd124ee927b60af', NULL, 1678975571),
-(11, 20, 'UserData', 20, 'esig4', 'png', 'b12014b1fb25fdf438f40e308225d135', NULL, 1679147038);
+(11, 20, 'UserData', 20, 'esig4', 'png', 'b12014b1fb25fdf438f40e308225d135', NULL, 1679147038),
+(12, 20, 'LoginForm', NULL, '641e9222754f7.png', 'png', '641e9222754f7.png', NULL, 1679725090),
+(13, 20, 'LoginForm', NULL, '641e9278d1130.png', 'png', '641e9278d1130.png', NULL, 1679725177),
+(14, 20, 'LoginForm', NULL, '641e940e5eac8.png', 'png', '641e940e5eac8.png', NULL, 1679725582),
+(15, 20, 'TimeSheet', 63, '641e95f319f2d.png', 'png', '641e95f319f2d.png', NULL, 1679726068),
+(16, 20, 'UserTimesheet', 63, '641e9768e35ae.png', 'png', '641e9768e35ae.png', NULL, 1679726441),
+(17, 20, 'UserTimesheet', 63, '641e9c7d2bc36.png', 'png', '641e9c7d2bc36.png', NULL, 1679727742),
+(18, 20, 'UserTimesheet', 63, '641e9d6f4975f.png', 'png', '641e9d6f4975f.png', NULL, 1679727984),
+(19, 20, 'UserTimesheet', 63, '641e9dabeb079.png', 'png', '641e9dabeb079.png', NULL, 1679728044),
+(20, 20, 'UserTimesheet', 63, '641e9dfddf8b4.png', 'png', '641e9dfddf8b4.png', NULL, 1679728126),
+(21, 20, 'UserTimesheet', 63, '641f138d119ee.png', 'png', '641f138d119ee.png', NULL, 1679758222),
+(22, 20, 'UserTimesheet', 63, '641f13bb82cfc.png', 'png', '641f13bb82cfc.png', NULL, 1679758268),
+(23, 20, 'UserTimesheet', 63, '641f13d6a5616.png', 'png', '641f13d6a5616.png', NULL, 1679758295),
+(24, 20, 'UserTimesheet', 63, '641f13e65324c.png', 'png', '641f13e65324c.png', NULL, 1679758311),
+(25, 20, 'UserTimesheet', 63, '641f13fa6f258.png', 'png', '641f13fa6f258.png', NULL, 1679758331),
+(26, 20, 'UserTimesheet', 63, '641f14113c047.png', 'png', '641f14113c047.png', NULL, 1679758354),
+(27, 20, 'UserTimesheet', 63, '641f142d07fdd.png', 'png', '641f142d07fdd.png', NULL, 1679758382),
+(28, 20, 'UserTimesheet', 63, '641f15c02f0e2.png', 'png', '641f15c02f0e2.png', NULL, 1679758785),
+(29, 20, 'UserTimesheet', 63, '641f162d99773.png', 'png', '641f162d99773.png', NULL, 1679758894),
+(30, 20, 'UserTimesheet', 63, '641f16725485d.png', 'png', '641f16725485d.png', NULL, 1679758963),
+(31, 20, 'UserTimesheet', 63, '641f168567d60.png', 'png', '641f168567d60.png', NULL, 1679758982),
+(32, 20, 'UserTimesheet', 63, '641f168eae1fc.png', 'png', '641f168eae1fc.png', NULL, 1679758991),
+(33, 20, 'UserTimesheet', 63, '641f169d405fd.png', 'png', '641f169d405fd.png', NULL, 1679759006),
+(34, 20, 'UserTimesheet', 63, '641f16eb0866e.png', 'png', '641f16eb0866e.png', NULL, 1679759083),
+(35, 20, 'UserTimesheet', 64, '641f1aa699a8f.png', 'png', '641f1aa699a8f.png', NULL, 1679760039),
+(36, 20, 'UserTimesheet', 64, '641f1abe219f5.png', 'png', '641f1abe219f5.png', NULL, 1679760063),
+(37, 20, 'UserTimesheet', 64, '641f1ac8e5685.png', 'png', '641f1ac8e5685.png', NULL, 1679760074),
+(38, 20, 'UserTimesheet', 64, '641f1b5d34ee9.png', 'png', '641f1b5d34ee9.png', NULL, 1679760222),
+(39, 20, 'UserTimesheet', 64, '641f1bbce7e94.png', 'png', '641f1bbce7e94.png', NULL, 1679760317),
+(40, 20, 'UserTimesheet', 64, '641f1bce0a9eb.png', 'png', '641f1bce0a9eb.png', NULL, 1679760335),
+(41, 20, 'UserTimesheet', 64, '641f1bdc1fee4.png', 'png', '641f1bdc1fee4.png', NULL, 1679760349),
+(42, 20, 'UserTimesheet', 64, '641f1bfbde31e.png', 'png', '641f1bfbde31e.png', NULL, 1679760381),
+(43, 20, 'UserTimesheet', 64, '641f1c0dece3f.png', 'png', '641f1c0dece3f.png', NULL, 1679760399),
+(44, 20, 'UserTimesheet', 64, '641f1c1caec2f.png', 'png', '641f1c1caec2f.png', NULL, 1679760413),
+(45, 20, 'UserTimesheet', 64, '641f1c3d924ad.png', 'png', '641f1c3d924ad.png', NULL, 1679760446),
+(46, 20, 'UserTimesheet', 64, '641f1d0602ee0.png', 'png', '641f1d0602ee0.png', NULL, 1679760647),
+(47, 20, 'UserTimesheet', 64, '641f1d1007f6f.png', 'png', '641f1d1007f6f.png', NULL, 1679760657),
+(48, 20, 'UserTimesheet', 64, '641f1d2846376.png', 'png', '641f1d2846376.png', NULL, 1679760681),
+(49, 30, 'UserTimesheet', 65, '641f1dc420108.png', 'png', '641f1dc420108.png', NULL, 1679760837),
+(50, 30, 'UserTimesheet', 65, '641f1fa37ce99.png', 'png', '641f1fa37ce99.png', NULL, 1679761316),
+(51, 30, 'UserTimesheet', 65, '641f1fdcaff48.png', 'png', '641f1fdcaff48.png', NULL, 1679761373),
+(52, 30, 'UserTimesheet', 65, '641f23b2850bc.png', 'png', '641f23b2850bc.png', NULL, 1679762355),
+(53, 20, 'UserTimesheet', 64, '641f29aeaa0ef.png', 'png', '641f29aeaa0ef.png', NULL, 1679763888),
+(54, 20, 'UserTimesheet', 64, '641f2d5b64153.png', 'png', '641f2d5b64153.png', NULL, 1679764828),
+(55, 20, 'UserTimesheet', 64, '641f2d6792580.png', 'png', '641f2d6792580.png', NULL, 1679764840),
+(56, 28, 'UserTimesheet', 66, '641f337a0319a.png', 'png', '641f337a0319a.png', NULL, 1679766394),
+(57, 21, 'UserTimesheet', 67, '641f362bba246.png', 'png', '641f362bba246.png', NULL, 1679767084),
+(86, 20, 'SubmissionThread', 13, 'ACCOMPLISHMENT REPORT - JANUARY', 'pdf', '08cb3dd68cb0114eb640a6197aa0eb72', NULL, 1680016846),
+(87, 20, 'SubmissionThread', 1, 'ACCOMPLISHMENT REPORT - FEBRUARY', 'pdf', '7e6ff20369054b1f45a168a8c4298f81', NULL, 1680017111),
+(91, 20, 'SubmissionThread', 13, 'DTR EMC-DAT 2022 - ABUBO', 'pdf', 'd4f324ded35ed1cbdad2fb76cc48fc7f', NULL, 1680063036),
+(92, 20, 'SubmissionThread', 13, 'ACCOMPLISHMENT REPORT - JANUARY', 'pdf', '70608b97605563e013748b17ba4a5342', NULL, 1680071885),
+(93, 20, 'SubmissionReply', 3, 'ACCOMPLISHMENT REPORT - JANUARY', 'pdf', 'd4afd62a10b269c0b41a87b7cef07de6', NULL, 1680072193),
+(94, 20, 'SubmissionThread', 14, 'Sample Document', 'pdf', '2c14e8f4ecd9aecca62533f14c30c571', NULL, 1680073549);
 
 -- --------------------------------------------------------
 
@@ -391,13 +462,51 @@ INSERT INTO `ref_department` (`id`, `title`, `abbreviation`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `ref_document_assignment`
+--
+
+CREATE TABLE `ref_document_assignment` (
+  `id` int(11) NOT NULL,
+  `ref_document_type_id` int(11) DEFAULT NULL,
+  `auth_item` varchar(50) DEFAULT NULL,
+  `type` varchar(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `ref_document_assignment`
+--
+
+INSERT INTO `ref_document_assignment` (`id`, `ref_document_type_id`, `auth_item`, `type`) VALUES
+(1, 1, 'CompanySupervisor', 'SENDER'),
+(2, 1, 'OjtCoordinator', 'RECEIVER'),
+(3, 3, 'Trainee', 'SENDER'),
+(4, 3, 'OjtCoordinator', 'RECEIVER'),
+(5, 5, 'CompanySupervisor', 'SENDER'),
+(6, 5, 'Trainee', 'RECEIVER');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `ref_document_type`
 --
 
 CREATE TABLE `ref_document_type` (
   `id` int(11) NOT NULL,
-  `title` int(11) DEFAULT NULL
+  `title` varchar(150) DEFAULT NULL,
+  `action_title` varchar(150) DEFAULT NULL,
+  `required_uploading` int(11) NOT NULL,
+  `enable_tagging` int(11) NOT NULL,
+  `enable_commenting` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `ref_document_type`
+--
+
+INSERT INTO `ref_document_type` (`id`, `title`, `action_title`, `required_uploading`, `enable_tagging`, `enable_commenting`) VALUES
+(1, 'Trainees Evaluation Form', 'Submit Trainees Evaluation Form', 1, 1, 0),
+(3, 'Accomplishment Report', 'Submit Accomplishment Report', 1, 0, 1),
+(5, 'Activity Reminder', 'Create Activity Reminder', 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -512,16 +621,58 @@ INSERT INTO `student_year` (`year`, `title`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `submission_reply`
+--
+
+CREATE TABLE `submission_reply` (
+  `id` int(11) NOT NULL,
+  `submission_thread_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `message` text DEFAULT NULL,
+  `date_time` datetime DEFAULT NULL,
+  `seen_by_user_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `submission_reply`
+--
+
+INSERT INTO `submission_reply` (`id`, `submission_thread_id`, `user_id`, `message`, `date_time`, `seen_by_user_id`) VALUES
+(1, 13, 24, 'Please upload your AR for the month of January', '2023-03-29 13:11:21', NULL),
+(2, 13, 20, 'I will upload it later, thank you.', '2023-03-29 14:28:35', NULL),
+(3, 13, 20, 'Here\'s my AR for the month of January', '2023-03-29 14:43:13', NULL),
+(4, 13, 24, '', '2023-03-29 14:58:09', NULL),
+(5, 13, 24, 'Thank you', '2023-03-29 14:58:56', NULL),
+(6, 13, 24, 'Please revised your AR, you have no task in January 11', '2023-03-29 14:59:43', NULL),
+(7, 13, 24, 'Well  ', '2023-03-29 15:00:53', NULL);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `submission_thread`
 --
 
 CREATE TABLE `submission_thread` (
   `id` int(11) NOT NULL,
   `user_id` int(11) DEFAULT NULL,
+  `tagged_user_id` int(11) DEFAULT NULL,
+  `subject` varchar(250) DEFAULT NULL,
   `remarks` text DEFAULT NULL,
   `ref_document_type_id` int(11) DEFAULT NULL,
-  `created_at` int(11) DEFAULT NULL
+  `created_at` int(11) DEFAULT NULL,
+  `date_time` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `submission_thread`
+--
+
+INSERT INTO `submission_thread` (`id`, `user_id`, `tagged_user_id`, `subject`, `remarks`, `ref_document_type_id`, `created_at`, `date_time`) VALUES
+(1, 20, 0, 'Accomplishment Report [MARCH]', 'Please see the attached file. For your reference. Thank you.', 3, 1679984787, '2023-03-28 14:26:27'),
+(2, 28, 0, 'AR', 'Converge ICT Trainee Days (@ IT Department) - BSEM', 3, 1679984939, '2023-03-28 14:28:59'),
+(4, 31, 0, 'TASK FOR NEXT WEEK', 'We will be having preventive maintenance @ 3rd Floor, all trainees are required to wear black T-Shirt', 5, 1679985115, '2023-03-28 14:31:55'),
+(9, 31, 20, NULL, 'Please see the attached files', 1, 1680012255, '2023-03-28 22:04:15'),
+(13, 20, NULL, NULL, 'This is my AR for the month of January', 3, 1680016846, '2023-03-28 23:20:46');
 
 -- --------------------------------------------------------
 
@@ -596,7 +747,7 @@ INSERT INTO `user` (`id`, `student_idno`, `student_year`, `student_section`, `re
 (13, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Ken', '', 'Mateo', NULL, '2005-03-10', 'M', 'ken', 'dU_YwJsZbxPpzMhLenmo62G3HUQRQByy', '$2y$13$d6/4LxP7LqGnJM3JJQLyf.XdJpnWfaSau3/Kn4Hb5pgaZc09hEfP.', NULL, 'ken@gm.com', NULL, '', NULL, 10, 0, 0, 'aFFYT7PA5MtXlgmzAwrrYi2kS4Er3kj-_1678434605'),
 (15, NULL, NULL, NULL, NULL, NULL, 2, 2, 'Yael', 'Di Makulangan', 'Yuzon', '', '2005-03-10', 'M', 'asdsd', 'Uas9Q6lT6K2ZleRjQUe7u9-f0STX8fUZ', '$2y$13$o5HF8ta/VDg0f7sn5hd1HekdePk7Jr5dPq7JoksNSUsYOHYzltH3K', NULL, 'sdfdf@gf.com', NULL, '', '', 10, 0, 0, 'Gx2hofcN7X0ltP3xHFAfi0lBd4RgzE6y_1678435021'),
 (20, '1232090', 1, 'B', 1, 1, 1, 1, 'JOHN', 'De Guzman', 'SMOOTH', 'IV', '2005-03-06', 'M', 'trainee', 'a7jMTVWHllh3qnNl9HE4lLBrexdWRYh8', '$2y$13$bBA.7wEkNaHZUm9WTxjoieI8XTckTg2eMoDltOdMeq9Y7eNfil27W', NULL, 'nap@gm.com', 2147483647, '2343434', '12323 address', 10, 0, 0, 'BI5HOKRlYM6YNi6HhzRDRJX7jH7Fu3Xg_1678677157'),
-(21, '2313553', 4, 'B', 1, 2, 1, NULL, 'vilma', '', 'dayagmil', '', '2005-03-06', 'M', 'vilma', 'bQW83W97gNRv8h_OLOQQEcBKt82ZKDtG', '$2y$13$p12B2eY8FRiAArUz1ONr7.bugwXDqwfCjh7diU2YcVSc.BYIbHJQ6', NULL, 'vilma@gm.com', 9232323, 'sdfdf', 'sdfdfd', 10, 0, 0, 'mEhL6bWT6Dms3Cs8-jvfRt8N-D9OqWPL_1678677395'),
+(21, '2313553', 4, 'B', 1, 2, 1, NULL, 'Vilma', '', 'Santos', '', '2005-03-06', 'M', 'vilma', 'bQW83W97gNRv8h_OLOQQEcBKt82ZKDtG', '$2y$13$p12B2eY8FRiAArUz1ONr7.bugwXDqwfCjh7diU2YcVSc.BYIbHJQ6', NULL, 'vilma@gm.com', 9232323, 'sdfdf', 'sdfdfd', 10, 0, 0, 'mEhL6bWT6Dms3Cs8-jvfRt8N-D9OqWPL_1678677395'),
 (22, '234343', 4, 'E', 4, NULL, 1, NULL, 'france', '', 'dacales', '', '2005-02-28', 'F', 'france', 'LEH7yRVrvsCkfYGvvykGSekyD_gq3q5S', '$2y$13$oqmSvq5yfCPHkOARf8Wyye5s4WnZjXJ8ilMdqmgFWjXT9hQah8LSK', NULL, 'france@gm.com', 2147483647, '2343434', 'sdfdfd', 10, 0, 0, 'NuE-OGiB9RnY3zRC6Qe7OGar1-Up5vrx_1678677582'),
 (23, NULL, NULL, NULL, 2, NULL, NULL, NULL, 'alvin', '', 'sibaluca', 'II', '2005-03-06', 'M', 'alvin', 'Jt2FFZ4bDd5qIpZXNgDVJgD5zdGcnaAN', '$2y$13$4PWK6Ic8FySi/zmcrSa16O698puS9W3ESCemobfyMHm1/FnJsNj0i', NULL, 'alvin@gm.com', 2147483647, 'tel12323', '031 Elma Stree, Don Fabian,  Brgy. Commonwealth, Quezon City, Metro Manila, 1121', 10, 0, 0, 'ycVi4JFu-nQdW7jEf0KESszpRK-XsFt2_1678687295'),
 (24, NULL, NULL, NULL, 1, NULL, NULL, NULL, 'Nicka', '', 'De Guzman', '', '2005-02-27', 'M', 'coor', '1Veun2dt3r9hnBJQ7Qn0G5H0Tkagzu84', '$2y$13$27LnUZ568Q46.lXRp4yXa.a689gXPsxms76TphmARiO9gbgUVIKqq', NULL, 'nickadg@gm.com', 2147483647, '2323323', 'Tabing Ilog, Malolos, Bulacan', 10, 0, 0, 'DlnHssTWDN0RLchN0Bf_udvgnI7qnM0C_1678689072'),
@@ -665,7 +816,13 @@ INSERT INTO `user_timesheet` (`id`, `user_id`, `time_in_am`, `time_out_am`, `tim
 (59, 20, '08:00:00', NULL, NULL, '13:45:00', '2023-04-25', NULL, 0),
 (60, 20, '08:00:00', NULL, NULL, '13:45:00', '2023-05-25', NULL, 0),
 (61, 20, '08:00:00', NULL, NULL, '13:45:00', '2023-06-25', NULL, 0),
-(62, 20, '08:00:00', NULL, NULL, '13:45:00', '2023-07-25', NULL, 0);
+(62, 20, '08:00:00', NULL, NULL, '13:45:00', '2023-07-25', NULL, 0),
+(63, 20, '09:51:05', NULL, NULL, '23:44:43', '2023-03-25', NULL, 0),
+(64, 20, '00:00:39', '01:20:40', NULL, NULL, '2023-03-26', NULL, 0),
+(65, 30, '00:13:57', '00:39:15', NULL, NULL, '2023-03-26', NULL, 0),
+(66, 28, '01:46:34', NULL, NULL, NULL, '2023-03-26', NULL, 0),
+(67, 21, '01:58:04', NULL, NULL, NULL, '2023-03-26', NULL, 0),
+(68, 20, NULL, NULL, '20:27:28', NULL, '2023-03-27', NULL, 0);
 
 --
 -- Indexes for dumped tables
@@ -756,6 +913,12 @@ ALTER TABLE `ref_department`
   ADD KEY `id` (`id`);
 
 --
+-- Indexes for table `ref_document_assignment`
+--
+ALTER TABLE `ref_document_assignment`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `ref_document_type`
 --
 ALTER TABLE `ref_document_type`
@@ -797,6 +960,12 @@ ALTER TABLE `student_section`
 ALTER TABLE `student_year`
   ADD PRIMARY KEY (`year`),
   ADD UNIQUE KEY `year` (`year`);
+
+--
+-- Indexes for table `submission_reply`
+--
+ALTER TABLE `submission_reply`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `submission_thread`
@@ -864,7 +1033,7 @@ ALTER TABLE `attendance`
 -- AUTO_INCREMENT for table `files`
 --
 ALTER TABLE `files`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=95;
 
 --
 -- AUTO_INCREMENT for table `post`
@@ -891,10 +1060,16 @@ ALTER TABLE `ref_department`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT for table `ref_document_assignment`
+--
+ALTER TABLE `ref_document_assignment`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
 -- AUTO_INCREMENT for table `ref_document_type`
 --
 ALTER TABLE `ref_document_type`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `ref_position`
@@ -915,10 +1090,16 @@ ALTER TABLE `ref_program_major`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT for table `submission_reply`
+--
+ALTER TABLE `submission_reply`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
 -- AUTO_INCREMENT for table `submission_thread`
 --
 ALTER TABLE `submission_thread`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `user`
@@ -936,7 +1117,7 @@ ALTER TABLE `user_company`
 -- AUTO_INCREMENT for table `user_timesheet`
 --
 ALTER TABLE `user_timesheet`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
 
 --
 -- Constraints for dumped tables
