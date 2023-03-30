@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 29, 2023 at 03:10 PM
+-- Generation Time: Mar 30, 2023 at 05:22 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -358,7 +358,9 @@ INSERT INTO `files` (`id`, `user_id`, `model_name`, `model_id`, `file_name`, `ex
 (91, 20, 'SubmissionThread', 13, 'DTR EMC-DAT 2022 - ABUBO', 'pdf', 'd4f324ded35ed1cbdad2fb76cc48fc7f', NULL, 1680063036),
 (92, 20, 'SubmissionThread', 13, 'ACCOMPLISHMENT REPORT - JANUARY', 'pdf', '70608b97605563e013748b17ba4a5342', NULL, 1680071885),
 (93, 20, 'SubmissionReply', 3, 'ACCOMPLISHMENT REPORT - JANUARY', 'pdf', 'd4afd62a10b269c0b41a87b7cef07de6', NULL, 1680072193),
-(94, 20, 'SubmissionThread', 14, 'Sample Document', 'pdf', '2c14e8f4ecd9aecca62533f14c30c571', NULL, 1680073549);
+(94, 20, 'SubmissionThread', 14, 'Sample Document', 'pdf', '2c14e8f4ecd9aecca62533f14c30c571', NULL, 1680073549),
+(95, 20, 'UserTimesheet', 69, '6424fb5706da8.png', 'png', '6424fb5706da8.png', NULL, 1680145239),
+(96, 20, 'UserTimesheet', 69, '6424fb6ab59f8.png', 'png', '6424fb6ab59f8.png', NULL, 1680145259);
 
 -- --------------------------------------------------------
 
@@ -469,20 +471,21 @@ CREATE TABLE `ref_document_assignment` (
   `id` int(11) NOT NULL,
   `ref_document_type_id` int(11) DEFAULT NULL,
   `auth_item` varchar(50) DEFAULT NULL,
-  `type` varchar(20) DEFAULT NULL
+  `type` varchar(20) DEFAULT NULL,
+  `filter_type` varchar(150) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `ref_document_assignment`
 --
 
-INSERT INTO `ref_document_assignment` (`id`, `ref_document_type_id`, `auth_item`, `type`) VALUES
-(1, 1, 'CompanySupervisor', 'SENDER'),
-(2, 1, 'OjtCoordinator', 'RECEIVER'),
-(3, 3, 'Trainee', 'SENDER'),
-(4, 3, 'OjtCoordinator', 'RECEIVER'),
-(5, 5, 'CompanySupervisor', 'SENDER'),
-(6, 5, 'Trainee', 'RECEIVER');
+INSERT INTO `ref_document_assignment` (`id`, `ref_document_type_id`, `auth_item`, `type`, `filter_type`) VALUES
+(1, 1, 'CompanySupervisor', 'SENDER', 'based_on_company_department'),
+(2, 1, 'OjtCoordinator', 'RECEIVER', 'based_on_course'),
+(3, 3, 'Trainee', 'SENDER', 'based_on_login_id'),
+(4, 3, 'OjtCoordinator', 'RECEIVER', 'based_on_course'),
+(5, 5, 'CompanySupervisor', 'SENDER', 'based_on_company_department'),
+(6, 5, 'Trainee', 'RECEIVER', 'based_on_company_department');
 
 -- --------------------------------------------------------
 
@@ -629,22 +632,21 @@ CREATE TABLE `submission_reply` (
   `submission_thread_id` int(11) DEFAULT NULL,
   `user_id` int(11) DEFAULT NULL,
   `message` text DEFAULT NULL,
-  `date_time` datetime DEFAULT NULL,
-  `seen_by_user_id` int(11) DEFAULT NULL
+  `date_time` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `submission_reply`
 --
 
-INSERT INTO `submission_reply` (`id`, `submission_thread_id`, `user_id`, `message`, `date_time`, `seen_by_user_id`) VALUES
-(1, 13, 24, 'Please upload your AR for the month of January', '2023-03-29 13:11:21', NULL),
-(2, 13, 20, 'I will upload it later, thank you.', '2023-03-29 14:28:35', NULL),
-(3, 13, 20, 'Here\'s my AR for the month of January', '2023-03-29 14:43:13', NULL),
-(4, 13, 24, '', '2023-03-29 14:58:09', NULL),
-(5, 13, 24, 'Thank you', '2023-03-29 14:58:56', NULL),
-(6, 13, 24, 'Please revised your AR, you have no task in January 11', '2023-03-29 14:59:43', NULL),
-(7, 13, 24, 'Well  ', '2023-03-29 15:00:53', NULL);
+INSERT INTO `submission_reply` (`id`, `submission_thread_id`, `user_id`, `message`, `date_time`) VALUES
+(1, 13, 24, 'Please upload your AR for the month of January', '2023-03-29 13:11:21'),
+(2, 13, 20, 'I will upload it later, thank you.', '2023-03-29 14:28:35'),
+(3, 13, 20, 'Here\'s my AR for the month of January', '2023-03-29 14:43:13'),
+(4, 13, 24, '', '2023-03-29 14:58:09'),
+(5, 13, 24, 'Thank you', '2023-03-29 14:58:56'),
+(6, 13, 24, 'Please revised your AR, you have no task in January 11', '2023-03-29 14:59:43'),
+(7, 13, 24, 'Well  ', '2023-03-29 15:00:53');
 
 -- --------------------------------------------------------
 
@@ -673,6 +675,18 @@ INSERT INTO `submission_thread` (`id`, `user_id`, `tagged_user_id`, `subject`, `
 (4, 31, 0, 'TASK FOR NEXT WEEK', 'We will be having preventive maintenance @ 3rd Floor, all trainees are required to wear black T-Shirt', 5, 1679985115, '2023-03-28 14:31:55'),
 (9, 31, 20, NULL, 'Please see the attached files', 1, 1680012255, '2023-03-28 22:04:15'),
 (13, 20, NULL, NULL, 'This is my AR for the month of January', 3, 1680016846, '2023-03-28 23:20:46');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `submission_thread_seen`
+--
+
+CREATE TABLE `submission_thread_seen` (
+  `id` int(11) NOT NULL,
+  `submission_thread_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -822,7 +836,8 @@ INSERT INTO `user_timesheet` (`id`, `user_id`, `time_in_am`, `time_out_am`, `tim
 (65, 30, '00:13:57', '00:39:15', NULL, NULL, '2023-03-26', NULL, 0),
 (66, 28, '01:46:34', NULL, NULL, NULL, '2023-03-26', NULL, 0),
 (67, 21, '01:58:04', NULL, NULL, NULL, '2023-03-26', NULL, 0),
-(68, 20, NULL, NULL, '20:27:28', NULL, '2023-03-27', NULL, 0);
+(68, 20, NULL, NULL, '20:27:28', NULL, '2023-03-27', NULL, 0),
+(69, 20, '11:00:39', '11:00:59', NULL, NULL, '2023-03-30', NULL, 0);
 
 --
 -- Indexes for dumped tables
@@ -976,6 +991,12 @@ ALTER TABLE `submission_thread`
   ADD KEY `ref_document_type_id` (`ref_document_type_id`);
 
 --
+-- Indexes for table `submission_thread_seen`
+--
+ALTER TABLE `submission_thread_seen`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `suffix`
 --
 ALTER TABLE `suffix`
@@ -1033,7 +1054,7 @@ ALTER TABLE `attendance`
 -- AUTO_INCREMENT for table `files`
 --
 ALTER TABLE `files`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=95;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
 
 --
 -- AUTO_INCREMENT for table `post`
@@ -1102,6 +1123,12 @@ ALTER TABLE `submission_thread`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
+-- AUTO_INCREMENT for table `submission_thread_seen`
+--
+ALTER TABLE `submission_thread_seen`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
@@ -1117,7 +1144,7 @@ ALTER TABLE `user_company`
 -- AUTO_INCREMENT for table `user_timesheet`
 --
 ALTER TABLE `user_timesheet`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
 
 --
 -- Constraints for dumped tables
