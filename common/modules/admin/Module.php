@@ -7,6 +7,8 @@ use common\models\UserCompany;
 use common\models\AuthAssignment;
 use common\models\DocumentAssignment;
 use common\models\DocumentType;
+use common\models\SubmissionThread;
+use common\models\SubmissionThreadSeen;
 use Yii;
 
 /**
@@ -27,6 +29,18 @@ class Module extends \yii\base\Module
         parent::init();
 
         // custom initialization code goes here
+    }
+
+    public static function TaskFilterType($ref_document_type_id,$role=[],$filter_type)
+    {
+        $docAss = DocumentAssignment::find()->where([
+            'ref_document_type_id' => $ref_document_type_id, 
+            'auth_item' => $role,
+            'filter_type' => $filter_type,
+            ])->one();
+
+       
+        return !empty($docAss->id) ? $docAss->id : NULL;
     }
 
     public static function documentTypeAttrib($id,$attrib)

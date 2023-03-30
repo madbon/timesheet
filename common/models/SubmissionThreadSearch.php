@@ -124,6 +124,8 @@ class SubmissionThreadSearch extends SubmissionThread
             endforeach;
         }
 
+        // Yii::$app->getModule('admin')->TaskFilterType($ref_document_type_id,$role=[],$filter_type)
+
         if(Yii::$app->user->can('Trainee'))
         {
             if($this->ref_document_type_id == 3) // ACCOMPLISHMENT REPORT

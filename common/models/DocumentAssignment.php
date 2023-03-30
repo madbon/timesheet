@@ -29,9 +29,11 @@ class DocumentAssignment extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['ref_document_type_id','auth_item','type','filter_type'],'required'],
             [['ref_document_type_id'], 'integer'],
             [['auth_item'], 'string', 'max' => 50],
             [['type'], 'string', 'max' => 20],
+            [['filter_type'], 'string', 'max' => 150],
             [['auth_item','ref_document_type_id','type'],'unique','targetAttribute' => ['auth_item','ref_document_type_id','type']],
         ];
     }

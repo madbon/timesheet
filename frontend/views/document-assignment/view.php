@@ -33,6 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'ref_document_type_id',
             'auth_item',
             'type',
+            'filter_type',
         ],
     ]) ?>
 

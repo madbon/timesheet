@@ -40,6 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'auth_item',
             'type',
+            'filter_type',
             [
                 'class' => ActionColumn::className(),
                 'urlCreator' => function ($action, DocumentAssignment $model, $key, $index, $column) {
