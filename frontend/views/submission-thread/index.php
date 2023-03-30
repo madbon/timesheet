@@ -14,6 +14,55 @@ use common\models\Files;
 $this->title = 'Tasks';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<style>
+    /* GRID STYLE */
+        
+    table.table thead tr th
+        {
+            font-size:11px;
+            font-weight: normal;
+            text-transform: uppercase;
+            /* background:#af4343; */
+            background: #ffdbdb;
+            color:#af4343;
+            text-align: center;
+        }
+
+        table.table thead tr td select option,table.table thead tr td select, table.table thead tr td input
+        {
+            font-size: 11px;
+        }
+
+        table.table thead tr th a
+        {
+            font-size:11px;
+            text-decoration: none;
+            font-weight: normal;
+            color:#af4343;
+        }
+
+        table.table tbody tr td
+        {
+            font-size:11px;
+            border-bottom: 1px solid #e6e6e6;
+            border-top:1px solid #e6e6e6;
+            /* background:white; */
+        }
+
+        table.table tbody tr td a
+        {
+            font-size:11px;
+        }
+        
+        table.table
+        {
+            background-color: white;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+
+        /* GRID STYLE _END */
+</style>
 <div class="submission-thread-index">
 
     <!-- <h1><?= Html::encode($this->title) ?></h1> -->
@@ -69,6 +118,27 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'rowOptions' => function($model, $key, $index, $column) {
+            if(Yii::$app->getModule('admin')->documentAssignedAttrib($model->ref_document_type_id,'RECEIVER'))
+            {
+                if(!empty($model->submissionThreadSeen->submission_thread_id))
+                {
+                    if($model->submissionThreadSeen->submission_thread_id == $model->id && $model->submissionThreadSeen->user_id == Yii::$app->user->identity->id){
+                        return ['style' => 'background-color:#ffffff;'];
+                    }
+                    else
+                    {
+                        return ['style' => 'background-color: #ffdbdb'];
+                    }
+                }
+                else
+                {
+                    return ['style' => 'background-color: #ffdbdb'];
+                }
+            }
+            
+        },
+        'tableOptions' => ['class' => 'table table-condensed table-hover'],
         'columns' => [
             // ['class' => 'yii\grid\SerialColumn'],
 
@@ -270,3 +340,4 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 </div>
+

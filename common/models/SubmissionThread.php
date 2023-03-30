@@ -61,6 +61,15 @@ class SubmissionThread extends \yii\db\ActiveRecord
         ];
     }
 
+    /**
+     * Gets query for [[RefDocumentType]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSubmissionThreadSeen()
+    {
+        return $this->hasOne(SubmissionThreadSeen::class, ['submission_thread_id' => 'id']);
+    }
 
     /**
      * Gets query for [[RefDocumentType]].
@@ -70,6 +79,16 @@ class SubmissionThread extends \yii\db\ActiveRecord
     public function getDocumentType()
     {
         return $this->hasOne(DocumentType::class, ['id' => 'ref_document_type_id']);
+    }
+
+     /**
+     * Gets query for [[RefDocumentType]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getDocumentAssignment()
+    {
+        return $this->hasOne(DocumentAssignment::class, ['ref_document_type_id' => 'ref_document_type_id']);
     }
 
     /**

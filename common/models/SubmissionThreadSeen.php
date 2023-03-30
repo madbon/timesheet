@@ -28,6 +28,7 @@ class SubmissionThreadSeen extends \yii\db\ActiveRecord
     {
         return [
             [['submission_thread_id', 'user_id'], 'integer'],
+            [['date_time'], 'safe'],
         ];
     }
 

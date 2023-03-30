@@ -31,6 +31,64 @@ class Module extends \yii\base\Module
         // custom initialization code goes here
     }
 
+    public static function submissionThreadSeen()
+    {
+
+        $documentAssignment = DocumentAssignment::find()
+        ->select(['ref_document_type_id'])
+        ->where(['auth_item' => Yii::$app->getModule('admin')->getLoggedInUserRoles()])
+        ->andWhere(['type' => 'RECEIVER'])
+        ->all();
+
+        $countTask = 0;
+        foreach ($documentAssignment as $row) {
+            $qrySubThread = SubmissionThread::find()
+            ->select(['submission_thread.id'])
+            ->joinWith(Yii::$app->getModule('admin')->documentTypeAttrib($row->ref_document_type_id,'enable_tagging') ? 'taggedUser' : 'user')
+            ->joinWith('userCompany')
+            ->joinWith(['documentAssignment'])
+            ->where(['ref_document_assignment.auth_item' => Yii::$app->getModule('admin')->getLoggedInUserRoles()])
+            ->andWhere(['ref_document_assignment.ref_document_type_id' => $row->ref_document_type_id])
+            ->andWhere(['ref_document_assignment.type' => 'RECEIVER']);
+            // ->count();
+
+            if(Yii::$app->getModule('admin')->TaskFilterType($row->ref_document_type_id,Yii::$app->getModule('admin')->getLoggedInUserRoles(),'based_on_login_id'))
+            {
+                if($row->ref_document_type_id == 3) // ACCOMPLISHMENT REPORT
+                {
+                    $qrySubThread->andFilterWhere(['user.id' => Yii::$app->user->identity->id]);
+                }
+            }
+
+            // if($this->ref_document_type_id == 3) // ACCOMPLISHMENT REPORT
+            if(Yii::$app->getModule('admin')->TaskFilterType($row->ref_document_type_id,Yii::$app->getModule('admin')->getLoggedInUserRoles(),'based_on_course'))
+            {
+                $qrySubThread->andFilterWhere(['user.ref_program_id' => Yii::$app->getModule('admin')->GetAssignedProgram()]);
+                $qrySubThread->andFilterWhere(['user_company.ref_company_id' => Yii::$app->getModule('admin')->GetCompanyBasedOnCourse()]);
+                $qrySubThread->andFilterWhere(['user.ref_department_id' => Yii::$app->getModule('admin')->GetDepartmentBasedOnCourse()]);
+            }
+
+            // if($this->ref_document_type_id == 5) // ACTIVITY REMINDERS
+            if(Yii::$app->getModule('admin')->TaskFilterType($row->ref_document_type_id,Yii::$app->getModule('admin')->getLoggedInUserRoles(),'based_on_company_department'))
+            {
+                $qrySubThread->andFilterWhere(['user.ref_department_id' => Yii::$app->getModule('admin')->GetAssignedDepartment()]);
+                $qrySubThread->andFilterWhere(['user_company.ref_company_id'=> Yii::$app->getModule('admin')->GetAssignedCompany()]);
+            }
+
+            foreach ($qrySubThread->groupBy(['submission_thread.id'])->all() as $thread) {
+                if(!SubmissionThreadSeen::find()
+                ->where(['user_id' => Yii::$app->user->identity->id])
+                ->andWhere(['submission_thread_id' => $thread->id])->exists())
+                {
+                    $countTask  += 1;
+                }
+            }
+            
+        }
+
+        return $countTask;
+    }
+
     public static function TaskFilterType($ref_document_type_id,$role=[],$filter_type)
     {
         $docAss = DocumentAssignment::find()->where([
@@ -38,12 +96,6 @@ class Module extends \yii\base\Module
             'auth_item' => $role,
             'filter_type' => $filter_type,
             ])->one();
-
-            // print_r(DocumentAssignment::find()->where([
-            //     'ref_document_type_id' => $ref_document_type_id, 
-            //     'auth_item' => $role,
-            //     'filter_type' => $filter_type,
-            //     ])->createCommand()->rawSql); exit;
        
         return !empty($docAss->filter_type) ? $docAss->filter_type : NULL;
     }

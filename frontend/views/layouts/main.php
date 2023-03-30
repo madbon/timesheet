@@ -9,6 +9,8 @@ use yii\bootstrap5\Breadcrumbs;
 use yii\helpers\Html;
 use yii\bootstrap5\Nav;
 use yii\bootstrap5\NavBar;
+use common\models\SubmissionThread;
+use common\models\DocumentAssignment;
 
 AppAsset::register($this);
 ?>
@@ -259,6 +261,8 @@ AppAsset::register($this);
         //         ['class' => 'btn btn-link logout text-decoration-none']
         //     )
         //     . Html::endForm();
+        
+        $countTask = Yii::$app->getModule('admin')->submissionThreadSeen();
 
         $menuItemsLeft = [
             [
@@ -274,7 +278,7 @@ AppAsset::register($this);
                 'visible' => Yii::$app->user->can('menu-map-markers'),
             ],
             [
-                'label' => 'Tasks', 'url' => ['/submission-thread/index'], 'active' => Yii::$app->controller->id == "submission-thread" ? true : false,
+                'label' => 'Tasks ('.$countTask.')', 'url' => ['/submission-thread/index'], 'active' => Yii::$app->controller->id == "submission-thread" ? true : false,
                 'visible' => Yii::$app->user->can('menu-tasks'),
             ],
             ['label' => 'Settings', 'url' => ['/settings'], 'active' => in_array(Yii::$app->controller->id,[
