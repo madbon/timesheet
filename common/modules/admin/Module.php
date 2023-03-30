@@ -39,8 +39,13 @@ class Module extends \yii\base\Module
             'filter_type' => $filter_type,
             ])->one();
 
+            // print_r(DocumentAssignment::find()->where([
+            //     'ref_document_type_id' => $ref_document_type_id, 
+            //     'auth_item' => $role,
+            //     'filter_type' => $filter_type,
+            //     ])->createCommand()->rawSql); exit;
        
-        return !empty($docAss->id) ? $docAss->id : NULL;
+        return !empty($docAss->filter_type) ? $docAss->filter_type : NULL;
     }
 
     public static function documentTypeAttrib($id,$attrib)
