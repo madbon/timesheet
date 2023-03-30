@@ -78,7 +78,7 @@ card {
 
     <div style="width:80%; margin-right:10%; margin-left:auto;">
     <p>
-        <?= Html::a('Edit Remarks / Add Attachment', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?= Yii::$app->user->identity->id == $model->user_id ? Html::a('Edit Remarks / Add Attachment', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) : "" ?>
         <?php 
         // Html::a('Delete', ['delete', 'id' => $model->id], [
         //     'class' => 'btn btn-danger',
