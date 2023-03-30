@@ -127,10 +127,10 @@ class SubmissionThreadSearch extends SubmissionThread
         // if(Yii::$app->user->can('Trainee'))
         if(Yii::$app->getModule('admin')->TaskFilterType($this->ref_document_type_id,Yii::$app->getModule('admin')->getLoggedInUserRoles(),'based_on_login_id'))
         {
-            if($this->ref_document_type_id == 3) // ACCOMPLISHMENT REPORT
-            {
+            // if($this->ref_document_type_id == 3) // ACCOMPLISHMENT REPORT
+            // {
                 $query->andFilterWhere(['user.id' => Yii::$app->user->identity->id]);
-            }
+            // }
         }
 
         // if($this->ref_document_type_id == 3) // ACCOMPLISHMENT REPORT
@@ -147,13 +147,6 @@ class SubmissionThreadSearch extends SubmissionThread
             $query->andFilterWhere(['user.ref_department_id' => Yii::$app->getModule('admin')->GetAssignedDepartment()]);
             $query->andFilterWhere(['user_company.ref_company_id'=> Yii::$app->getModule('admin')->GetAssignedCompany()]);
         }
-
-
-        // if(Yii::$app->user->can('OjtCoordinator'))
-        // if(Yii::$app->getModule('admin')->TaskFilterType($this->ref_document_type_id,Yii::$app->getModule('admin')->getLoggedInUserRoles(),'based_on_course'))
-        // {
-        //     $query->andFilterWhere(['user_company.ref_company_id' => Yii::$app->getModule('admin')->GetCompanyBasedOnCourse()])->andFilterWhere(['ref_department_id' => Yii::$app->getModule('admin')->GetDepartmentBasedOnCourse()]);
-        // }
 
 
         $query->andFilterWhere(['user.ref_program_id' => $this->program]);

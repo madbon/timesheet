@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use common\models\SubmissionThread;
 use common\models\SubmissionThreadSearch;
 use common\models\SubmissionReply;
+use common\models\SubmissionThreadSeen;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -146,6 +147,21 @@ class SubmissionThreadController extends Controller
      */
     public function actionView($id)
     {
+        $model = $this->findModel($id);
+
+        if(Yii::$app->getModule('admin')->documentAssignedAttrib($model->ref_document_type_id,'RECEIVER'))
+        {
+            if(!SubmissionThreadSeen::find()->where(['user_id' => Yii::$app->user->identity->id, 'submission_thread_id' => $id])->exists())
+            {
+                date_default_timezone_set('Asia/Manila');
+                $modelSubmThreadSeen = new SubmissionThreadSeen();
+                $modelSubmThreadSeen->user_id = Yii::$app->user->identity->id;
+                $modelSubmThreadSeen->submission_thread_id = $id;
+                $modelSubmThreadSeen->date_time = date('Y-m-d H:i:s');
+                $modelSubmThreadSeen->save();
+            }
+        }
+
         $files = Files::find()->where(['model_id' => $id, 'model_name' => 'SubmissionThread'])->all();
 
         $replyModel = new SubmissionReply();
@@ -186,7 +202,7 @@ class SubmissionThreadController extends Controller
         $replyQuery = SubmissionReply::find()->where(['submission_thread_id' => $id])->all();
 
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
             'files' => $files,
             'replyModel' => $replyModel,
             'replyQuery' => $replyQuery,

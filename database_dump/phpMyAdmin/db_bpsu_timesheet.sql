@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 30, 2023 at 05:22 AM
+-- Generation Time: Mar 30, 2023 at 08:44 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -674,7 +674,8 @@ INSERT INTO `submission_thread` (`id`, `user_id`, `tagged_user_id`, `subject`, `
 (2, 28, 0, 'AR', 'Converge ICT Trainee Days (@ IT Department) - BSEM', 3, 1679984939, '2023-03-28 14:28:59'),
 (4, 31, 0, 'TASK FOR NEXT WEEK', 'We will be having preventive maintenance @ 3rd Floor, all trainees are required to wear black T-Shirt', 5, 1679985115, '2023-03-28 14:31:55'),
 (9, 31, 20, NULL, 'Please see the attached files', 1, 1680012255, '2023-03-28 22:04:15'),
-(13, 20, NULL, NULL, 'This is my AR for the month of January', 3, 1680016846, '2023-03-28 23:20:46');
+(13, 20, NULL, NULL, 'This is my AR for the month of January', 3, 1680016846, '2023-03-28 23:20:46'),
+(15, 31, NULL, NULL, 'Preventive Maintenance @ 23rd Floor,  Directors Office. Please wear white t-shirt.', 5, 1680151893, '2023-03-30 12:51:33');
 
 -- --------------------------------------------------------
 
@@ -685,8 +686,16 @@ INSERT INTO `submission_thread` (`id`, `user_id`, `tagged_user_id`, `subject`, `
 CREATE TABLE `submission_thread_seen` (
   `id` int(11) NOT NULL,
   `submission_thread_id` int(11) DEFAULT NULL,
-  `user_id` int(11) DEFAULT NULL
+  `user_id` int(11) DEFAULT NULL,
+  `date_time` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `submission_thread_seen`
+--
+
+INSERT INTO `submission_thread_seen` (`id`, `submission_thread_id`, `user_id`, `date_time`) VALUES
+(4, 4, 20, '2023-03-30 14:39:30');
 
 -- --------------------------------------------------------
 
@@ -854,7 +863,8 @@ ALTER TABLE `attendance`
 --
 ALTER TABLE `auth_assignment`
   ADD PRIMARY KEY (`item_name`,`user_id`),
-  ADD KEY `idx-auth_assignment-user_id` (`user_id`);
+  ADD KEY `idx-auth_assignment-user_id` (`user_id`),
+  ADD KEY `item_name` (`item_name`);
 
 --
 -- Indexes for table `auth_item`
@@ -862,14 +872,16 @@ ALTER TABLE `auth_assignment`
 ALTER TABLE `auth_item`
   ADD PRIMARY KEY (`name`),
   ADD KEY `rule_name` (`rule_name`),
-  ADD KEY `idx-auth_item-type` (`type`);
+  ADD KEY `idx-auth_item-type` (`type`),
+  ADD KEY `name` (`name`);
 
 --
 -- Indexes for table `auth_item_child`
 --
 ALTER TABLE `auth_item_child`
   ADD PRIMARY KEY (`parent`,`child`),
-  ADD KEY `child` (`child`);
+  ADD KEY `child` (`child`),
+  ADD KEY `parent` (`parent`);
 
 --
 -- Indexes for table `auth_rule`
@@ -885,7 +897,8 @@ ALTER TABLE `files`
   ADD KEY `user_id` (`user_id`),
   ADD KEY `id` (`id`),
   ADD KEY `model_id` (`model_id`),
-  ADD KEY `created_at` (`created_at`);
+  ADD KEY `created_at` (`created_at`),
+  ADD KEY `model_name` (`model_name`);
 
 --
 -- Indexes for table `migration`
@@ -931,14 +944,22 @@ ALTER TABLE `ref_department`
 -- Indexes for table `ref_document_assignment`
 --
 ALTER TABLE `ref_document_assignment`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id` (`id`),
+  ADD KEY `ref_document_type_id` (`ref_document_type_id`),
+  ADD KEY `auth_item` (`auth_item`),
+  ADD KEY `type` (`type`),
+  ADD KEY `filter_type` (`filter_type`);
 
 --
 -- Indexes for table `ref_document_type`
 --
 ALTER TABLE `ref_document_type`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `id` (`id`);
+  ADD KEY `id` (`id`),
+  ADD KEY `required_uploading` (`required_uploading`),
+  ADD KEY `enable_tagging` (`enable_tagging`),
+  ADD KEY `enable_commenting` (`enable_commenting`);
 
 --
 -- Indexes for table `ref_position`
@@ -980,7 +1001,11 @@ ALTER TABLE `student_year`
 -- Indexes for table `submission_reply`
 --
 ALTER TABLE `submission_reply`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id` (`id`),
+  ADD KEY `submission_thread_id` (`submission_thread_id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `date_time` (`date_time`);
 
 --
 -- Indexes for table `submission_thread`
@@ -988,13 +1013,18 @@ ALTER TABLE `submission_reply`
 ALTER TABLE `submission_thread`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`),
-  ADD KEY `ref_document_type_id` (`ref_document_type_id`);
+  ADD KEY `ref_document_type_id` (`ref_document_type_id`),
+  ADD KEY `id` (`id`),
+  ADD KEY `tagged_user_id` (`tagged_user_id`);
 
 --
 -- Indexes for table `submission_thread_seen`
 --
 ALTER TABLE `submission_thread_seen`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id` (`id`),
+  ADD KEY `submission_thread_id` (`submission_thread_id`),
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `suffix`
@@ -1026,7 +1056,8 @@ ALTER TABLE `user`
 ALTER TABLE `user_company`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`),
-  ADD KEY `ref_company_id` (`ref_company_id`);
+  ADD KEY `ref_company_id` (`ref_company_id`),
+  ADD KEY `id` (`id`);
 
 --
 -- Indexes for table `user_timesheet`
@@ -1038,7 +1069,9 @@ ALTER TABLE `user_timesheet`
   ADD KEY `time_out_am` (`time_out_am`),
   ADD KEY `time_in_pm` (`time_in_pm`),
   ADD KEY `time_out_pm` (`time_out_pm`),
-  ADD KEY `date` (`date`);
+  ADD KEY `date` (`date`),
+  ADD KEY `id` (`id`),
+  ADD KEY `status` (`status`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -1120,13 +1153,13 @@ ALTER TABLE `submission_reply`
 -- AUTO_INCREMENT for table `submission_thread`
 --
 ALTER TABLE `submission_thread`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `submission_thread_seen`
 --
 ALTER TABLE `submission_thread_seen`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `user`
