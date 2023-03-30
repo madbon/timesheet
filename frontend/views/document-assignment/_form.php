@@ -19,6 +19,8 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'auth_item')->dropDownList($authItem, ['prompt' => '-','class' => 'form-control'])->label("ROLE") ?>
 
+    <?= $form->field($model,'filter_type')->textInput()->label("Filter Type: please use underscore ( _ ) as space") ?>
+
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
     </div>

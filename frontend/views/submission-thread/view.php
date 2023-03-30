@@ -423,8 +423,8 @@ card {
 
     <?php // $form->field($replyModel, 'date_time')->textInput() ?>
 
-    <div class="form-group">
-        <?= Html::submitButton('REPLY', ['class' => 'btn btn-warning']) ?>
+    <div class="form-group" style="text-align:right;">
+        <?= Html::submitButton('SEND', ['class' => 'btn btn-warning']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
