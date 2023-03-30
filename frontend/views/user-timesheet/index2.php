@@ -385,7 +385,7 @@ date_default_timezone_set('Asia/Manila');
                     echo "<td></td>";
                     echo "<td></td>";
                     echo "<td></td>";
-                    // echo "<td></td>";
+                    echo Yii::$app->user->can('timesheet-remarks') || Yii::$app->user->can('edit-time') ? "<td></td>" : "";
                     echo "</tr>";
                 }
             }
@@ -402,7 +402,7 @@ date_default_timezone_set('Asia/Manila');
             echo "<td>".($total_hours_val." hrs. ".$totalMinutesRendered." mins.")."</td>";
             echo "<td></td>";
             echo "<td></td>";
-            // echo "<td></td>";
+            echo Yii::$app->user->can('timesheet-remarks') || Yii::$app->user->can('edit-time') ? "<td></td>" : "";
             echo "</tr>";
 
             echo "</tbody>";
