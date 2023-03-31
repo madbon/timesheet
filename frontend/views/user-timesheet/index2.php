@@ -134,7 +134,7 @@ date_default_timezone_set('Asia/Manila');
         <h1 style="text-align: center; font-size:30px; font-weight:bold;">DAILY TIME RECORD</h1>
 
         <p style="text-align: center;">
-            <?php // Yii::$app->user->can('record-time-in-out') ? Html::a("RECORD TIME", ['record'], ['class' => '']) : "" ?>
+            <?= Yii::$app->user->can('record-time-in-out') ? Html::a("RECORD TIME", ['record'], ['class' => '']) : "" ?>
         </p>
 
         <table class="table-primary-details">
@@ -776,23 +776,24 @@ date_default_timezone_set('Asia/Manila');
                  $totalMinutesOvertime2 = $totalMinutesOvertime2 % 60;
 
                 $totalOverall = floor(($march_total + $april_total + $may_total + $june_total + $july_total) / 60);
+                // $overAllTotal = ($march_total + $april_total + $may_total + $june_total + $july_total) % 60;
 
-                 $totalMarch = floor($march_total / 60);
-                 $march_total = $march_total % 60;
+                 $totalMarch = floor($march_total / 60); // total of hours
+                 $march_total = $march_total % 60; // total of minutes
 
-                 $totalApril = floor($april_total / 60);
-                 $april_total = $april_total % 60;
+                 $totalApril = floor($april_total / 60); // total of hours
+                 $april_total = $april_total % 60; // total of minutes
 
-                 $totalMay = floor($may_total / 60);
-                 $may_total = $may_total % 60;
+                 $totalMay = floor($may_total / 60); // total of hours
+                 $may_total = $may_total % 60; // total of minutes
 
-                 $totalJune = floor($june_total / 60);
-                 $june_total = $june_total % 60;
+                 $totalJune = floor($june_total / 60); // total of hours
+                 $june_total = $june_total % 60; // total of minutes
 
-                 $totalJuly = floor($july_total / 60);
-                 $july_total = $july_total % 60;
+                 $totalJuly = floor($july_total / 60); // total of hours
+                 $july_total = $july_total % 60; // total of minutes
 
-                 
+                 $overAllTotal = floor(($march_total + $april_total + $may_total + $june_total + $july_total) / 60);
             ?>
         
     <hr/>
@@ -805,50 +806,53 @@ date_default_timezone_set('Asia/Manila');
             </tr>
             <tr>
                 <td>MARCH</td>
-                <td><?= $totalMarch; ?></td>
+                <td><?= $totalMarch. " hr/s ".$march_total." min/s "; ?></td>
                 <td></td>
                 <td></td>
                 <td></td>
             </tr>
             <tr>
                 <td>APRIL</td>
-                <td><?= $totalApril; ?></td>
+                <td><?= $totalApril. " hr/s ".$april_total." min/s "; ?></td>
                 <td></td>
                 <td></td>
                 <td></td>
             </tr>
             <tr>
                 <td>MAY</td>
-                <td><?= $totalMay; ?></td>
+                <td><?= $totalMay. " hr/s ".$may_total." min/s "; ?></td>
                 <td></td>
                 <td></td>
                 <td></td>
             </tr>
             <tr>
                 <td>JUNE</td>
-                <td><?= $totalJune; ?></td>
+                <td><?= $totalJune. " hr/s ".$june_total." min/s "; ?></td>
                 <td></td>
                 <td></td>
                 <td></td>
             </tr>
             <tr>
                 <td>JULY</td>
-                <td><?= $totalJuly; ?></td>
+                <td><?= $totalJuly. " hr/s ".$july_total." min/s "; ?></td>
                 <td></td>
                 <td></td>
                 <td></td>
             </tr>
             <tr>
                 <td>TOTAL HOURS REQUIRED</td>
-                <td style="font-weight:bold;"><?= $model->user->program->required_hours ?></td>
+                <td style="font-weight:bold;"><?= $model->user->program->required_hours." hrs " ?></td>
             </tr>
             <tr>
                 <td>TOTAL HOURS RENDERED</td>
-                <td style="font-weight:bold;"><?= $totalOverall ?></td>
+                <td style="font-weight:bold;"><?= $totalOverall. " hr/s ".$overAllTotal." min/s " ?></td>
             </tr>
             <tr>
                 <td>TOTAL HOURS REMAINED</td>
-                <td style="font-weight:bold;"><?= ($model->user->program->required_hours - $totalOverall) ?></td>
+                <td style="font-weight:bold;"><?php 
+                $totalWithDecimal = (double)$model->user->program->required_hours - ((double)$totalOverall.".".$overAllTotal);
+                echo (int)$totalWithDecimal." hr/s ".(floor($totalWithDecimal / 60)). " min/s ";
+                ?></td>
             </tr>
         </tbody>
     </table>
