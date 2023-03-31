@@ -564,17 +564,21 @@ date_default_timezone_set('Asia/Manila');
             $countPendingRecord2 = 0;
             $total_minutes2 = 0;
             $totalMinutesOvertime2 = 0;
+            
+            
+            
+            $jan_total = 0;
+            $feb_total = 0;
             $march_total = 0;
             $april_total = 0;
             $may_total = 0;
             $june_total = 0;
             $july_total = 0;
-
-            $march_total_minutes = 0;
-            $april_total_minutes = 0;
-            $may_total_minutes = 0;
-            $june_total_minutes = 0;
-            $july_total_minutes = 0;
+            $aug_total = 0;
+            $sept_total = 0;
+            $oct_total = 0;
+            $nov_total = 0;
+            $dec_total = 0;
 
 
                 $querySummary = UserTimesheet::find()
@@ -711,6 +715,12 @@ date_default_timezone_set('Asia/Manila');
                         if($model2->time_in_am && $model2->time_out_am && $model2->time_in_pm && $model2->time_out_pm)
                         {
                             switch ($model2->month_val) {
+                                case '1':
+                                    $jan_total  += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                                break;
+                                case '2':
+                                    $feb_total  += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                                break;
                                 case '3':
                                     $march_total  += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
                                 break;
@@ -726,6 +736,21 @@ date_default_timezone_set('Asia/Manila');
                                 case '7':
                                     $july_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
                                 break;
+                                case '8':
+                                    $aug_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                                break;
+                                case '9':
+                                    $sept_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                                break;
+                                case '10':
+                                    $oct_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                                break;
+                                case '11':
+                                    $nov_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                                break;
+                                case '12':
+                                    $dec_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                                break;
                                 
                                 default:
                                     # code...
@@ -735,6 +760,12 @@ date_default_timezone_set('Asia/Manila');
                         else
                         {
                             switch ($model2->month_val) {
+                                case '1':
+                                    $jan_total  += $interval3->h * 60 + $interval3->i; 
+                                break;
+                                case '2':
+                                    $feb_total  += $interval3->h * 60 + $interval3->i; 
+                                break;
                                 case '3':
                                     $march_total  += $interval3->h * 60 + $interval3->i; 
                                 break;
@@ -749,6 +780,21 @@ date_default_timezone_set('Asia/Manila');
                                 break;
                                 case '7':
                                     $july_total += $interval3->h * 60 + $interval3->i; 
+                                break;
+                                case '8':
+                                    $aug_total  += $interval3->h * 60 + $interval3->i; 
+                                break;
+                                case '9':
+                                    $sept_total  += $interval3->h * 60 + $interval3->i; 
+                                break;
+                                case '10':
+                                    $oct_total  += $interval3->h * 60 + $interval3->i; 
+                                break;
+                                case '11':
+                                    $nov_total  += $interval3->h * 60 + $interval3->i; 
+                                break;
+                                case '12':
+                                    $dec_total  += $interval3->h * 60 + $interval3->i; 
                                 break;
                                 
                                 default:
@@ -775,25 +821,46 @@ date_default_timezone_set('Asia/Manila');
                  $total_hours_ot2 = floor($totalMinutesOvertime2 / 60);
                  $totalMinutesOvertime2 = $totalMinutesOvertime2 % 60;
 
-                $totalOverall = floor(($march_total + $april_total + $may_total + $june_total + $july_total) / 60);
+                $totalOverall = floor(($jan_total + $feb_total +$march_total + $april_total + $may_total + $june_total + $july_total + $aug_total + $sept_total + $oct_total + $nov_total + $dec_total) / 60);
                 // $overAllTotal = ($march_total + $april_total + $may_total + $june_total + $july_total) % 60;
 
-                 $totalMarch = floor($march_total / 60); // total of hours
-                 $march_total = $march_total % 60; // total of minutes
+                $totalJan = floor($jan_total / 60); // total of hours
+                $jan_total = $jan_total % 60; // total of minutes
 
-                 $totalApril = floor($april_total / 60); // total of hours
-                 $april_total = $april_total % 60; // total of minutes
+                $totalFeb = floor($feb_total / 60); // total of hours
+                $feb_total = $feb_total % 60; // total of minutes
 
-                 $totalMay = floor($may_total / 60); // total of hours
-                 $may_total = $may_total % 60; // total of minutes
+                $totalMarch = floor($march_total / 60); // total of hours
+                $march_total = $march_total % 60; // total of minutes
 
-                 $totalJune = floor($june_total / 60); // total of hours
-                 $june_total = $june_total % 60; // total of minutes
+                $totalApril = floor($april_total / 60); // total of hours
+                $april_total = $april_total % 60; // total of minutes
 
-                 $totalJuly = floor($july_total / 60); // total of hours
-                 $july_total = $july_total % 60; // total of minutes
+                $totalMay = floor($may_total / 60); // total of hours
+                $may_total = $may_total % 60; // total of minutes
 
-                 $overAllTotal = floor(($march_total + $april_total + $may_total + $june_total + $july_total) / 60);
+                $totalJune = floor($june_total / 60); // total of hours
+                $june_total = $june_total % 60; // total of minutes
+
+                $totalJuly = floor($july_total / 60); // total of hours
+                $july_total = $july_total % 60; // total of minutes
+
+                $totalAug = floor($aug_total / 60); // total of hours
+                $aug_total = $aug_total % 60; // total of minutes
+
+                $totalSept = floor($sept_total / 60); // total of hours
+                $sept_total = $sept_total % 60; // total of minutes
+
+                $totalOct = floor($oct_total / 60); // total of hours
+                $oct_total = $oct_total % 60; // total of minutes
+
+                $totalNov = floor($nov_total / 60); // total of hours
+                $nov_total = $nov_total % 60; // total of minutes
+
+                $totalDec = floor($dec_total / 60); // total of hours
+                $dec_total = $dec_total % 60; // total of minutes
+
+                $overAllTotal = floor(($jan_total + $feb_total +$march_total + $april_total + $may_total + $june_total + $july_total + $aug_total + $sept_total + $oct_total + $nov_total + $dec_total) / 60);
             ?>
         
     <hr/>
@@ -804,6 +871,28 @@ date_default_timezone_set('Asia/Manila');
             <tr>
                 <td colspan="5" style="border-top:none; border-left:none; border-right:none; font-weight:bold;">SUMMARY OF HOURS RENDERED</td>
             </tr>
+
+            <?php if($totalJan){ ?>
+            <tr>
+                <td>JANUARY</td>
+                <td><?= $totalJan. " hr/s ".$jan_total." min/s "; ?></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <?php } ?>
+
+            <?php if($totalFeb){ ?>
+            <tr>
+                <td>FEBRUARY</td>
+                <td><?= $totalFeb. " hr/s ".$feb_total." min/s "; ?></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <?php } ?>
+
+            <?php if($totalMarch){ ?>
             <tr>
                 <td>MARCH</td>
                 <td><?= $totalMarch. " hr/s ".$march_total." min/s "; ?></td>
@@ -811,6 +900,9 @@ date_default_timezone_set('Asia/Manila');
                 <td></td>
                 <td></td>
             </tr>
+            <?php } ?>
+
+            <?php if($totalApril){ ?>
             <tr>
                 <td>APRIL</td>
                 <td><?= $totalApril. " hr/s ".$april_total." min/s "; ?></td>
@@ -818,6 +910,9 @@ date_default_timezone_set('Asia/Manila');
                 <td></td>
                 <td></td>
             </tr>
+            <?php } ?>
+
+            <?php if($totalMay){ ?>
             <tr>
                 <td>MAY</td>
                 <td><?= $totalMay. " hr/s ".$may_total." min/s "; ?></td>
@@ -825,6 +920,9 @@ date_default_timezone_set('Asia/Manila');
                 <td></td>
                 <td></td>
             </tr>
+            <?php } ?>
+
+            <?php if($totalJune){ ?>
             <tr>
                 <td>JUNE</td>
                 <td><?= $totalJune. " hr/s ".$june_total." min/s "; ?></td>
@@ -832,6 +930,9 @@ date_default_timezone_set('Asia/Manila');
                 <td></td>
                 <td></td>
             </tr>
+            <?php } ?>
+
+            <?php if($totalJuly){ ?>
             <tr>
                 <td>JULY</td>
                 <td><?= $totalJuly. " hr/s ".$july_total." min/s "; ?></td>
@@ -839,19 +940,74 @@ date_default_timezone_set('Asia/Manila');
                 <td></td>
                 <td></td>
             </tr>
+            <?php } ?>
+
+            <?php if($totalAug){ ?>
+            <tr>
+                <td>AUGUST</td>
+                <td><?= $totalAug. " hr/s ".$aug_total." min/s "; ?></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <?php } ?>
+
+            <?php if($totalSept){ ?>
+            <tr>
+                <td>SEPTEMBER</td>
+                <td><?= $totalSept. " hr/s ".$sept_total." min/s "; ?></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <?php } ?>
+
+            <?php if($totalOct){ ?>
+            <tr>
+                <td>OCTOBER</td>
+                <td><?= $totalOct. " hr/s ".$oct_total." min/s "; ?></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <?php } ?>
+
+            <?php if($totalNov){ ?>
+            <tr>
+                <td>NOVEMBER</td>
+                <td><?= $totalNov. " hr/s ".$nov_total." min/s "; ?></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <?php } ?>
+
+            <?php if($totalDec){ ?>
+            <tr>
+                <td>DECEMBER</td>
+                <td><?= $totalDec. " hr/s ".$dec_total." min/s "; ?></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <?php } ?>
+
             <tr>
                 <td>TOTAL HOURS REQUIRED</td>
                 <td style="font-weight:bold;"><?= $model->user->program->required_hours." hrs " ?></td>
             </tr>
+            
+
             <tr>
                 <td>TOTAL HOURS RENDERED</td>
-                <td style="font-weight:bold;"><?= $totalOverall. " hr/s ".$overAllTotal." min/s " ?></td>
+                <td style="font-weight:bold;"><?= $totalOverall. " hr/s " ?> </td> 
+                <!-- .$overAllTotal." min/s " -->
             </tr>
             <tr>
                 <td>TOTAL HOURS REMAINED</td>
                 <td style="font-weight:bold;"><?php 
-                $totalWithDecimal = (double)$model->user->program->required_hours - ((double)$totalOverall.".".$overAllTotal);
-                echo (int)$totalWithDecimal." hr/s ".(floor($totalWithDecimal / 60)). " min/s ";
+                $totalWithDecimal = $model->user->program->required_hours - $totalOverall;
+                echo $totalWithDecimal." hr/s ";
                 ?></td>
             </tr>
         </tbody>

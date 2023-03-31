@@ -227,6 +227,7 @@ class UserTimesheetController extends Controller
         ->where(['user_id' => $user_id])
         ->andWhere(['YEAR(date)' => $year])
         ->groupBy(['month'])
+        ->orderBy(['MONTH(date)' => SORT_ASC])
         ->all();
 
         $queryYear = UserTimesheet::find()
