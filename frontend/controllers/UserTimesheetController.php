@@ -26,7 +26,7 @@ class UserTimesheetController extends Controller
                 // 'only' => ['logout', 'signup'],
                 'rules' => [
                     [
-                        'actions' => ['index','create','update','view','delete','time-in','preview-pdf','record'],
+                        'actions' => ['index','create','update','view','delete','time-in','preview-pdf','record','record-time'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -110,6 +110,7 @@ class UserTimesheetController extends Controller
             'marginLeft' => 5,
             'marginRight' => 5,
             'marginTop' => 10,
+            'marginBottom' => 1,
             // your html content input
             'content' => $content,  
             // format content from your own css file if needed or use the
@@ -117,6 +118,11 @@ class UserTimesheetController extends Controller
             // 'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
             // any css to be embedded if required
             'cssInline' => '
+
+                .page-break {
+                    page-break-before: always;
+                }
+
                 table.table thead tr th
                 {
                     font-size:11px;
@@ -287,6 +293,15 @@ class UserTimesheetController extends Controller
         ]);
     }
 
+    // public function actionRecordTime()
+    // {
+    //     date_default_timezone_set('Asia/Manila');
+    //     $user_id = Yii::$app->user->identity->id;
+    //     $date = date('Y-m-d');
+    //     $time = date('H:i:s');
+    //     $timestamp = strtotime($time);
+    // }
+
     public function actionRecord()
     {
         date_default_timezone_set('Asia/Manila');
@@ -295,7 +310,7 @@ class UserTimesheetController extends Controller
         $time = date('H:i:s');
         $timestamp = strtotime($time);
 
-        $model = UserTimesheet::findOne(['user_id' => Yii::$app->user->id, 'date' => date('Y-m-d')]);
+        $model = UserTimesheet::find()->where(['user_id' => Yii::$app->user->id, 'date' => date('Y-m-d')])->orderBy(['id' => SORT_DESC])->one();
         if (!$model) {
             $model = new UserTimesheet();
             $model->user_id = Yii::$app->user->id;
@@ -311,19 +326,62 @@ class UserTimesheetController extends Controller
         else
         {
             if (date('a', $timestamp) === 'am') {
-                $model->time_out_am = date('H:i:s', $timestamp);
-            } else {
                 if($model->time_out_am)
                 {
-                    $model->time_out_am = NULL;
-                    $model->time_in_pm = NULL;
-                    $model->time_out_pm = date('H:i:s', $timestamp);
+                    $model = new UserTimesheet();
+                    $model->user_id = Yii::$app->user->id;
+                    $model->date = date('Y-m-d');
+                    $model->time_in_am = date('H:i:s', $timestamp);
+                }else{
+                    $model->time_out_am = date('H:i:s', $timestamp);
                 }
-                else
+                
+            } else { // PM
+                if($model->time_out_am)
                 {
-                    $model->time_out_am = NULL;
-                    $model->time_out_pm = date('H:i:s', $timestamp);
+                    if($model->time_out_pm)
+                    {
+                        $model = new UserTimesheet();
+                        $model->user_id = Yii::$app->user->id;
+                        $model->date = date('Y-m-d');
+                        $model->time_in_pm = date('H:i:s', $timestamp);
+                    }
+                    else
+                    {
+                        if($model->time_in_pm)
+                        {
+                            $model->time_out_pm = date('H:i:s', $timestamp);
+                        }   
+                        else
+                        {
+                            $model->time_in_pm = date('H:i:s', $timestamp);
+                        }
+                    }
                 }
+                else // if empty ung TIME_OUT_AM
+                {
+                    if($model->time_out_pm)
+                    {
+                        $model = new UserTimesheet();
+                        $model->user_id = Yii::$app->user->id;
+                        $model->date = date('Y-m-d');
+                        $model->time_in_pm = date('H:i:s', $timestamp);
+                    }
+                    else
+                    {
+                        // if($model->time_in_pm)
+                        // {
+                        //     $model->time_out_pm = date('H:i:s', $timestamp);
+                        // }   
+                        // else
+                        // {
+                            
+                        // }
+                        $model->time_out_pm = date('H:i:s', $timestamp);
+                    }
+                }
+
+                
             }
         }
         

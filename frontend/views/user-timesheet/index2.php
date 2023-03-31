@@ -235,26 +235,36 @@ date_default_timezone_set('Asia/Manila');
                             $start_time2 = !empty($model->time_in_pm) ? new DateTime($formatted_in_pm) : "";
                             $end_time2 = !empty($model->time_out_pm) ? new DateTime($formatted_out_pm) : "";
 
-                            if (new DateTime($start_time2->format('g:i A')) >= new DateTime('12:00 PM') && new DateTime( $start_time2->format('g:i A')) <= new DateTime('12:59 PM')) {
-                                $start_time2 = new DateTime('1:00 PM');
+                            if(empty($model->time_out_am) && empty($model->time_out_pm))
+                            {
+
+                            }
+                            else
+                            {
+                                // if (new DateTime($start_time2->format('g:i A')) >= new DateTime('12:00 PM') && new DateTime( $start_time2->format('g:i A')) <= new DateTime('12:59 PM')) {
+                                //     $start_time2 = new DateTime('1:00 PM');
+                                // }
+                                
+                                // // Check if the end time is between 12:00 PM and 12:59 PM
+                                // if (new DateTime($end_time2->format('g:i A')) >= new DateTime('12:00 PM') && new DateTime($end_time2->format('g:i A')) <= new DateTime('12:59 PM')) {
+                                //     $end_time2 = new DateTime('12:00 PM');
+                                // }
+                                
+                                // // Check if the end time is greater than 1:00 PM
+                                // // print_r($end_time->format('g:i A')); exit;
+    
+                                // if (new DateTime($end_time2->format('g:i A')) >= new DateTime('01:00 PM')) {
+                                //     // Subtract one hour from the end time
+    
+                                //     if(!empty($model->time_in_pm))
+                                //     {
+                                //         $end_time2->modify('-1 hour');
+                                //     }
+                                // }
                             }
                             
-                            // Check if the end time is between 12:00 PM and 12:59 PM
-                            if (new DateTime($end_time2->format('g:i A')) >= new DateTime('12:00 PM') && new DateTime($end_time2->format('g:i A')) <= new DateTime('12:59 PM')) {
-                                $end_time2 = new DateTime('12:00 PM');
-                            }
+
                             
-                            // Check if the end time is greater than 1:00 PM
-                            // print_r($end_time->format('g:i A')); exit;
-
-                            if (new DateTime($end_time2->format('g:i A')) >= new DateTime('01:00 PM')) {
-                                // Subtract one hour from the end time
-
-                                if(!empty($model->time_in_pm))
-                                {
-                                    $end_time2->modify('-1 hour');
-                                }
-                            }
 
                             
                         }
@@ -613,26 +623,26 @@ date_default_timezone_set('Asia/Manila');
                         $start_time2 = !empty($model2->time_in_pm) ? new DateTime($formatted_in_pm2) : "";
                         $end_time2 = !empty($model2->time_out_pm) ? new DateTime($formatted_out_pm2) : "";
 
-                        if (new DateTime($start_time2->format('g:i A')) >= new DateTime('12:00 PM') && new DateTime( $start_time2->format('g:i A')) <= new DateTime('12:59 PM')) {
-                            $start_time2 = new DateTime('1:00 PM');
-                        }
+                        // if (new DateTime($start_time2->format('g:i A')) >= new DateTime('12:00 PM') && new DateTime( $start_time2->format('g:i A')) <= new DateTime('12:59 PM')) {
+                        //     $start_time2 = new DateTime('1:00 PM');
+                        // }
                         
-                        // Check if the end time is between 12:00 PM and 12:59 PM
-                        if (new DateTime($end_time2->format('g:i A')) >= new DateTime('12:00 PM') && new DateTime($end_time2->format('g:i A')) <= new DateTime('12:59 PM')) {
-                            $end_time2 = new DateTime('12:00 PM');
-                        }
+                        // // Check if the end time is between 12:00 PM and 12:59 PM
+                        // if (new DateTime($end_time2->format('g:i A')) >= new DateTime('12:00 PM') && new DateTime($end_time2->format('g:i A')) <= new DateTime('12:59 PM')) {
+                        //     $end_time2 = new DateTime('12:00 PM');
+                        // }
                         
-                        // Check if the end time is greater than 1:00 PM
-                        // print_r($end_time->format('g:i A')); exit;
+                        // // Check if the end time is greater than 1:00 PM
+                        // // print_r($end_time->format('g:i A')); exit;
 
-                        if (new DateTime($end_time2->format('g:i A')) >= new DateTime('01:00 PM')) {
-                            // Subtract one hour from the end time
+                        // if (new DateTime($end_time2->format('g:i A')) >= new DateTime('01:00 PM')) {
+                        //     // Subtract one hour from the end time
 
-                            if(!empty($model2->time_in_pm))
-                            {
-                                $end_time2->modify('-1 hour');
-                            }
-                        }
+                        //     if(!empty($model2->time_in_pm))
+                        //     {
+                        //         $end_time2->modify('-1 hour');
+                        //     }
+                        // }
 
                         
                     }
