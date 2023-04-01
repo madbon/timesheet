@@ -155,7 +155,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     $type = "<label style='background:#dc3545; color:white; border:1px solid #dc3545; border-radius:25px; padding:2px; padding-left:7px; padding-right:7px;'>".$model->documentType->title."</label>";
                     return $type;
                 },
-                'filter' => \yii\helpers\ArrayHelper::map((\common\models\DocumentType::find()->all()), 'id', 'title'),
+                'filter' => \yii\helpers\ArrayHelper::map((\common\models\DocumentAssignment::find()
+                ->select(['ref_document_type.id','ref_document_type.title'])
+                ->joinWith('documentType')
+                ->where(['ref_document_assignment.auth_item' => Yii::$app->getModule('admin')->getLoggedInUserRoles()])
+                ->all()), 'id', 'title'),
             ],
             [
                 'label' => "CREATED BY",
@@ -188,7 +192,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'PROGRAM/COURSE',
                 'attribute' => 'program',
                 'format' => 'raw',
-                'visible' => Yii::$app->user->can('OjtCoordinator') || Yii::$app->getModule('admin')->documentTypeAttrib($searchModel->ref_document_type_id,'enable_tagging'),
+                'visible' => Yii::$app->user->can('view-column-course-program'),
                 'value' => function($model) use($searchModel)
                 {
                     if(Yii::$app->getModule('admin')->documentTypeAttrib($searchModel->ref_document_type_id,'enable_tagging'))
