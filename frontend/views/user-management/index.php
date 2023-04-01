@@ -132,7 +132,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         'format' => 'raw',
                         'attribute' => 'ref_program_id',
                         'value' => function ($model) {
-                            return !empty($model->program->title) ? "<span style='color:#af4343; text-transform:uppercase;'>".$model->program->title."</span>" : "";
+                            $abbreviation = !empty($model->program->abbreviation) ? $model->program->abbreviation : "";
+                            return !empty($model->program->title) ? "<span style='color:#af4343; text-transform:uppercase;'>".$model->program->title." <strong>[".$abbreviation."]</strong></span>" : "";
                         },
                         'filter' => \yii\helpers\ArrayHelper::map(\common\models\RefProgram::find()->asArray()->all(), 'id', 'title'),
                         'visible' => in_array($searchModel->item_name,['Trainee','OjtCoordinator',NULL,'']) ? true : false,
@@ -141,15 +142,18 @@ $this->params['breadcrumbs'][] = $this->title;
                         'attribute' => 'ref_program_major_id',
                         'format' => 'raw',
                         'value' => function ($model) {
-                            return !empty($model->programMajor->title) ? "<span style='color:#af4343;'>".$model->programMajor->title."</span>" : "";
+                            $abbreviation = !empty($model->programMajor->abbreviation) ? $model->programMajor->abbreviation : "";
+
+                            return !empty($model->programMajor->title) ? "<span style='color:#af4343;'>".$model->programMajor->title." <strong>[".$abbreviation."]</strong> </span>" : "";
                         },
                         'filter' => \yii\helpers\ArrayHelper::map(\common\models\ProgramMajor::find()->asArray()->all(), 'id', 'title'),
                         'visible' => in_array($searchModel->item_name,['Trainee',NULL,'']) ? true : false,
                     ],
                     [
                         'attribute' => 'student_year',
+                        'format' => 'raw',
                         'value' => function ($model) {
-                            return !empty($model->student_year) ? $model->student_year : "";
+                            return !empty($model->student_year) ? "<span style='color:#af4343;'><strong>".$model->student_year."</strong> </span>" : "";
                         },
                         'filter' => \yii\helpers\ArrayHelper::map(\common\models\StudentYear::find()->asArray()->all(), 'year', 'title'),
                         'visible' => in_array($searchModel->item_name,['Trainee',NULL,'']) ? true : false,
@@ -157,8 +161,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                     [
                         'attribute' => 'student_section',
+                        'format' => 'raw',
                         'value' => function ($model) {
-                            return !empty($model->student_section) ? $model->student_section : "";
+                            return !empty($model->student_section) ? "<span style='color:#af4343;'><strong>".$model->student_section."</strong> </span>" : "";
                         },
                         'filter' => \yii\helpers\ArrayHelper::map(\common\models\StudentSection::find()->asArray()->all(), 'section', 'section'),
                         'visible' => in_array($searchModel->item_name,['Trainee',NULL,'']) ? true : false,

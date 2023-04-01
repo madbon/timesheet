@@ -723,7 +723,7 @@ use common\models\UserTimesheet;
         <table class="table table-bordered summary-details">
             <tbody>
                 <tr>
-                    <td cols    n="5" style="border-top:none; border-left:none; border-right:none; font-weight:bold;">SUMMARY OF HOURS RENDERED</td>
+                    <td colspan="5" style="border-top:none; border-left:none; border-right:none; font-weight:bold;">SUMMARY OF HOURS RENDERED</td>
                 </tr>
 
                 <?php if($totalJan){ ?>
