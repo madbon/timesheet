@@ -239,6 +239,8 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
         $assignedCompany = Yii::$app->getModule('admin')->AssignedCompany();
         $assignedDepartment = Yii::$app->getModule('admin')->AssignedDepartment();
 
+        $firstName = !empty(Yii::$app->user->identity->fname) ? "(".Yii::$app->user->identity->fname.")" : "";
+
         if(Yii::$app->user->can("Administrator"))
         {
             $roleName = "Administrator";
@@ -246,15 +248,15 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
         }
         else if(Yii::$app->user->can("OjtCoordinator"))
         {
-            $roleName = "<span id='role-name-container'>OJT Coordinator</span> of ".$assignedProgram;
+            $roleName = "<span id='role-name-container'> OJT Coordinator  </span> of ".$assignedProgram." ".$firstName;
         }
         else if(Yii::$app->user->can("CompanySupervisor"))
         {
-            $roleName = "<span id='role-name-container'>Supervisor</span> at ".$assignedCompany.($assignedDepartment == "NOTHING" ? "" : ", ".$assignedDepartment);
+            $roleName = "<span id='role-name-container'>Supervisor</span> at ".$assignedCompany.($assignedDepartment == "NOTHING" ? "" : ", ".$assignedDepartment)." ".$firstName;
         }
         else if(Yii::$app->user->can("Trainee"))
         {
-            $roleName = "<span id='role-name-container'>Trainee</span> at ".$assignedCompany.($assignedDepartment == "NOTHING" ? "" : ", ".$assignedDepartment);
+            $roleName = "<span id='role-name-container'>Trainee</span> at ".$assignedCompany.($assignedDepartment == "NOTHING" ? "" : ", ".$assignedDepartment)." ".$firstName;
         }
 
         // echo Html::beginForm(['/site/logout'], 'post', ['class' => 'd-flex'])

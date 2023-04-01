@@ -38,7 +38,7 @@ use yii\widgets\ActiveForm;
 
             <div style="border:2px solid #ddd; padding:10px; margin-top:15px; background:white; border-radius:5px;">
                 <p>
-                    <code><strong>Acccepted File format:</strong> png, jpg</code><br/>
+                    <code><strong>Acccepted File format:</strong> png, jpg, jpeg, gif, pdf, docx, xlsx, xls</code><br/>
                     <code><strong>Max file size:</strong> Less than 5MB</code><br/>
                     <code><strong>Max no. of files per upload:</strong> 5 files</code>
                 </p>

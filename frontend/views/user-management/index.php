@@ -130,13 +130,15 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'label' => $searchModel->item_name == 'OjtCoordinator' ? 'Assigned Program/Course' : 'Program/Course',
                         'format' => 'raw',
+                        
                         'attribute' => 'ref_program_id',
                         'value' => function ($model) {
                             $abbreviation = !empty($model->program->abbreviation) ? $model->program->abbreviation : "";
                             return !empty($model->program->title) ? "<span style='color:#af4343; text-transform:uppercase;'>".$model->program->title." <strong>[".$abbreviation."]</strong></span>" : "";
                         },
                         'filter' => \yii\helpers\ArrayHelper::map(\common\models\RefProgram::find()->asArray()->all(), 'id', 'title'),
-                        'visible' => in_array($searchModel->item_name,['Trainee','OjtCoordinator',NULL,'']) ? true : false,
+                        // 'visible' => in_array($searchModel->item_name,['Trainee','OjtCoordinator',NULL,'']) ? true : false,
+                        'visible' => Yii::$app->user->can('view-column-course-program') && in_array($searchModel->item_name,['Trainee','OjtCoordinator',NULL,'']),
                     ],
                     [
                         'attribute' => 'ref_program_major_id',

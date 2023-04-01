@@ -17,7 +17,7 @@ class DocumentAssignment extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public $title,$action_title,$required_uploading;
+    public $title,$action_title,$required_uploading,$docu_id,$docu_title;
     public static function tableName()
     {
         return 'ref_document_assignment';
