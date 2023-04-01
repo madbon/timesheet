@@ -13,7 +13,8 @@ table.time-details tbody tr td
     text-transform: uppercase;
 }
 
-table.time-details tbody tr:nth-child(3) td
+
+table.time-details tbody tr:nth-child(1) td,table.time-details tbody tr:nth-child(2) td
 {
     font-weight: bold;
 }
@@ -34,21 +35,25 @@ table.student-details tbody tr td
 </style>
 <div class="site-index">
 
+
+
     <div class="jumbotron text-center bg-transparent" style="padding-top:20px;">
+    <div style="text-align: right;">
+        <?php 
+        //     echo Html::beginForm(['/site/logout'], 'post', ['class' => ''])
+        // . Html::submitButton(
+        //     'BACK TO TIME IN/OUT PORTAL',
+        //     ['class' => 'btn btn-outline-primary btn-lg', 'style' => 'text-align:center']
+        // )
+        // . Html::endForm(); 
+        echo Html::a('X',['/site/backtoportal'],['class' => 'btn btn-danger btn-lg']);
+    ?>
+</div>
+
         <h1 class="display-4">SUCCESS!</h1>
 
         <p class="lead">You have successfully recorded your time in/out. You can check it below.</p>
-        <div style="text-align: center;">
-                    <?php 
-                //     echo Html::beginForm(['/site/logout'], 'post', ['class' => ''])
-                // . Html::submitButton(
-                //     'BACK TO TIME IN/OUT PORTAL',
-                //     ['class' => 'btn btn-outline-primary btn-lg', 'style' => 'text-align:center']
-                // )
-                // . Html::endForm(); 
-                echo Html::a('Back to Portal',['/site/backtoportal']);
-                ?>
-                </div>
+        
 
     </div>
 
@@ -69,12 +74,16 @@ table.student-details tbody tr td
                             <td>TIME IN</td>
                             <td>TIME OUT</td>
                         </tr>
-                        <tr>
-                            <td><?= !empty($time_in_am) ? date('g:i:s A', strtotime($time_in_am)) : ""; ?></td>
-                            <td><?= !empty($time_out_am) ? date('g:i:s A', strtotime($time_out_am)) : ""; ?></td>
-                            <td><?= !empty($time_in_pm) ? date('g:i:s A', strtotime($time_in_pm)) : ""; ?></td>
-                            <td><?= !empty($time_out_pm) ? date('g:i:s A', strtotime($time_out_pm)) : ""; ?></td>
-                        </tr>
+
+                        <?php foreach ($timeSheetAll as $row) { ?>
+                            <tr>
+                                <td><?= !empty($row->time_in_am) ? date('g:i:s A', strtotime($row->time_in_am)) : ""; ?></td>
+                                <td><?= !empty($row->time_out_am) ? date('g:i:s A', strtotime($row->time_out_am)) : ""; ?></td>
+                                <td><?= !empty($row->time_in_pm) ? date('g:i:s A', strtotime($row->time_in_pm)) : ""; ?></td>
+                                <td><?= !empty($row->time_out_pm) ? date('g:i:s A', strtotime($row->time_out_pm)) : ""; ?></td>
+                            </tr>
+                        <?php } ?>
+                        
                     </tbody>
                 </table>
 
