@@ -13,7 +13,7 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin([
         'id' => 'user-management-form',
-        // 'enableAjaxValidation' => true,
+        'enableAjaxValidation' => Yii::$app->controller->action->id == "create" ? true : false,
         // ... other options ...
     ]); ?>
     
@@ -28,7 +28,7 @@ use yii\widgets\ActiveForm;
         </div>
     <?php } ?>
 
-    <div class="card" style="margin-bottom: 10px;">
+    <div class="card" style="<?= $account_type == "administrator" ? 'display:none;' : 'margin-bottom: 10px;'; ?>" >
         <div class="card-body">
             <h5 class="card-title">
                 <?php
@@ -51,21 +51,21 @@ use yii\widgets\ActiveForm;
             </h5>
             <!-- LINK THE COMPANY -->
             <?php if(in_array($account_type,['trainee','companysupervisor'])){ ?>
-    <!-- <div class="card" style="margin-bottom: 10px;">
-        <div class="card-body"> -->
-            <?php 
-                // if(Yii::$app->controller->action->id == "update")
-                // {
-                //     if(!empty($model->userCompany->company->name))
-                //     {
-                //         echo "This User is in this Company: 
-                //         <p><code><strong>Name: </strong>".$model->userCompany->company->name."</code><br/>
-                //         <code><strong>Address: </strong>".$model->userCompany->company->address."</code><br/>
-                //         <code><strong>Contact Info: </strong>".$model->userCompany->company->contact_info."</code>
-                //         </p>
-                //         ";
-                //     }
-                // }
+            <!-- <div class="card" style="margin-bottom: 10px;">
+                <div class="card-body"> -->
+                    <?php 
+                        // if(Yii::$app->controller->action->id == "update")
+                        // {
+                        //     if(!empty($model->userCompany->company->name))
+                        //     {
+                        //         echo "This User is in this Company: 
+                        //         <p><code><strong>Name: </strong>".$model->userCompany->company->name."</code><br/>
+                        //         <code><strong>Address: </strong>".$model->userCompany->company->address."</code><br/>
+                        //         <code><strong>Contact Info: </strong>".$model->userCompany->company->contact_info."</code>
+                        //         </p>
+                        //         ";
+                        //     }
+                        // }
             ?>
             
             <p style="display:none;">
@@ -80,7 +80,11 @@ use yii\widgets\ActiveForm;
                 <?php if(in_array($account_type,['companysupervisor','trainee'])){ ?>
                 <div class="col-sm-6">
                     <label>Department</label>
-                    <?= $form->field($model, 'ref_department_id')->dropDownList($department, ['prompt' => 'Select Department', 'class' => 'form-control'])->label(false) ?>
+                    <?= $form->field($model, 'ref_department_id')->dropDownList($department, [
+                        'prompt' => 'Select Department',
+                        'class' => 'form-control',
+                        // 'enableAjaxValidation' => true, // Enable Ajax validation for this field
+                    ])->label(false) ?>
                 </div>
                 <?php } ?>
                 <?php if(in_array($account_type,['companysupervisor'])){ ?>

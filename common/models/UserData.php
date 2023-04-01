@@ -75,7 +75,7 @@ class UserData extends \yii\db\ActiveRecord
 
             [['company'], in_array(Yii::$app->request->get('account_type'),['companysupervisor','trainee']) ? 'required' : 'safe'],
 
-            [['company'], in_array(Yii::$app->request->get('account_type'),['companysupervisor','trainee']) ? 'required' : 'safe'],
+            // [['company'], in_array(Yii::$app->request->get('account_type'),['companysupervisor','trainee']) ? 'required' : 'safe'],
 
             [['company'], 'required', 'when' => function ($model) { return $model->item_name == 'CompanySupervisor'; }, 'whenClient' => "function (attribute, value) { return $('#userdata-item_name').val() == 'CompanySupervisor'; }"],
 
@@ -126,15 +126,18 @@ class UserData extends \yii\db\ActiveRecord
 
     public function validateCompanyDepartment($attribute)
     {
-        if(Yii::$app->controller->action->id == "create")
+        if(in_array(Yii::$app->request->get('account_type'),['companysupervisor']))
         {
-            if (UserData::find()
-            ->joinWith('userCompany')
-            ->joinWith('authAssignment')
-            ->where(['user_company.ref_company_id' => $this->company])
-            ->andWhere(['auth_assignment.item_name' => 'CompanySupervisor'])
-            ->andWhere(['user.ref_department_id' => $this->ref_department_id])->exists()) {
-                $this->addError($attribute, 'There is already Company Supervisor in this Department');
+            if(Yii::$app->controller->action->id == "create")
+            {
+                if (UserData::find()
+                ->joinWith('userCompany')
+                ->joinWith('authAssignment')
+                ->where(['user_company.ref_company_id' => $this->company])
+                ->andWhere(['auth_assignment.item_name' => 'CompanySupervisor'])
+                ->andWhere(['user.ref_department_id' => $this->ref_department_id])->exists()) {
+                    $this->addError($attribute, 'There is already Company Supervisor in this Department');
+                }
             }
         }
     }
