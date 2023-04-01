@@ -53,7 +53,7 @@ class UserData extends \yii\db\ActiveRecord
             [['mname'], 'string', 'max' => 150],
             [['sname'], 'string', 'max' => 50],
             [['sex'], 'string', 'max' => 1],
-            [['mobile_no'],'string','max' => 10],
+            [['mobile_no'],'number'],
             [['mobile_no','tel_no','suffix','item_name'],'safe'],
             // [['username', 'password_hash', 'password_reset_token', 'email', 'verification_token'], 'string', 'max' => 255],
             // [['auth_key'], 'string', 'max' => 32],
@@ -69,7 +69,7 @@ class UserData extends \yii\db\ActiveRecord
 
             [['mobile_no','ref_program_id'], in_array(Yii::$app->request->get('account_type'),['ojtcoordinator']) ? 'required' : 'safe'],
 
-            [['ref_department_id','ref_position_id'], in_array(Yii::$app->request->get('account_type'),['ojtcoordinator']) ? 'required' : 'safe'],
+            [['ref_department_id','ref_position_id'], in_array(Yii::$app->request->get('account_type'),['companysupervisor']) ? 'required' : 'safe'],
 
             [['ref_department_id'], in_array(Yii::$app->request->get('account_type'),['trainee']) ? 'required' : 'safe'],
 
