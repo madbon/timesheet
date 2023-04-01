@@ -30,6 +30,7 @@ use common\components\PdfWidget;
 use yii\data\ActiveDataProvider;
 use yii\helpers\Json;
 use yii\widgets\ActiveForm;
+use yii\web\Response;
 use Yii;
 
 /**
@@ -157,9 +158,10 @@ class UserManagementController extends Controller
        
         $itemName = NULL;
 
+
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
-            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-            return \yii\widgets\ActiveForm::validate($model);
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ActiveForm::validate($model);
         }
 
         if ($this->request->isPost) {
@@ -171,15 +173,15 @@ class UserManagementController extends Controller
                 $model->auth_key = Yii::$app->security->generateRandomString();
                 $model->verification_token = Yii::$app->security->generateRandomString() . '_' . time();
 
-            
                 if($model->save())
                 {
                     \Yii::$app->getSession()->setFlash('success', 'Data has been saved');
                 }
                 else
                 {
-                    print_r($model->errors); exit;
+                    // print_r($model->errors); exit;
                 }
+                
 
                 // ROLE ASSIGNMENT SAVING
                 $model_id = $model->id;
@@ -211,7 +213,7 @@ class UserManagementController extends Controller
                 
                 if(!$roleAssignment->save())
                 {
-                    print_r($roleAssignment->errors); exit;
+                    // print_r($roleAssignment->errors); exit;
                 }
 
                 $userCompany->user_id = $model_id;
@@ -219,7 +221,7 @@ class UserManagementController extends Controller
 
                 if(!$userCompany->save())
                 {
-                    print_r($userCompany->errors); exit;
+                    // print_r($userCompany->errors); exit;
                 }
 
                 return $this->redirect(['index', 
