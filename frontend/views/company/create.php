@@ -18,13 +18,17 @@ $this->params['breadcrumbs'][] = $this->title;
         ]);
     ?>
 
+    <br/>
+    <button id="copy-company-details" type="button" class="btn btn-outline-dark">LOAD COMPANY DETAILS</button>
+
     <?= $this->render('_form', [
         'model' => $model,
     ]) ?>
 
+    
     <?php
         $this->registerJs('
-            $(".container-fluid").mousemove(function(){
+            $("#copy-company-details").click(function(){
                 var companyName = $("#company_name").val();
                 var companyAddress = $("#address").val();
                 var companyLat = $("#latitude").val();
