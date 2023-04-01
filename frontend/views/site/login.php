@@ -74,7 +74,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     
                     <div style="border:1px solid #ddd; padding:10px; padding-top:0px; border-radius:5px;">
 
-                        <p style="text-align: center; font-weight:normal; font-size:15px; color:#ae0505; padding:5px; padding-right:50px; padding-left:50px; padding-top:30px; padding-bottom:30px;">Timesheet Monitoring System for CICT Trainees</p>
+                        <p style="text-align: center; font-weight:normal; font-size:15px; color:#ae0505; padding:5px; padding-right:50px; padding-left:50px; padding-top:30px; padding-bottom:30px;">OJT Timesheet Monitoring System for CICT Trainees</p>
                         
                         <div class="card-body">
                             

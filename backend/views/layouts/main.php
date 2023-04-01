@@ -11,6 +11,8 @@ use yii\bootstrap5\Nav;
 use yii\bootstrap5\NavBar;
 
 AppAsset::register($this);
+
+$this->title = "BPSU Timesheet Monitoring System for CICT Trainees";
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -71,7 +73,7 @@ AppAsset::register($this);
 <footer class="footer mt-auto py-3 text-muted">
     <div class="container">
         <p class="float-start">&copy; <?= Html::encode(Yii::$app->name) ?> <?= date('Y') ?></p>
-        <p class="float-end"><?= Yii::powered() ?></p>
+        <p class="float-end"><?php // Yii::powered() ?></p>
     </div>
 </footer>
 
