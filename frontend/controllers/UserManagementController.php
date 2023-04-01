@@ -176,6 +176,10 @@ class UserManagementController extends Controller
                 {
                     \Yii::$app->getSession()->setFlash('success', 'Data has been saved');
                 }
+                else
+                {
+                    print_r($model->errors); exit;
+                }
 
                 // ROLE ASSIGNMENT SAVING
                 $model_id = $model->id;

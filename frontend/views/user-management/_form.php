@@ -260,7 +260,7 @@ use yii\widgets\ActiveForm;
             <h5 class="card-title">Contact Information</h5>
                 <div class="row">
                     <div class="col-sm-4">
-                        <?= $form->field($model, 'mobile_no')->textInput(['maxlength' => true, 'placeholder' => '+63 9123456789']) ?>
+                        <?= $form->field($model, 'mobile_no')->textInput(['maxlength' => 10, 'placeholder' => '+63 9123456789']) ?>
                         
                     </div>
                     <div class="col-sm-4">
