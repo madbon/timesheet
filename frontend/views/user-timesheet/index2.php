@@ -134,7 +134,7 @@ date_default_timezone_set('Asia/Manila');
         <h1 style="text-align: center; font-size:30px; font-weight:bold;">DAILY TIME RECORD</h1>
 
         <p style="text-align: center;">
-            <?= Yii::$app->user->can('record-time-in-out') ? Html::a("RECORD TIME", ['record'], ['class' => '']) : "" ?>
+            <?php // Yii::$app->user->can('record-time-in-out') ? Html::a("RECORD TIME", ['record'], ['class' => '']) : "" ?>
         </p>
 
         <table class="table-primary-details">
