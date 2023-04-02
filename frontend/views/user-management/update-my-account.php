@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use common\models\CoordinatorPrograms;
 
 /** @var yii\web\View $this */
 /** @var common\models\UserData $model */
@@ -36,6 +37,34 @@ $this->title = 'My Account';
         }
     ?>
 
+    <?php if(CoordinatorPrograms::find()->where(['user_id' => Yii::$app->user->identity->id])->exists()){ ?>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="card" style="margin-bottom:10px;">
+                
+                <div class="card-body">
+                    <h5>Assigned Program(s)/Course(s)</h5>
+                    <table class="table table-hover">
+                        <tbody>
+                            <?php
+                                $query = CoordinatorPrograms::find()->where(['user_id' => Yii::$app->user->identity->id])->all();
+                                foreach ($query as $row) {
+                                    $major = !empty($row->program->abbreviation) ? "[".$row->program->abbreviation."] " : "";
+                                    echo "
+                                        <tr>
+                                            <td><code> * </code> ".$major." ".(!empty($row->program->title) ? $row->program->title : "")."</td>
+                                        </tr>
+                                    ";
+                                }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php } ?>
+
     <?= $this->render('_form', [
         'model' => $model,
         'roleArr' => $roleArr,
@@ -49,5 +78,10 @@ $this->title = 'My Account';
             'department' => $department,
             'company' => $company,
     ]) ?>
+
+<?php
+
+?>
+
 
 </div>

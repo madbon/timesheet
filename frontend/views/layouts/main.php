@@ -266,22 +266,40 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
 
         $firstName = !empty(Yii::$app->user->identity->fname) ? "(".Yii::$app->user->identity->fname.")" : "";
 
+        // if(Yii::$app->user->can("Administrator"))
+        // {
+        //     $roleName = "Administrator";
+            
+        // }
+        // else if(Yii::$app->user->can("OjtCoordinator"))
+        // {
+        //     $roleName = "<span id='role-name-container'> OJT Coordinator  </span> of ".$assignedProgram." ".$firstName;
+        // }
+        // else if(Yii::$app->user->can("CompanySupervisor"))
+        // {
+        //     $roleName = "<span id='role-name-container'>Supervisor</span> at ".$assignedCompany.($assignedDepartment == "NOTHING" ? "" : ", ".$assignedDepartment)." ".$firstName;
+        // }
+        // else if(Yii::$app->user->can("Trainee"))
+        // {
+        //     $roleName = "<span id='role-name-container'>Trainee</span> at ".$assignedCompany.($assignedDepartment == "NOTHING" ? "" : ", ".$assignedDepartment)." ".$firstName;
+        // }
+
         if(Yii::$app->user->can("Administrator"))
         {
-            $roleName = "Administrator";
+            $roleName = "Administrator (".$firstName.")";
             
         }
         else if(Yii::$app->user->can("OjtCoordinator"))
         {
-            $roleName = "<span id='role-name-container'> OJT Coordinator  </span> of ".$assignedProgram." ".$firstName;
+            $roleName = "<span id='role-name-container'> OJT Coordinator  ".$firstName."</span> ";
         }
         else if(Yii::$app->user->can("CompanySupervisor"))
         {
-            $roleName = "<span id='role-name-container'>Supervisor</span> at ".$assignedCompany.($assignedDepartment == "NOTHING" ? "" : ", ".$assignedDepartment)." ".$firstName;
+            $roleName = "<span id='role-name-container'>Supervisor ".$firstName."</span> ";
         }
         else if(Yii::$app->user->can("Trainee"))
         {
-            $roleName = "<span id='role-name-container'>Trainee</span> at ".$assignedCompany.($assignedDepartment == "NOTHING" ? "" : ", ".$assignedDepartment)." ".$firstName;
+            $roleName = "<span id='role-name-container'>Trainee ".$firstName." </span> ";
         }
 
         // echo Html::beginForm(['/site/logout'], 'post', ['class' => 'd-flex'])
