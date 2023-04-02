@@ -36,6 +36,31 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
             font-size:25px;
         }
 
+        ul.pagination
+        {
+            margin-top:10px;
+        }
+
+        ul.pagination li a
+        {
+            text-decoration: none;
+            color:#af4343;
+            font-size:12px;
+            font-weight: bold;
+        }
+
+        ul.pagination li.active
+        {
+            background: #ffdbdb;
+        }
+
+        ul.pagination li
+        {
+            padding:10px;
+            background:white;
+            border:1px solid #ffdbdb;
+        }
+
         .btn-outline-success,.btn-outline-primary,.btn-outline-danger,.btn-outline-secondary
         {
             background:white;
@@ -299,6 +324,7 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
                 'company',
                 'document-type',
                 'document-assignment',
+                'coordinator-programs',
                 ]) ? true : false,
                 'visible' => Yii::$app->user->can('menu-settings'),
             ],

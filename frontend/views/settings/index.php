@@ -12,6 +12,10 @@ ul li a:hover
 {
     text-decoration: underline;
 }
+.col-sm-4
+{
+    padding:10px;
+}
 </style>
 
 <h1>SYSTEM SETTINGS</h1>
@@ -80,6 +84,21 @@ ul li a:hover
                         <ul>
                             <?=  Yii::$app->user->can('settings-list-task-type') ?  "<li>".Html::a('List of Task Types',['/document-type']) ."</li>" : ""  ?>
                             <?=  Yii::$app->user->can('settings-list-task-type') ?  "<li>".Html::a('List of Task Assignments',['/document-assignment']) ."</li>" : ""  ?>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+        </div>
+    <?php } ?>
+
+    <?php  if(Yii::$app->user->can('settings-coordinator-assigned-programs-container')){ ?>
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Coordinator Assigned Programs</h5>
+                    <p class="card-text">
+                        <ul>
+                            <?=  Yii::$app->user->can('settings-list-coordinator-programs') ?  "<li>".Html::a('List of Coordinator Programs/Courses',['/coordinator-programs']) ."</li>" : ""  ?>
                         </ul>
                     </p>
                 </div>

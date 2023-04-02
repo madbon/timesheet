@@ -133,8 +133,33 @@ $this->params['breadcrumbs'][] = $this->title;
                         
                         'attribute' => 'ref_program_id',
                         'value' => function ($model) {
-                            $abbreviation = !empty($model->program->abbreviation) ? $model->program->abbreviation : "";
-                            return !empty($model->program->title) ? "<span style='color:#af4343; text-transform:uppercase;'>".$model->program->title." <strong>[".$abbreviation."]</strong></span>" : "";
+
+                            $prom_val = "";
+                            if(!empty($model->coordinatorPrograms))
+                            {
+                                $prom_val = "<ul>";
+                                foreach ($model->coordinatorPrograms as $row) {
+                                    $abbreviation = !empty($row->program->abbreviation) ? "[".$row->program->abbreviation."] " : "";
+                                    $prom_val .= "<li style='color:#af4343;'>".$abbreviation." ".$row->program->title."</li>";
+                                }
+                                $prom_val .= "</ul>";
+                            }
+                            else
+                            {
+                                if($model->authAssignment->item_name == "OjtCoordinator")
+                                {
+                                    $prom_val = Html::a('No Assigned Program/Course',['/coordinator-programs/create', 'user_id' => $model->id], ['class' => 'btn btn-outline-danger btn-sm', 'target' => '_blank']);
+                                }
+                                else
+                                {
+                                    $abbreviation = !empty($model->program->abbreviation) ? $model->program->abbreviation : "";
+
+                                    $prom_val = !empty($model->program->title) ? "<span style='color:#af4343; text-transform:uppercase;'>".$model->program->title." <strong>[".$abbreviation."]</strong></span>" : "";
+                                }
+                                
+                            }
+
+                            return $prom_val;
                         },
                         'filter' => \yii\helpers\ArrayHelper::map(\common\models\RefProgram::find()->asArray()->all(), 'id', 'title'),
                         // 'visible' => in_array($searchModel->item_name,['Trainee','OjtCoordinator',NULL,'']) ? true : false,

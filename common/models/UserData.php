@@ -64,22 +64,17 @@ class UserData extends \yii\db\ActiveRecord
             // ['confirm_password', 'compare', 'compareAttribute' => 'password', 'message' => "Passwords don't match"],
             [['password'],Yii::$app->controller->id == "user-management" && Yii::$app->controller->action->id == "create" ? 'required' : 'safe'],
 
-            // Create Trainee other required indicators
+            // TRAINEE REQUIRED FIELDS
             [['student_idno','mobile_no','ref_program_id','ref_program_major_id','student_year','student_section','address'], in_array(Yii::$app->request->get('account_type'),['trainee']) ? 'required' : 'safe'],
 
-            [['mobile_no','ref_program_id'], in_array(Yii::$app->request->get('account_type'),['ojtcoordinator']) ? 'required' : 'safe'],
+            [['student_idno','mobile_no','ref_program_id','ref_program_major_id','student_year','student_section','address'], 'required', 'when' => function ($model) { return $model->item_name == 'Trainee'; }, 'whenClient' => "function (attribute, value) { return $('#userdata-item_name').val() == 'Trainee'; }"],
 
-            [['ref_department_id','ref_position_id'], in_array(Yii::$app->request->get('account_type'),['companysupervisor']) ? 'required' : 'safe'],
 
-            [['ref_department_id'], in_array(Yii::$app->request->get('account_type'),['trainee']) ? 'required' : 'safe'],
+            // COMPANY SUPERVISOR FIELDS
+            [['company','ref_department_id','ref_position_id'], in_array(Yii::$app->request->get('account_type'),['companysupervisor']) ? 'required' : 'safe'],
 
-            [['company'], in_array(Yii::$app->request->get('account_type'),['companysupervisor','trainee']) ? 'required' : 'safe'],
-
-            // [['company'], in_array(Yii::$app->request->get('account_type'),['companysupervisor','trainee']) ? 'required' : 'safe'],
-
-            [['company'], 'required', 'when' => function ($model) { return $model->item_name == 'CompanySupervisor'; }, 'whenClient' => "function (attribute, value) { return $('#userdata-item_name').val() == 'CompanySupervisor'; }"],
-
-            [['company'], 'required', 'when' => function ($model) { return $model->item_name == 'Trainee'; }, 'whenClient' => "function (attribute, value) { return $('#userdata-item_name').val() == 'Trainee'; }"],
+            [['company','ref_department_id','ref_position_id'], 'required', 'when' => function ($model) { return $model->item_name == 'CompanySupervisor'; }, 'whenClient' => "function (attribute, value) { return $('#userdata-item_name').val() == 'CompanySupervisor'; }"],
+            
 
             [['ref_department_id'], 'validateCompanyDepartment'],
 
@@ -126,18 +121,36 @@ class UserData extends \yii\db\ActiveRecord
 
     public function validateCompanyDepartment($attribute)
     {
-        if(in_array(Yii::$app->request->get('account_type'),['companysupervisor']))
+        if(in_array(Yii::$app->request->get('account_type'),['companysupervisor']) || $this->item_name == "CompanySupervisor")
         {
-            if(Yii::$app->controller->action->id == "create")
+            if(in_array(Yii::$app->controller->action->id,['create','update']))
             {
-                if (UserData::find()
+                $query = UserData::find()
                 ->joinWith('userCompany')
                 ->joinWith('authAssignment')
                 ->where(['user_company.ref_company_id' => $this->company])
                 ->andWhere(['auth_assignment.item_name' => 'CompanySupervisor'])
-                ->andWhere(['user.ref_department_id' => $this->ref_department_id])->exists()) {
-                    $this->addError($attribute, 'There is already Company Supervisor in this Department');
+                ->andWhere(['user.ref_department_id' => $this->ref_department_id])->one();
+
+                if(!empty($query->id))
+                {
+                    if($query->id == $this->id)
+                    {
+                        
+                    }
+                    else
+                    {
+                        if (UserData::find()
+                        ->joinWith('userCompany')
+                        ->joinWith('authAssignment')
+                        ->where(['user_company.ref_company_id' => $this->company])
+                        ->andWhere(['auth_assignment.item_name' => 'CompanySupervisor'])
+                        ->andWhere(['user.ref_department_id' => $this->ref_department_id])->exists()) {
+                            $this->addError($attribute, 'There is already Company Supervisor in this Department');
+                        }
+                    }
                 }
+                
             }
         }
     }
@@ -172,6 +185,17 @@ class UserData extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
+
+      /**
+     * Gets query for [[CmsRoleActions]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCoordinatorPrograms()
+    {
+        return $this->hasMany(CoordinatorPrograms::class, ['user_id' => 'id']);
+    }
+
 
     public function getUserCompany()
     {

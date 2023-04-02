@@ -28,7 +28,7 @@ use yii\widgets\ActiveForm;
         </div>
     <?php } ?>
 
-    <div class="card" style="<?= $account_type == "administrator" ? 'display:none;' : 'margin-bottom: 10px;'; ?>" >
+    <div class="card" style="<?= in_array($account_type,['administrator','ojtcoordinator']) ? 'display:none;' : 'margin-bottom: 10px;'; ?>" >
         <div class="card-body">
             <h5 class="card-title">
                 <?php
@@ -158,11 +158,13 @@ use yii\widgets\ActiveForm;
                     ?>
                 </div>
             </div>
+            
+            <?php if(in_array($account_type,['trainee'])){ ?>
             <div class="row">
                 <div class="col-sm-4">
                     <?php 
-                        if(in_array($account_type,['trainee','ojtcoordinator']))
-                        {
+                        // if(in_array($account_type,['trainee']))
+                        // {
                             echo $form->field($model, 'ref_program_id')->dropDownList(
                                 $program,
                                 [
@@ -174,21 +176,23 @@ use yii\widgets\ActiveForm;
                                     '
                                 ]
                                     );
-                        }
+                        // }
                     ?>
                 </div>
                 <div class="col-sm-4">
                     <?php     
-                        if(in_array($account_type,['trainee']))
-                        {
+                        // if(in_array($account_type,['trainee']))
+                        // {
                             echo $form->field($model, 'ref_program_major_id')->dropDownList(
                                 !empty($major) ? $major : [],
                                 ['prompt'=>'Select Program/Course First']
                             );
-                        }
+                        // }
                     ?>
                 </div>
             </div>   
+            <?php } ?>
+
             <div class="row">
                 <div class="col-sm-4">
                     <?php 

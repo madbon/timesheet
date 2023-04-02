@@ -395,14 +395,20 @@ class UserManagementController extends Controller
                 $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
             }
 
+           
             if($model->save())
             {
                 \Yii::$app->getSession()->setFlash('success', 'Changes has been saved');
             }
             else
             {
-                // print_r($model->errors); exit;
+                
+                \Yii::$app->getSession()->setFlash('danger', "A Supervisor has already been assigned to this department. You cannot assign this user to this department.");
+                return $this->redirect(['update', 'id' => $model->id]);
             }
+            
+
+            
 
             // print_r($model->company); exit;
 
