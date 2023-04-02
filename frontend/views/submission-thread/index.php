@@ -198,37 +198,46 @@ $this->params['breadcrumbs'][] = $this->title;
                     if(Yii::$app->getModule('admin')->documentTypeAttrib($searchModel->ref_document_type_id,'enable_tagging'))
                     {
                         $major = !empty($model->taggedUser->programMajor->title) ? "<code> > </code>"."Major in ".$model->taggedUser->programMajor->title : "";
-                        $program = (!empty($model->taggedUser->program->title) ? "<code> > </code>".$model->taggedUser->program->title : "");
+                        $program = (!empty($model->taggedUser->program->title) ? "<code> > </code> <strong>".$model->taggedUser->program->title."</strong>" : "");
     
                     }
                     else
                     {
                         $major = !empty($model->user->programMajor->title) ? "<code> > </code>"."Major in ".$model->user->programMajor->title : "";
-                        $program = (!empty($model->user->program->title) ? "<code> > </code>".$model->user->program->title : "");
+                        $program = (!empty($model->user->program->title) ? "<code> > </code><strong>".$model->user->program->title."</strong>" : "");
     
                     }
                    
                     return $program."<br/>".$major;
                 },
-                'filter' => \yii\helpers\ArrayHelper::map((\common\models\RefProgram::find()->all()), 'id', 'title'),
+                'filter' => \yii\helpers\ArrayHelper::map((\common\models\RefProgram::find()
+                ->andFilterWhere(['id' => Yii::$app->getModule('admin')->GetAssignedProgram()])
+                ->all()), 'id', 'title'),
             ],
             [
                 'label' => 'COMPANY',
                 'attribute' => 'company',
+                'format' => 'raw',
                 'visible' => Yii::$app->user->can('OjtCoordinator'),
                 'value' => function($model) use($searchModel)
                 {
                     if(Yii::$app->getModule('admin')->documentTypeAttrib($searchModel->ref_document_type_id,'enable_tagging'))
                     {
-                        return !empty($model->taggedUser->userCompany->company->name) ? $model->taggedUser->userCompany->company->name : "";
+                        $companyAddress = !empty($model->taggedUser->userCompany->company->address) ? "<p><code>ADDRESS > </code>".$model->taggedUser->userCompany->company->address."</p>" : "";
+
+                        return !empty($model->taggedUser->userCompany->company->name) ? "<strong>".$model->taggedUser->userCompany->company->name."</strong>".$companyAddress : "";
                     }
                     else
                     {
-                        return !empty($model->user->userCompany->company->name) ? $model->user->userCompany->company->name : "";
+                        $companyAddress = !empty($model->user->userCompany->company->address) ? "<p><code>ADDRESS > </code>".$model->user->userCompany->company->address."</p>" : "";
+
+                        return !empty($model->user->userCompany->company->name) ? "<strong>".$model->user->userCompany->company->name."</strong>".$companyAddress : "";
                     }
                     
                 },
-                'filter' => \yii\helpers\ArrayHelper::map((\common\models\Company::find()->all()), 'id', 'name'),
+                'filter' => \yii\helpers\ArrayHelper::map((\common\models\Company::find()
+                ->andFilterWhere(['id' => Yii::$app->getModule('admin')->GetCompanyBasedOnCourse()])
+                ->all()), 'id', 'name'),
             ],
             [
                 'label' => 'DEPARTMENT',
@@ -246,7 +255,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     }
                     
                 },
-                'filter' => \yii\helpers\ArrayHelper::map((\common\models\Department::find()->all()), 'id', 'title'),
+                'filter' => \yii\helpers\ArrayHelper::map((\common\models\Department::find()
+                ->andFilterWhere(['id' => Yii::$app->getModule('admin')->GetDepartmentBasedOnCourse()])
+                ->all()), 'id', 'title'),
             ],
             
             // [
