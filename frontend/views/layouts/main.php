@@ -315,22 +315,26 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
 
         $menuItemsLeft = [
             [
-                'label' => 'Timesheet', 'url' => ['/user-timesheet'], 'active' => Yii::$app->controller->id == "user-timesheet" ? true : false,
+                'label' => '<i class="fas fa-clock"></i> Timesheet', 'url' => ['/user-timesheet'], 'active' => Yii::$app->controller->id == "user-timesheet" ? true : false,
                 'visible' => Yii::$app->user->can('menu-timesheet'),
             ],
             [
-                'label' => 'User Management', 'url' => ['/user-management','UserDataSearch[item_name]' => 'Trainee'], 'active' => Yii::$app->controller->id == "user-management" ? true : false,
+                'label' => '<i class="fas fa-users-cog"></i> User Management', 'url' => ['/user-management','UserDataSearch[item_name]' => 'Trainee'], 'active' => Yii::$app->controller->id == "user-management" ? true : false,
                 'visible' => Yii::$app->user->can('menu-user-management'),
             ],
             [
-                'label' => 'Map Markers', 'url' => ['/user-company/google-map'], 'active' => Yii::$app->controller->action->id == "google-map" ? true : false,
+                'label' => '<i class="fas fa-map-marker-alt"></i> Map Markers', 'url' => ['/user-company/google-map'], 'active' => Yii::$app->controller->action->id == "google-map" ? true : false,
                 'visible' => Yii::$app->user->can('menu-map-markers'),
             ],
             [
-                'label' => 'Tasks ('.$countTask.')', 'url' => ['/submission-thread/index'], 'active' => Yii::$app->controller->id == "submission-thread" ? true : false,
+                'label' => '<i class="fas fa-bullhorn"></i> Announcement', 'url' => ['/announcement/index'], 'active' => Yii::$app->controller->id == "announcement" ? true : false,
+                'visible' => Yii::$app->user->can('announcement-menu'),
+            ],
+            [
+                'label' => '<i class="fas fa-tasks"></i> Tasks ('.$countTask.')', 'url' => ['/submission-thread/index'], 'active' => Yii::$app->controller->id == "submission-thread" ? true : false,
                 'visible' => Yii::$app->user->can('menu-tasks'),
             ],
-            ['label' => 'Settings', 'url' => ['/settings'], 'active' => in_array(Yii::$app->controller->id,[
+            ['label' => '<i class="fas fa-cogs"></i> Settings', 'url' => ['/settings'], 'active' => in_array(Yii::$app->controller->id,[
                 'settings',
                 'auth-item',
                 'auth-item-child',

@@ -28,6 +28,8 @@ class Announcement extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
+
+    public $selected_programs;
     public function rules()
     {
         return [
@@ -36,6 +38,7 @@ class Announcement extends \yii\db\ActiveRecord
             [['content'], 'string'],
             [['date_time'], 'safe'],
             [['content_title'], 'string', 'max' => 250],
+            [['selected_programs'], 'required', 'when' => function ($model) { return $model->viewer_type == 'selected_program'; }, 'whenClient' => "function (attribute, value) { return $('#announcement-viewer_type').val() == 'selected_program'; }"],
             // [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
     }

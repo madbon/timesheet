@@ -7,6 +7,7 @@ use common\models\AnnouncementSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use common\models\AnnouncementProgramTags;
 use Yii;
 
 /**
@@ -50,7 +51,23 @@ class AnnouncementController extends Controller
             date_default_timezone_set('Asia/Manila');
             $model->date_time = date('Y-m-d H:i:s');
 
-            if ($model->load($this->request->post()) && $model->save()) {
+            if ($model->load($this->request->post()) &&  $model->save()) {
+                // print_r($model->selected_programs); exit;
+
+                if($model->selected_programs)
+                {
+                    $model_id = $model->id;
+                    $selected_programs = $model->selected_programs;
+                    
+                    foreach ($selected_programs as $key => $value) {
+                        $tags = new AnnouncementProgramTags();
+                        $tags->announcement_id = $model_id;
+                        $tags->ref_program_id = $value;
+                        $tags->save();
+                    }
+                }
+                
+               
 
                 \Yii::$app->getSession()->setFlash('success', 'Announcement has been posted successfully');
                 return $this->redirect(Yii::$app->request->referrer);

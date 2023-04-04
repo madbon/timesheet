@@ -75,6 +75,7 @@ $this->title = 'Announcements';
     // ]); 
     ?>
 
+    <?php if(Yii::$app->user->can('announcement-create')){ ?>
     <div class="row">
         <div class="col-sm-3">
         </div>
@@ -110,8 +111,9 @@ $this->title = 'Announcements';
         <div class="col-sm-3">
         </div>
     </div>
+    <?php } ?>
 
-   
+    <?php if(Yii::$app->user->can('announcement-index')){ ?>
     <div class="row">
         <div class="col-sm-3">
         </div>
@@ -121,9 +123,11 @@ $this->title = 'Announcements';
                     <?= Html::a('Today',['index'],['class' => 'btn btn-dark', 'style' => 'border-radius:25px; padding-left:20px; padding-right:20px;']) ?>
                     <?= Html::a('Yesterday',['index'],['class' => 'btn btn-outline-dark','style' => 'border-radius:25px; padding-left:20px; padding-right:20px;']) ?>
                     <?= Html::a('All',['index'],['class' => 'btn btn-outline-dark','style' => 'border-radius:25px; padding-left:20px; padding-right:20px;']) ?>
+                    <?= Html::a('My Posts',['index'],['class' => 'btn btn-outline-dark','style' => 'border-radius:25px; padding-left:20px; padding-right:20px;']) ?>
                 </div>
 
                 <?php foreach ($dataProvider->query->all() as $row) { ?>
+                    
                     <div class="card">
                         <div class="card-title">
                             <?= $row->content_title ?>
@@ -141,6 +145,7 @@ $this->title = 'Announcements';
         <div class="col-sm-3">
         </div>
     </div>
+    <?php } ?>
 
     
 
