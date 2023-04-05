@@ -8,6 +8,10 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use common\models\AnnouncementProgramTags;
+use frontend\models\UploadMultipleInAnnouncement;
+use yii\web\UploadedFile;
+use common\models\Files;
+use yii\helpers\Url;
 use Yii;
 
 /**
@@ -47,12 +51,21 @@ class AnnouncementController extends Controller
 
         $model->user_id = Yii::$app->user->identity->id;
 
+        $modelUpload = new UploadMultipleInAnnouncement();
+
         if ($this->request->isPost) {
             date_default_timezone_set('Asia/Manila');
             $model->date_time = date('Y-m-d H:i:s');
 
-            if ($model->load($this->request->post()) &&  $model->save()) {
-                // print_r($model->selected_programs); exit;
+            if ($model->load($this->request->post()) &&  $model->save() && $modelUpload->load($this->request->post())) {
+
+                $model_id = $model->id;
+                // UPLOAD FILE
+                $modelUpload->model_name = "Announcement";
+                $modelUpload->model_id = $model_id;
+
+                $modelUpload->imageFiles = UploadedFile::getInstances($modelUpload, 'imageFiles');
+                $modelUpload->uploadMultiple();
 
                 if($model->selected_programs)
                 {
@@ -80,7 +93,71 @@ class AnnouncementController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'model' => $model,
+            'modelUpload' => $modelUpload,
         ]);
+    }
+
+    public function actionDownload($id)
+    {
+        $file = Files::findOne(['id' => $id]);
+
+        if ($file !== null) {
+            $filePath = 'uploads/' . $file->file_hash . '.' . $file->extension;
+
+            if (file_exists($filePath)) {
+                return Yii::$app->response->sendFile($filePath, $file->file_name . '.' . $file->extension);
+            } else {
+                throw new \yii\web\NotFoundHttpException('File not found.');
+            }
+        } else {
+            throw new \yii\web\NotFoundHttpException('File not found.');
+        }
+    }
+
+    public function actionPreview($id)
+    {
+        $file = Files::findOne(['id' => $id]);
+
+        if ($file !== null) {
+            $filePath = 'uploads/' . $file->file_hash . '.' . $file->extension;
+
+            if (file_exists($filePath)) {
+                if (in_array($file->extension, ['png', 'jpg', 'jpeg', 'gif'])) {
+                    return Yii::$app->response->sendFile($filePath, $file->file_name . '.' . $file->extension, ['inline' => true]);
+                } else if ($file->extension === 'pdf') {
+                    return $this->redirect(Url::to('@web/uploads/' . $file->file_hash . '.' . $file->extension));
+                } else {
+                    throw new \yii\web\BadRequestHttpException('File type not supported for preview.');
+                }
+            } else {
+                throw new \yii\web\NotFoundHttpException('File not found.');
+            }
+        } else {
+            throw new \yii\web\NotFoundHttpException('File not found.');
+        }
+    }
+
+
+    public function actionDeleteFile($id)
+    {
+        $file = Files::findOne(['id' => $id]);
+
+        if ($file !== null) {
+            $filePath = 'uploads/' . $file->file_hash . '.' . $file->extension;
+
+            if ($file->delete()) {
+                if (file_exists($filePath)) {
+                    @unlink($filePath);
+                }
+                Yii::$app->session->setFlash('success', 'File deleted successfully.');
+            } else {
+                Yii::$app->session->setFlash('error', 'Error deleting file. Please try again.');
+            }
+        } else {
+            throw new \yii\web\NotFoundHttpException('File not found.');
+        }
+
+        return $this->redirect(Yii::$app->request->referrer);
     }
 
     /**
@@ -142,7 +219,7 @@ class AnnouncementController extends Controller
         }
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            
+
             if($model->selected_programs)
             {
                 $model_id = $id;

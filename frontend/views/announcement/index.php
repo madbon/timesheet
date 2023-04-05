@@ -6,6 +6,7 @@ use yii\helpers\Url;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
+use common\models\Files;
 /** @var yii\web\View $this */
 /** @var common\models\AnnouncementSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
@@ -51,7 +52,7 @@ $this->title = 'Announcements';
 
     <h1><?php // Html::encode($this->title) ?></h1>
 
-    <?php Pjax::begin(); ?>
+    <?php // Pjax::begin(); ?>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <?php 
@@ -100,9 +101,11 @@ $this->title = 'Announcements';
                             </div>
                         </div>
                     </div>
+                    <?php // print_r($modelUpload); exit; ?>
                     <div id="form-announcement" class="card-content" style="display:none;">
                         <?= $this->render('create', [
                             'model' => $model,
+                            'modelUpload' => $modelUpload,
                         ]) ?>
                     </div>
                 </div>
@@ -131,10 +134,164 @@ $this->title = 'Announcements';
                     <div class="card" >
                         <div class="card-title">
                             <?= $row->content_title ?>
+
+                            <?php if($row->viewer_type == "selected_program"){ ?>
+                                <p style="font-weight: normal; font-size:11px;">
+                                    <code>ATTENTION: </code>
+                                    <?php foreach ($row->announcementProgramTags as $tags) { ?>
+                                        <span style='background:#ae0505; color:white; padding-left:7px; padding-right:7px; border-radius:25px;'><?= $tags->program->abbreviation; ?></span>
+                                    <?php } ?>
+                                </p>
+                            <?php }else if($row->viewer_type == "assigned_program"){ ?>
+                                <p style="font-weight: normal; font-size:11px;">
+                                    <code>ATTENTION: </code>
+                                    <?php //echo "<pre>"; print_r($row->coordinatorPrograms); exit; ?>
+                                    <?php if(!empty($row->user->coordinatorPrograms)){ ?>
+                                        <?php foreach ($row->user->coordinatorPrograms as $assProg) { ?>
+                                            <span style='background:#ae0505; color:white; padding-left:7px; padding-right:7px; border-radius:25px;'><?= $assProg->program->abbreviation; ?></span>
+                                        <?php } ?>
+                                    <?php } ?>
+                                </p>
+                            <?php }else{ ?>
+                                <p style="font-weight: normal; font-size:11px;">
+                                    <code>ATTENTION:  <span style='background:#ae0505; color:white; padding-left:7px; padding-right:7px; border-radius:25px;'>ALL PROGRAMS/COURSES</span></code>
+                                </p>
+                            <?php } ?>
                         </div>
                         <div class="card-content">
-                        <?= Html::button(' <span class="glyphicon glyphicon-pencil"></span> Edit', ['value'=>Url::to('@web/announcement/update?id='.$row->id), 'class' => 'btn btn-primary btn-xs modalButton btn-block']); ?>
+                        <?= Html::button('<i class="fas fa-edit"></i>', ['value'=>Url::to('@web/announcement/update?id='.$row->id), 'class' => 'btn btn-link btn-sm modalButton','style' => 'float:right;']); ?>
                             <p style="white-space: pre-line;"><?= $row->content ?></p>
+
+                            <?php
+                                $files = Files::find()->where(['model_id' => $row->id, 'model_name' => 'Announcement'])->all();
+
+                                $fileContent = "";
+                                // foreach ($files as $file)
+                                // {
+                                                                    
+                                // }
+
+                                $fileContent .= '<div id="image-container-'.$row->id.'" style="position:relative;">';
+                                $index = 0;
+                                foreach ($files as $file) {
+                                    // ...
+                                    if (in_array($file->extension, ['jpg','jpeg','png','gif'])) {
+                                        $fileContent .= '<div class="image-wrapper-'.$row->id.'" data-index="' . $index . '" style="' . ($index === 0 ? '' : 'display:none;') . '">';
+                                        $fileContent .= Html::img(Url::to(['preview', 'id' => $file->id]), [
+                                            'alt'=>'My Image',
+                                            'style' => 'width:100%;',
+                                            'class' => 'img-responsive'
+                                        ]);
+                                        $fileContent .= '</div>';
+                                        $index++;
+                                    }
+                                    else
+                                    {
+                                        $filePath = 'uploads/' . $file->file_hash . '.' . $file->extension;
+                                        if (file_exists($filePath)) {
+                                            if (in_array($file->extension, ['pdf']))
+                                            {
+                                                if($file->user_id == Yii::$app->user->identity->id)
+                                                {
+                                                    $fileContent .= "<div>".Html::a('<i class="fas fa-file-pdf"></i> '.Html::encode($file->file_name . '.' . $file->extension), Url::to(['preview', 'id' => $file->id]), ['class' => 'btn btn-outline-dark btn-sm', 'style' => 'border-radius:25px 0px 0px 25px; border-right:none;','target' => '_blank']).Html::a('X', Url::to(['delete-file', 'id' => $file->id]), [
+                                                        'class' => 'btn btn-outline-dark btn-sm',
+                                                        'style' => 'border-radius:0px 25px 25px 0px; border-left:none;',
+                                                        'data' => [
+                                                            'confirm' => 'Are you sure you want to delete this file?',
+                                                            'method' => 'post',
+                                                        ],
+                                                    ])."</div>";
+                                                }
+                                                else
+                                                {
+                                                    $fileContent .= Html::a('<i class="fas fa-file-pdf"></i> '.Html::encode($file->file_name . '.' . $file->extension), Url::to(['preview', 'id' => $file->id]), ['class' => 'btn btn-outline-dark btn-sm', 'style' => 'border-radius:25px;','target' => '_blank']);
+                                                }
+                                                
+                                            }
+                                            else
+                                            {
+                                                $fileExt = "";
+                                                if(in_array($file->extension,['xlsx','xls']))
+                                                {
+                                                    $fileExt = '<i class="fas fa-file-excel"></i> ';
+                                                }
+                                                else if(in_array($file->extension,['csv']))
+                                                {
+                                                    $fileExt = '<i class="fas fa-file-csv"></i> ';
+                                                }
+                                                else if(in_array($file->extension,['docx']))
+                                                {
+                                                    $fileExt = '<i class="fas fa-file-word"></i> ';
+                                                }
+
+                                                if($file->user_id == Yii::$app->user->identity->id)
+                                                {
+                                                    $fileContent .= Html::a(Html::encode($fileExt.$file->file_name . '.' . $file->extension), Url::to(['download', 'id' => $file->id]), ['class' => 'btn btn-outline-dark btn-sm', 'style' => 'border-radius:25px 0px 0px 25px;','target' => '_blank']).Html::a('X', Url::to(['delete-file', 'id' => $file->id]), [
+                                                        'class' => 'btn btn-light',
+                                                        'style' => 'border-radius:0px 25px 25px 0px;',
+                                                        'data' => [
+                                                            'confirm' => 'Are you sure you want to delete this file?',
+                                                            'method' => 'post',
+                                                        ],
+                                                    ]);
+                                                }
+                                                else
+                                                {
+                                                    $fileContent .= Html::a(Html::encode($fileExt.$file->file_name . '.' . $file->extension), Url::to(['download', 'id' => $file->id]), ['class' => 'btn btn-outline-dark btn-sm', 'style' => 'border-radius:25px;','target' => '_blank']);
+                                                }
+                                            }
+                                        }    
+                                    }
+                                    // ...
+                                }
+
+                                $fileContent .= '<button id="previous-button-'.$row->id.'" style="position:absolute;left:0;top:50%;display:none;" class="btn btn-link"><i style="font-size:50px; color:#ff000054;" class="fas fa-chevron-circle-left"></i></button>';
+                                $fileContent .= '<button id="next-button-'.$row->id.'" style="position:absolute;right:0;top:50%;display:none;" class="btn btn-link"><i style="font-size:50px; color:#ff000054;" class="fas fa-chevron-circle-right"></i></button>';
+                                $fileContent .= '</div>';
+
+                                echo $fileContent;
+                            ?>
+
+<?php
+$script = <<<JS
+$(document).ready(function() {
+    const \$imageWrapper = $(".image-wrapper-" + $row->id);
+    const \$previousButton = $("#previous-button-" + $row->id);
+    const \$nextButton = $("#next-button-" + $row->id);
+    const transitionDuration = 200; // duration of the transition in milliseconds
+
+    if (\$imageWrapper.length > 1) {
+        \$previousButton.show();
+        \$nextButton.show();
+    }
+
+    \$previousButton.click(function() {
+        const currentIndex = parseInt(\$imageWrapper.filter(":visible").data("index"));
+        const newIndex = currentIndex === 0 ? \$imageWrapper.length - 1 : currentIndex - 1;
+
+        \$imageWrapper.filter(":visible").fadeOut(transitionDuration, function() {
+            \$imageWrapper.filter('[data-index="' + newIndex + '"]').fadeIn(transitionDuration);
+        });
+    });
+
+    \$nextButton.click(function() {
+        const currentIndex = parseInt(\$imageWrapper.filter(":visible").data("index"));
+        const newIndex = (currentIndex + 1) % \$imageWrapper.length;
+
+        \$imageWrapper.filter(":visible").fadeOut(transitionDuration, function() {
+            \$imageWrapper.filter('[data-index="' + newIndex + '"]').fadeIn(transitionDuration);
+        });
+    });
+});
+JS;
+
+$this->registerJs($script, \yii\web\View::POS_READY);
+?>
+
+
+
+                       
+
                         </div>
                         <div class="card-footer">
                             Posted by: <?= $row->user->userFullname ?>  on <?=  date('F j, Y h:i a',strtotime($row->date_time)); ?>
@@ -150,6 +307,6 @@ $this->title = 'Announcements';
 
     
 
-    <?php Pjax::end(); ?>
+    <?php // Pjax::end(); ?>
 
 </div>

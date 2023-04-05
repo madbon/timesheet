@@ -13,7 +13,7 @@ use yii\helpers\ArrayHelper;
 
 <div class="announcement-form" style="margin-bottom:20px;">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]); ?>
 
     <?= $form->field($model, 'user_id')->hiddenInput()->label(false) ?>
 
@@ -52,6 +52,8 @@ use yii\helpers\ArrayHelper;
             ]
         ) ?>
     </div>
+
+    <?= $form->field($modelUpload, 'imageFiles[]')->fileInput(['multiple' => true])->label('Attach file/s') ?>
 
     
 

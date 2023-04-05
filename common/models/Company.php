@@ -54,4 +54,5 @@ class Company extends \yii\db\ActiveRecord
             'contact_info' => 'Contact Info',
         ];
     }
+
 }

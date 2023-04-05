@@ -15,6 +15,7 @@ use yii\helpers\Html;
 
     <?= $this->render('_form', [
         'model' => $model,
+        'modelUpload' => $modelUpload,
     ]) ?>
 
 </div>
