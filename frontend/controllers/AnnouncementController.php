@@ -218,7 +218,9 @@ class AnnouncementController extends Controller
             $model->selected_programs = $arrTags;
         }
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
+        $modelUpload = new UploadMultipleInAnnouncement();
+
+        if ($this->request->isPost && $model->load($this->request->post()) && $model->save() && $modelUpload->load($this->request->post())) {
 
             if($model->selected_programs)
             {
@@ -237,7 +239,17 @@ class AnnouncementController extends Controller
                     $tags->ref_program_id = $value;
                     $tags->save();
                 }
+
+                $model_id = $id;
+                // UPLOAD FILE
+                
             }
+
+            $modelUpload->model_name = "Announcement";
+            $modelUpload->model_id = $id;
+
+            $modelUpload->imageFiles = UploadedFile::getInstances($modelUpload, 'imageFiles');
+            $modelUpload->uploadMultiple();
 
             \Yii::$app->getSession()->setFlash('success', 'Announcement has been updated');
             return $this->redirect(Yii::$app->request->referrer);
@@ -245,6 +257,7 @@ class AnnouncementController extends Controller
 
         $content = $this->renderAjax('update', [
             'model' => $model,
+            'modelUpload' => $modelUpload,
         ]);
 
         return $content;
@@ -265,7 +278,8 @@ class AnnouncementController extends Controller
     {
         $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+        \Yii::$app->getSession()->setFlash('success', 'Announcement has been deleted');
+        return $this->redirect(Yii::$app->request->referrer);
     }
 
     /**

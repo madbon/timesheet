@@ -53,7 +53,7 @@ use yii\helpers\ArrayHelper;
         ) ?>
     </div>
 
-    <?= $form->field($modelUpload, 'imageFiles[]')->fileInput(['multiple' => true])->label('Attach file/s') ?>
+    <?= $form->field($modelUpload, 'imageFiles[]')->fileInput(['multiple' => true])->label('Add attachment/s') ?>
 
     
 

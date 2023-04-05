@@ -7,6 +7,7 @@ use yii\grid\ActionColumn;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
 use common\models\Files;
+use yii\widgets\LinkPager;
 /** @var yii\web\View $this */
 /** @var common\models\AnnouncementSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
@@ -56,7 +57,7 @@ $this->title = 'Announcements';
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <?php 
-    // GridView::widget([
+    // echo GridView::widget([
     //     'dataProvider' => $dataProvider,
     //     'filterModel' => $searchModel,
     //     'columns' => [
@@ -129,22 +130,33 @@ $this->title = 'Announcements';
                     <?= Html::a('My Posts',['index'],['class' => 'btn btn-outline-dark','style' => 'border-radius:25px; padding-left:20px; padding-right:20px;']) ?>
                 </div>
 
-                <?php foreach ($dataProvider->query->all() as $row) { ?>
+                <?php foreach ($dataProvider->models as $row) { ?>
                     
                     <div class="card" >
+                        <div style="text-align: right; padding-top:0; margin-top:0; margin-top:-10px;">
+                            <?= $row->user_id == Yii::$app->user->identity->id ? Html::button('<i class="fas fa-edit"></i>', ['value'=>Url::to('@web/announcement/update?id='.$row->id), 'class' => 'btn btn-outline-secondary btn-sm modalButton','style' => '']) : "" ?>
+                            <?= ($row->user_id == Yii::$app->user->identity->id ? Html::a('<i class="fas fa-trash-alt"></i>', Url::to(['delete', 'id' => $row->id]), [
+                                            'class' => 'btn btn-outline-secondary btn-sm',
+                                            'style' => '',
+                                            'data' => [
+                                                'confirm' => 'Are you sure you want to delete this announcement?',
+                                                'method' => 'post',
+                                            ],
+                            ]) : "") ?>
+                        </div>
                         <div class="card-title">
                             <?= $row->content_title ?>
 
                             <?php if($row->viewer_type == "selected_program"){ ?>
                                 <p style="font-weight: normal; font-size:11px;">
-                                    <code>ATTENTION: </code>
+                                    <code>ATTENTION <i class="fas fa-bullhorn"></i> </code>
                                     <?php foreach ($row->announcementProgramTags as $tags) { ?>
                                         <span style='background:#ae0505; color:white; padding-left:7px; padding-right:7px; border-radius:25px;'><?= $tags->program->abbreviation; ?></span>
                                     <?php } ?>
                                 </p>
                             <?php }else if($row->viewer_type == "assigned_program"){ ?>
                                 <p style="font-weight: normal; font-size:11px;">
-                                    <code>ATTENTION: </code>
+                                    <code>ATTENTION <i class="fas fa-bullhorn"></i> </code>
                                     <?php //echo "<pre>"; print_r($row->coordinatorPrograms); exit; ?>
                                     <?php if(!empty($row->user->coordinatorPrograms)){ ?>
                                         <?php foreach ($row->user->coordinatorPrograms as $assProg) { ?>
@@ -154,12 +166,12 @@ $this->title = 'Announcements';
                                 </p>
                             <?php }else{ ?>
                                 <p style="font-weight: normal; font-size:11px;">
-                                    <code>ATTENTION:  <span style='background:#ae0505; color:white; padding-left:7px; padding-right:7px; border-radius:25px;'>ALL PROGRAMS/COURSES</span></code>
+                                    <code>ATTENTION <i class="fas fa-bullhorn"></i>  <span style='background:#ae0505; color:white; padding-left:7px; padding-right:7px; border-radius:25px;'>ALL PROGRAMS/COURSES</span></code>
                                 </p>
                             <?php } ?>
                         </div>
                         <div class="card-content">
-                        <?= Html::button('<i class="fas fa-edit"></i>', ['value'=>Url::to('@web/announcement/update?id='.$row->id), 'class' => 'btn btn-link btn-sm modalButton','style' => 'float:right;']); ?>
+                        
                             <p style="white-space: pre-line;"><?= $row->content ?></p>
 
                             <?php
@@ -181,7 +193,14 @@ $this->title = 'Announcements';
                                             'alt'=>'My Image',
                                             'style' => 'width:100%;',
                                             'class' => 'img-responsive'
-                                        ]);
+                                        ]).($file->user_id == Yii::$app->user->identity->id ? Html::a('<i class="fas fa-trash-alt"></i>', Url::to(['delete-file', 'id' => $file->id]), [
+                                            'class' => 'btn btn-outline-danger btn-sm',
+                                            'style' => 'border-radius:25px; position:absolute; right:20px; top:20px;',
+                                            'data' => [
+                                                'confirm' => 'Are you sure you want to delete this image?',
+                                                'method' => 'post',
+                                            ],
+                                        ]) : "");
                                         $fileContent .= '</div>';
                                         $index++;
                                     }
@@ -193,7 +212,7 @@ $this->title = 'Announcements';
                                             {
                                                 if($file->user_id == Yii::$app->user->identity->id)
                                                 {
-                                                    $fileContent .= "<div>".Html::a('<i class="fas fa-file-pdf"></i> '.Html::encode($file->file_name . '.' . $file->extension), Url::to(['preview', 'id' => $file->id]), ['class' => 'btn btn-outline-dark btn-sm', 'style' => 'border-radius:25px 0px 0px 25px; border-right:none;','target' => '_blank']).Html::a('X', Url::to(['delete-file', 'id' => $file->id]), [
+                                                    $fileContent .= "<div style='margin-top:10px;'>".Html::a('<i class="fas fa-file-pdf"></i> '.Html::encode($file->file_name . '.' . $file->extension), Url::to(['preview', 'id' => $file->id]), ['class' => 'btn btn-outline-dark btn-sm', 'style' => 'border-radius:25px 0px 0px 25px; border-right:none;','target' => '_blank']).Html::a('X', Url::to(['delete-file', 'id' => $file->id]), [
                                                         'class' => 'btn btn-outline-dark btn-sm',
                                                         'style' => 'border-radius:0px 25px 25px 0px; border-left:none;',
                                                         'data' => [
@@ -223,12 +242,17 @@ $this->title = 'Announcements';
                                                 {
                                                     $fileExt = '<i class="fas fa-file-word"></i> ';
                                                 }
+                                                else if(in_array($file->extension,['pptx']))
+                                                {
+                                                    $fileExt = '<i class="fas fa-file-powerpoint"></i> ';
+                                                }
+
 
                                                 if($file->user_id == Yii::$app->user->identity->id)
                                                 {
-                                                    $fileContent .= Html::a(Html::encode($fileExt.$file->file_name . '.' . $file->extension), Url::to(['download', 'id' => $file->id]), ['class' => 'btn btn-outline-dark btn-sm', 'style' => 'border-radius:25px 0px 0px 25px;','target' => '_blank']).Html::a('X', Url::to(['delete-file', 'id' => $file->id]), [
-                                                        'class' => 'btn btn-light',
-                                                        'style' => 'border-radius:0px 25px 25px 0px;',
+                                                    $fileContent .= Html::a($fileExt.Html::encode($file->file_name . '.' . $file->extension), Url::to(['download', 'id' => $file->id]), ['class' => 'btn btn-outline-dark btn-sm', 'style' => 'border-radius:25px 0px 0px 25px; border-right:none;','target' => '_blank']).Html::a('X', Url::to(['delete-file', 'id' => $file->id]), [
+                                                        'class' => 'btn btn-outline-dark btn-sm',
+                                                        'style' => 'border-radius:0px 25px 25px 0px; border-left:none;',
                                                         'data' => [
                                                             'confirm' => 'Are you sure you want to delete this file?',
                                                             'method' => 'post',
@@ -237,7 +261,7 @@ $this->title = 'Announcements';
                                                 }
                                                 else
                                                 {
-                                                    $fileContent .= Html::a(Html::encode($fileExt.$file->file_name . '.' . $file->extension), Url::to(['download', 'id' => $file->id]), ['class' => 'btn btn-outline-dark btn-sm', 'style' => 'border-radius:25px;','target' => '_blank']);
+                                                    $fileContent .= Html::a($fileExt.Html::encode($file->file_name . '.' . $file->extension), Url::to(['download', 'id' => $file->id]), ['class' => 'btn btn-outline-dark btn-sm', 'style' => 'border-radius:25px;','target' => '_blank']);
                                                 }
                                             }
                                         }    
@@ -252,44 +276,41 @@ $this->title = 'Announcements';
                                 echo $fileContent;
                             ?>
 
-<?php
-$script = <<<JS
-$(document).ready(function() {
-    const \$imageWrapper = $(".image-wrapper-" + $row->id);
-    const \$previousButton = $("#previous-button-" + $row->id);
-    const \$nextButton = $("#next-button-" + $row->id);
-    const transitionDuration = 200; // duration of the transition in milliseconds
+                        <?php
+                        $script = <<<JS
+                        $(document).ready(function() {
+                            const \$imageWrapper = $(".image-wrapper-" + $row->id);
+                            const \$previousButton = $("#previous-button-" + $row->id);
+                            const \$nextButton = $("#next-button-" + $row->id);
+                            const transitionDuration = 200; // duration of the transition in milliseconds
 
-    if (\$imageWrapper.length > 1) {
-        \$previousButton.show();
-        \$nextButton.show();
-    }
+                            if (\$imageWrapper.length > 1) {
+                                \$previousButton.show();
+                                \$nextButton.show();
+                            }
 
-    \$previousButton.click(function() {
-        const currentIndex = parseInt(\$imageWrapper.filter(":visible").data("index"));
-        const newIndex = currentIndex === 0 ? \$imageWrapper.length - 1 : currentIndex - 1;
+                            \$previousButton.click(function() {
+                                const currentIndex = parseInt(\$imageWrapper.filter(":visible").data("index"));
+                                const newIndex = currentIndex === 0 ? \$imageWrapper.length - 1 : currentIndex - 1;
 
-        \$imageWrapper.filter(":visible").fadeOut(transitionDuration, function() {
-            \$imageWrapper.filter('[data-index="' + newIndex + '"]').fadeIn(transitionDuration);
-        });
-    });
+                                \$imageWrapper.filter(":visible").fadeOut(transitionDuration, function() {
+                                    \$imageWrapper.filter('[data-index="' + newIndex + '"]').fadeIn(transitionDuration);
+                                });
+                            });
 
-    \$nextButton.click(function() {
-        const currentIndex = parseInt(\$imageWrapper.filter(":visible").data("index"));
-        const newIndex = (currentIndex + 1) % \$imageWrapper.length;
+                            \$nextButton.click(function() {
+                                const currentIndex = parseInt(\$imageWrapper.filter(":visible").data("index"));
+                                const newIndex = (currentIndex + 1) % \$imageWrapper.length;
 
-        \$imageWrapper.filter(":visible").fadeOut(transitionDuration, function() {
-            \$imageWrapper.filter('[data-index="' + newIndex + '"]').fadeIn(transitionDuration);
-        });
-    });
-});
-JS;
+                                \$imageWrapper.filter(":visible").fadeOut(transitionDuration, function() {
+                                    \$imageWrapper.filter('[data-index="' + newIndex + '"]').fadeIn(transitionDuration);
+                                });
+                            });
+                        });
+                        JS;
 
-$this->registerJs($script, \yii\web\View::POS_READY);
-?>
-
-
-
+                        $this->registerJs($script, \yii\web\View::POS_READY);
+                        ?>
                        
 
                         </div>
@@ -298,15 +319,23 @@ $this->registerJs($script, \yii\web\View::POS_READY);
                         </div>
                     </div>
                 <?php } ?>
+                <div style="display:flex; justify-content:center;">
+                    <?php
+                        echo LinkPager::widget([
+                            'pagination' => $dataProvider->pagination,
+                        ]);
+                    ?>
+                </div>
             </div>
+            
         </div>
         <div class="col-sm-3">
-        </div>
+        </div>        
     </div>
     <?php } ?>
 
     
-
+    
     <?php // Pjax::end(); ?>
 
 </div>

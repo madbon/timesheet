@@ -21,7 +21,7 @@ class UploadMultipleInAnnouncement extends Model
     {
         return [
             // Yii::$app->controller->action->id == "update" ? true : false
-            [['imageFiles'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg, jpeg, gif, pdf, docx, xlsx, xls, csv', 'maxFiles' => 10,'maxSize' => 5 * 1024 * 1024, 'tooBig' => 'Maximum file size is less than 5MB'],
+            [['imageFiles'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg, jpeg, gif, pdf, docx, xlsx, xls, csv,pptx', 'maxFiles' => 10,'maxSize' => 5 * 1024 * 1024, 'tooBig' => 'Maximum file size is less than 5MB'],
             // ['imageFiles','validateImageFiles'],
             [['model_name','model_id','file_name','extension','file_hash','remarks','created_at'],'safe'],
             [['model_name','file_name','extension','file_hash','remarks'],'safe'],
