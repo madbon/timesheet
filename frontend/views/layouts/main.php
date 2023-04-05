@@ -11,8 +11,14 @@ use yii\bootstrap5\Nav;
 use yii\bootstrap5\NavBar;
 use common\models\SubmissionThread;
 use common\models\DocumentAssignment;
+use yii\bootstrap5\Modal;
+use yii\web\YiiAsset;
+use yii\bootstrap5\BootstrapAsset;
 
 AppAsset::register($this);
+$this->registerJsFile('@web/js/main.js', ['depends' => [\yii\web\JqueryAsset::class]]);
+YiiAsset::register($this);
+BootstrapAsset::register($this);
 
 $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
 ?>
@@ -243,6 +249,21 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
 </head>
 <body class="d-flex flex-column h-100">
 <?php $this->beginBody() ?>
+<?php
+    Modal::begin([
+        // 'header'=>'<h4>Person</h4>',
+            'id'=>'myModal',
+            'size'=>'modal-lg',
+            'options' => [
+            'tabindex' => false, // important for Select2 to work properly
+            'data-keyboard' => false,
+            'data-backdrop' => 'static',
+            ],
+        ]);
+        echo '<div id="modalContent"></div>';
+    Modal::end();
+?>
+
 
 <header>
     <?php
@@ -414,6 +435,8 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
         ?>
         <?= Alert::widget() ?>
 
+       
+
         <?= $content ?>
 
         
@@ -429,6 +452,7 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
 </footer>
 
 <?php $this->endBody() ?>
+
 </body>
 </html>
 <?php $this->endPage();

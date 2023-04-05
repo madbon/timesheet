@@ -128,11 +128,12 @@ $this->title = 'Announcements';
 
                 <?php foreach ($dataProvider->query->all() as $row) { ?>
                     
-                    <div class="card">
+                    <div class="card" >
                         <div class="card-title">
                             <?= $row->content_title ?>
                         </div>
                         <div class="card-content">
+                        <?= Html::button(' <span class="glyphicon glyphicon-pencil"></span> Edit', ['value'=>Url::to('@web/announcement/update?id='.$row->id), 'class' => 'btn btn-primary btn-xs modalButton btn-block']); ?>
                             <p style="white-space: pre-line;"><?= $row->content ?></p>
                         </div>
                         <div class="card-footer">

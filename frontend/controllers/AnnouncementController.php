@@ -131,13 +131,50 @@ class AnnouncementController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if($model->announcementProgramTags)
+        {
+            $arrTags = [];
+            foreach ($model->announcementProgramTags as $tags) {
+                $arrTags[] = $tags->ref_program_id;
+            }
+
+            $model->selected_programs = $arrTags;
         }
 
-        return $this->render('update', [
+        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
+            
+            if($model->selected_programs)
+            {
+                $model_id = $id;
+                $selected_programs = $model->selected_programs;
+
+                $modelDelete = AnnouncementProgramTags::find()->where(['announcement_id' => $id])->all();
+                    
+                foreach ($modelDelete as $ann) {
+                    $ann->delete();
+                }
+                
+                foreach ($selected_programs as $key => $value) {
+                    $tags = new AnnouncementProgramTags();
+                    $tags->announcement_id = $model_id;
+                    $tags->ref_program_id = $value;
+                    $tags->save();
+                }
+            }
+
+            \Yii::$app->getSession()->setFlash('success', 'Announcement has been updated');
+            return $this->redirect(Yii::$app->request->referrer);
+        }
+
+        $content = $this->renderAjax('update', [
             'model' => $model,
         ]);
+
+        return $content;
+
+        // return $this->render('update', [
+        //     'model' => $model,
+        // ]);
     }
 
     /**

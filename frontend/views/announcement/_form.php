@@ -5,6 +5,7 @@ use yii\widgets\ActiveForm;
 use common\models\RefProgram;
 use yii\helpers\ArrayHelper;
 
+
 /** @var yii\web\View $this */
 /** @var common\models\Announcement $model */
 /** @var yii\widgets\ActiveForm $form */
@@ -23,7 +24,7 @@ use yii\helpers\ArrayHelper;
     <?= $form->field($model, 'viewer_type')->dropDownList([
         'assigned_program' => 'Assigned Program/Course', 
         'all_program' => 'All Programs/Courses',
-        'selected_program' => 'Select Programs/Courses',
+        'selected_program' => Yii::$app->controller->action->id == "update" ? 'Selected Programs/Courses' : 'Select Programs/Courses',
         ],
         [
             'prompt' => '-',
@@ -41,6 +42,7 @@ use yii\helpers\ArrayHelper;
                 }
             '
         ]) ?>
+        
 
     <div id="selected-programs" style="display:none;">
         <?= $form->field($model, 'selected_programs')->checkboxList(
@@ -51,12 +53,25 @@ use yii\helpers\ArrayHelper;
         ) ?>
     </div>
 
+    
+
     <?php // $form->field($model, 'date_time')->textInput() ?>
 
     <div class="form-group" style="margin-top:50px;">
-        <?= Html::submitButton('POST', ['class' => 'btn btn-warning', 'style' => 'width:100%;']) ?>
+        <?= Html::submitButton(Yii::$app->controller->action->id == "index"  ? 'POST' : "UPDATE", ['class' => 'btn btn-warning', 'style' => 'width:100%;']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
 
 </div>
+
+<?php
+if($model->viewer_type === 'selected_program')
+{ 
+    $this->registerJs("
+        $('#selected-programs').show();
+    ");
+} 
+?>
+
+

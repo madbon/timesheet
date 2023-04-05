@@ -67,4 +67,14 @@ class Announcement extends \yii\db\ActiveRecord
     {
         return $this->hasOne(UserData::class, ['id' => 'user_id']);
     }
+
+    /**
+     * Gets query for [[User]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAnnouncementProgramTags()
+    {
+        return $this->hasMany(AnnouncementProgramTags::class, ['announcement_id' => 'id']);
+    }
 }
