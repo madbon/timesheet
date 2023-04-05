@@ -105,6 +105,7 @@ class CoordinatorProgramsController extends Controller
 
         return $this->render('update', [
             'model' => $model,
+            'user_id' => $model->user_id,
         ]);
     }
 

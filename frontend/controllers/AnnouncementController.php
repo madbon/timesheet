@@ -9,6 +9,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use common\models\AnnouncementProgramTags;
 use frontend\models\UploadMultipleInAnnouncement;
+use common\models\CoordinatorPrograms;
 use yii\web\UploadedFile;
 use common\models\Files;
 use yii\helpers\Url;
@@ -67,18 +68,34 @@ class AnnouncementController extends Controller
                 $modelUpload->imageFiles = UploadedFile::getInstances($modelUpload, 'imageFiles');
                 $modelUpload->uploadMultiple();
 
-                if($model->selected_programs)
+                if($model->viewer_type == "selected_program")
                 {
-                    $model_id = $model->id;
-                    $selected_programs = $model->selected_programs;
-                    
-                    foreach ($selected_programs as $key => $value) {
+                    if($model->selected_programs)
+                    {
+                        $model_id = $model->id;
+                        $selected_programs = $model->selected_programs;
+                        
+                        foreach ($selected_programs as $key => $value) {
+                            $tags = new AnnouncementProgramTags();
+                            $tags->announcement_id = $model_id;
+                            $tags->ref_program_id = $value;
+                            $tags->save();
+                        }
+                    }
+                }
+                else if($model->viewer_type == "assigned_program")
+                {
+                    $queryCoorProg = CoordinatorPrograms::find()->where(['user_id' => Yii::$app->user->identity->id])->all();
+
+                    foreach ($queryCoorProg as $coorProg) {
                         $tags = new AnnouncementProgramTags();
                         $tags->announcement_id = $model_id;
-                        $tags->ref_program_id = $value;
+                        $tags->ref_program_id = $coorProg->ref_program_id;
                         $tags->save();
                     }
                 }
+
+                
                 
                
 

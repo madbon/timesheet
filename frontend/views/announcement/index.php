@@ -155,13 +155,20 @@ $this->title = 'Announcements';
                                     <?php } ?>
                                 </p>
                             <?php }else if($row->viewer_type == "assigned_program"){ ?>
-                                <p style="font-weight: normal; font-size:11px;">
+                                <!-- <p style="font-weight: normal; font-size:11px;">
                                     <code>ATTENTION <i class="fas fa-bullhorn"></i> </code>
                                     <?php //echo "<pre>"; print_r($row->coordinatorPrograms); exit; ?>
                                     <?php if(!empty($row->user->coordinatorPrograms)){ ?>
                                         <?php foreach ($row->user->coordinatorPrograms as $assProg) { ?>
                                             <span style='background:#ae0505; color:white; padding-left:7px; padding-right:7px; border-radius:25px;'><?= $assProg->program->abbreviation; ?></span>
                                         <?php } ?>
+                                    <?php } ?>
+                                </p> -->
+
+                                <p style="font-weight: normal; font-size:11px;">
+                                    <code>ATTENTION <i class="fas fa-bullhorn"></i> </code>
+                                    <?php foreach ($row->announcementProgramTags as $tags) { ?>
+                                        <span style='background:#ae0505; color:white; padding-left:7px; padding-right:7px; border-radius:25px;'><?= $tags->program->abbreviation; ?></span>
                                     <?php } ?>
                                 </p>
                             <?php }else{ ?>

@@ -5,6 +5,7 @@ namespace common\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use common\models\Announcement;
+use Yii;
 
 /**
  * AnnouncementSearch represents the model behind the search form of `common\models\Announcement`.
@@ -40,7 +41,8 @@ class AnnouncementSearch extends Announcement
      */
     public function search($params)
     {
-        $query = Announcement::find();
+        $query = Announcement::find()
+        ->joinWith('announcementProgramTags');
 
         // add conditions that should always apply here
 
@@ -61,15 +63,27 @@ class AnnouncementSearch extends Announcement
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
-            'user_id' => $this->user_id,
-            'date_time' => $this->date_time,
+            // 'id' => $this->id,
+            // 'announcement.user_id' => $this->user_id,
+            'announcement.date_time' => $this->date_time,
         ]);
 
-        $query->andFilterWhere(['like', 'content_title', $this->content_title])
-            ->andFilterWhere(['like', 'content', $this->content]);
+        $query->andFilterWhere(['like', 'announcement.content_title', $this->content_title])
+            ->andFilterWhere(['like', 'announcement.content', $this->content]);
 
-        $query->orderBy(['id' => SORT_DESC]);
+        $query->andFilterWhere(['announcement_program_tags.ref_program_id' => Yii::$app->getModule('admin')->GetAssignedProgram()]);
+
+        if(Yii::$app->user->can('announcement-create'))
+        {
+            $query->orFilterWhere(['announcement.user_id' => Yii::$app->user->identity->id]);
+        }
+
+        $query->orFilterWhere(['announcement.viewer_type' => 'all_program']);
+       
+
+        $query->orderBy(['announcement.id' => SORT_DESC])->groupBy(['announcement.id']);
+
+        // print_r($query->createCommand()->rawSql); exit;
 
         return $dataProvider;
     }

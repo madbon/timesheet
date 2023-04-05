@@ -21,11 +21,30 @@ use yii\helpers\ArrayHelper;
 
     <?= $form->field($model, 'content')->textarea(['rows' => 6]) ?>
 
-    <?= $form->field($model, 'viewer_type')->dropDownList([
-        'assigned_program' => 'Assigned Program/Course', 
-        'all_program' => 'All Programs/Courses',
-        'selected_program' => Yii::$app->controller->action->id == "update" ? 'Selected Programs/Courses' : 'Select Programs/Courses',
-        ],
+    <?php
+        $viewerType = [];
+        if(Yii::$app->user->can('announcement-viewer-type-assigned-program'))
+        {
+            $viewerType += ['assigned_program' => 'ASSIGNED PROGRAM(S)/COURSE(S)'];
+        }
+
+        if(Yii::$app->user->can('announcement-viewer-type-select-programs'))
+        {
+            $viewerType += ['selected_program' => Yii::$app->controller->action->id == "update" ? 'SELECTED PROGRAMS/COURSES' : 'SELECT PROGRAM/COURSE'];
+        }
+
+        if(Yii::$app->user->can('announcement-viewer-type-all-programs'))
+        {
+            $viewerType += ['all_program' => 'ALL PROGRAMS/COURSES'];
+        }
+
+        // $viewerType = [
+        //     'all_program' => 'All Programs/Courses',
+        //     'selected_program' => Yii::$app->controller->action->id == "update" ? 'Selected Programs/Courses' : 'Select Programs/Courses',
+        // ];
+    ?>
+
+    <?= $form->field($model, 'viewer_type')->dropDownList($viewerType,
         [
             'prompt' => '-',
             'onchange' => '
