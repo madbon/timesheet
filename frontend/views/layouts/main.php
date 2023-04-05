@@ -348,7 +348,7 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
                 'visible' => Yii::$app->user->can('menu-map-markers'),
             ],
             [
-                'label' => '<i class="fas fa-bullhorn"></i> Announcement', 'url' => ['/announcement/index'], 'active' => Yii::$app->controller->id == "announcement" ? true : false,
+                'label' => '<i class="fas fa-bullhorn"></i> Announcement', 'url' => ['/announcement/index', 'AnnouncementSearch[date_time]' => 'today'], 'active' => Yii::$app->controller->id == "announcement" ? true : false,
                 'visible' => Yii::$app->user->can('announcement-menu'),
             ],
             [

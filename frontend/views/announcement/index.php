@@ -54,7 +54,7 @@ $this->title = 'Announcements';
     <h1><?php // Html::encode($this->title) ?></h1>
 
     <?php // Pjax::begin(); ?>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    
 
     <?php 
     // echo GridView::widget([
@@ -76,6 +76,19 @@ $this->title = 'Announcements';
     //     ],
     // ]); 
     ?>
+    <div class="row">
+        <div class="col-sm-3">
+        </div>
+        <div class="col-sm-6">
+            <div class="container">
+                <div class="card">
+                    <?php echo $this->render('_search', ['model' => $searchModel]); ?>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+        </div>
+    </div>
 
     <?php if(Yii::$app->user->can('announcement-create')){ ?>
     <div class="row">
@@ -124,10 +137,21 @@ $this->title = 'Announcements';
         <div class="col-sm-6">
             <div class="container">
                 <div style="margin-bottom:10px;">
-                    <?= Html::a('Today',['index'],['class' => 'btn btn-dark', 'style' => 'border-radius:25px; padding-left:20px; padding-right:20px;']) ?>
-                    <?= Html::a('Yesterday',['index'],['class' => 'btn btn-outline-dark','style' => 'border-radius:25px; padding-left:20px; padding-right:20px;']) ?>
-                    <?= Html::a('All',['index'],['class' => 'btn btn-outline-dark','style' => 'border-radius:25px; padding-left:20px; padding-right:20px;']) ?>
-                    <?= Html::a('My Posts',['index'],['class' => 'btn btn-outline-dark','style' => 'border-radius:25px; padding-left:20px; padding-right:20px;']) ?>
+                    <?= Html::a('Today',['index', 'AnnouncementSearch[date_time]' => 'today'],[
+                        'class' => $searchModel->date_time == 'today' ? 'btn btn-dark' : 'btn btn-outline-dark', 
+                        'style' => 'border-radius:25px; padding-left:20px; padding-right:20px;']) ?>
+
+                    <?= Html::a('Yesterday', ['index', 'AnnouncementSearch[date_time]' => 'yesterday'], [
+                        'class' => $searchModel->date_time == 'yesterday' ? 'btn btn-dark' : 'btn btn-outline-dark',
+                        'style' => 'border-radius:25px; padding-left:20px; padding-right:20px;']) ?>
+
+                    <?= Html::a('All',['index', 'AnnouncementSearch[date_time]' => 'all-days'],[
+                        'class' => $searchModel->date_time == 'all-days' ? 'btn btn-dark' : 'btn btn-outline-dark',
+                        'style' => 'border-radius:25px; padding-left:20px; padding-right:20px;']) ?>
+
+                    <?= Yii::$app->user->can('announcement-create') ? Html::a('My Posts',['index', 'AnnouncementSearch[date_time]' => 'my-post'],[
+                        'class' => $searchModel->date_time == 'my-post' ? 'btn btn-dark' : 'btn btn-outline-dark',
+                        'style' => 'border-radius:25px; padding-left:20px; padding-right:20px;']) : "" ?>
                 </div>
 
                 <?php foreach ($dataProvider->models as $row) { ?>
