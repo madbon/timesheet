@@ -36,6 +36,8 @@ phpunit.phar
 
 /backend/web/uploads/
 
+/frontend/web/uploads/
+
 # ignore generated files
 /frontend/web/index.php
 /frontend/web/index-test.php
