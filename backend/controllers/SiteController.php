@@ -215,6 +215,7 @@ class SiteController extends Controller
                     // Save the captured image data to the table_file
                     $file = new Files();
                     $file->model_name = "UserTimesheet";
+                    $file->user_timesheet_time = date('H:i:s', $timestamp);
                     $file->file_name = basename($imagePath);
                     $file->extension = pathinfo($imagePath, PATHINFO_EXTENSION);
                     $file->file_hash = basename($imagePath);
