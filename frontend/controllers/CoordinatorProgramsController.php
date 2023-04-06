@@ -7,6 +7,9 @@ use common\models\CoordinatorProgramsSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\Response;
+use yii\widgets\ActiveForm;
+use Yii;
 
 /**
  * CoordinatorProgramController implements the CRUD actions for CoordinatorPrograms model.
@@ -83,6 +86,39 @@ class CoordinatorProgramsController extends Controller
         }
 
         return $this->render('create', [
+            'model' => $model,
+            'user_id' => $user_id,
+        ]);
+    }
+
+    /**
+     * Creates a new CoordinatorPrograms model.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     * @return string|\yii\web\Response
+     */
+    public function actionAjaxCreate($user_id = null)
+    {
+        $model = new CoordinatorPrograms();
+
+        if(!empty($user_id))
+        {
+            $model->user_id = $user_id;
+        }
+
+        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ActiveForm::validate($model);
+        }
+
+        if ($this->request->isPost) {
+            if ($model->load($this->request->post()) && $model->save()) {
+                return $this->redirect(Yii::$app->request->referrer);
+            }
+        } else {
+            $model->loadDefaultValues();
+        }
+
+        return $this->renderAjax('create', [
             'model' => $model,
             'user_id' => $user_id,
         ]);

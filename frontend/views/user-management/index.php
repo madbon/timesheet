@@ -135,6 +135,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'value' => function ($model) {
 
                             $prom_val = "";
+                            $updateProgram = "";
                             if(!empty($model->coordinatorPrograms))
                             {
                                 $prom_val = "<ul>";
@@ -143,12 +144,17 @@ $this->params['breadcrumbs'][] = $this->title;
                                     $prom_val .= "<li style='color:#af4343;'>".$abbreviation." ".$row->program->title."</li>";
                                 }
                                 $prom_val .= "</ul>";
+
+                                if($model->authAssignment->item_name == "OjtCoordinator")
+                                {
+                                    $updateProgram = Yii::$app->user->can('access-ojt-coordinator-index') ? " ".Html::a('<i class="fas fa-edit"></i>',['/coordinator-programs/index','CoordinatorProgramsSearch[user_id]' => $model->fname. " ". $model->mname. " ". $model->sname],['class' => 'btn btn-outline-primary btn-sm', 'style' => '', 'target' => '_blank'])." ".Html::button('<i class="fas fa-plus"></i>', ['value'=>Url::to('@web/coordinator-programs/ajax-create?user_id='.$model->id), 'class' => 'btn btn-outline-primary btn-sm modalButton','style' => 'border:none;']) : "";
+                                }
                             }
                             else
                             {
                                 if($model->authAssignment->item_name == "OjtCoordinator")
                                 {
-                                    $prom_val = Html::a('No Assigned Program/Course',['/coordinator-programs/create', 'user_id' => $model->id], ['class' => 'btn btn-outline-danger btn-sm', 'target' => '_blank']);
+                                    $prom_val = Html::button('<i class="fas fa-plus"></i> Assign Program/Course', ['value'=>Url::to('@web/coordinator-programs/ajax-create?user_id='.$model->id), 'class' => 'btn btn-secondary btn-sm modalButton','style' => 'border:none;']);
                                 }
                                 else
                                 {
@@ -158,8 +164,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                 }
                                 
                             }
+                            
 
-                            return $prom_val;
+                            return $prom_val.$updateProgram;
                         },
                         'filter' => \yii\helpers\ArrayHelper::map(\common\models\RefProgram::find()->asArray()->all(), 'id', 'title'),
                         // 'visible' => in_array($searchModel->item_name,['Trainee','OjtCoordinator',NULL,'']) ? true : false,

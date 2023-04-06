@@ -63,6 +63,17 @@ $this->title = 'My Account';
             </div>
         </div>
     </div>
+    <?php }else{ ?>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="card" style="margin-bottom:10px;">
+                    
+                    <div class="card-body">
+                        <h5>Assigned Program(s)/Course(s): NO ASSIGNMENT</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
     <?php } ?>
 
     <?= $this->render('_form', [

@@ -28,6 +28,7 @@ class CoordinatorPrograms extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['user_id','ref_program_id'],'required'],
             [['user_id', 'ref_program_id', 'ref_program_major_id'], 'integer'],
             [['ref_program_id'], 'unique', 'targetAttribute' => ['ref_program_id','user_id'], 'message' => 'You have already assigned this Program to this OJT Coordinator']
         ];

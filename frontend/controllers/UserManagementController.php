@@ -386,7 +386,7 @@ class UserManagementController extends Controller
 
         $model->item_name = !empty($model->authAssignment->item_name) ? $model->authAssignment->item_name : null;
 
-       
+        $old_role = $model->item_name;
 
         if ($this->request->isPost && $model->load($this->request->post())) {
 
@@ -395,22 +395,37 @@ class UserManagementController extends Controller
                 $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
             }
 
-           
-            if($model->save())
+            if($old_role == $model->item_name)
             {
-                \Yii::$app->getSession()->setFlash('success', 'Changes has been saved');
+                if($model->save())
+                {
+                    \Yii::$app->getSession()->setFlash('success', 'Changes has been saved');
+                }
+                else
+                {
+                    \Yii::$app->getSession()->setFlash('danger', "A Supervisor has already been assigned to this department. You cannot assign this user to this department.");
+                    return $this->redirect(['update', 'id' => $model->id]);
+                }
             }
             else
             {
+                if($old_role == 'OjtCoordinator')
+                {
+                    foreach ($model->coordinatorPrograms as $coor) {
+                        $coor->delete();
+                    }
+                }
+                // print_r($model->item_name); exit;
+                $model->authAssignment->item_name = $model->item_name;
+                $model->authAssignment->save();
+
                 
-                \Yii::$app->getSession()->setFlash('danger', "A Supervisor has already been assigned to this department. You cannot assign this user to this department.");
+
+
+                 \Yii::$app->getSession()->setFlash('warning', 'Role has been changed successfully. Please fill out other required fields below.');
                 return $this->redirect(['update', 'id' => $model->id]);
             }
-            
-
-            
-
-            // print_r($model->company); exit;
+           
 
             if(UserCompany::find()->where(['user_id' => $model->id])->exists())
             {
@@ -419,7 +434,7 @@ class UserManagementController extends Controller
             
                 if(!$userCompany->save())
                 {
-                    print_r($userCompany->errors); exit;
+                    // print_r($userCompany->errors); exit;
                 }
             }
             else

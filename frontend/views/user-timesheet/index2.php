@@ -194,7 +194,7 @@ date_default_timezone_set('Asia/Manila');
                     <th>TOTAL NO. OF HOURS</th>
                     <th>REMARKS</th>
                     <th>STATUS</th>
-                    ".(Yii::$app->user->can('timesheet-remarks') || Yii::$app->user->can('edit-time') ? "<th></th>" : "")."
+                    ".(Yii::$app->user->can('timesheet-remarks') || Yii::$app->user->can('edit-time') ? "<th>AVAILABLE ACTIONS</th>" : "")."
             </tr>";
             echo "</thead>";
             echo "<tbody>";
@@ -455,7 +455,12 @@ date_default_timezone_set('Asia/Manila');
                                         echo Html::button('<i class="fas fa-edit"></i> TIME', ['value'=>Url::to('@web/user-timesheet/update-timeout?id='.$model->id.'&count_complete_time='.$countCompleteTime), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => ''])." ";
                                     }
                                 }
-                                echo Html::button('<i class="fas fa-edit"></i> REMARKS', ['value'=>Url::to('@web/user-timesheet/update?id='.$model->id), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => '']) . "</td>";
+
+                                if(empty($model->status))
+                                {
+                                    echo Html::button('<i class="fas fa-edit"></i> REMARKS', ['value'=>Url::to('@web/user-timesheet/update?id='.$model->id), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => '']) . "</td>";
+                                }
+                                
                             }
                             else
                             {

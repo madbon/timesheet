@@ -13,7 +13,7 @@ use common\models\RefProgram;
 
 <div class="coordinator-programs-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin(['enableAjaxValidation' => Yii::$app->controller->action->id == 'ajax-create' ? true :false]); ?>
 
     <?php
     // print_r($user_id); exit;
