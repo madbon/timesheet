@@ -45,7 +45,10 @@ $this->params['breadcrumbs'][] = 'Update';
                 <div class="card" style="margin-bottom:10px;">
                     
                     <div class="card-body">
-                        <h5>Assigned Program(s)/Course(s) <?= Html::a('<i class="fas fa-edit"></i>',['/coordinator-programs/index','CoordinatorProgramsSearch[user_id]' => $model->fname. " ". $model->mname. " ". $model->sname],['class' => 'btn btn-outline-primary', 'style' => 'float:right;', 'target' => '_blank']) ?></h5>
+                        <h5>
+                            Assigned Program(s)/Course(s) <?= Html::a('<i class="fas fa-edit"></i>',['/coordinator-programs/index','CoordinatorProgramsSearch[user_id]' => $model->fname. " ". $model->mname. " ". $model->sname],['class' => 'btn btn-outline-primary', 'style' => 'float:right;', 'target' => '_blank']) ?>
+                            <?= Html::button('<i class="fas fa-plus"></i> ASSIGN', ['value'=> Url::to('@web/coordinator-programs/ajax-create?user_id='.$model->id), 'class' => 'btn btn-secondary btn-sm modalButton','style' => 'border:none;']) ?>
+                        </h5>
                         <table class="table table-hover">
                             <tbody>
                                 <?php
