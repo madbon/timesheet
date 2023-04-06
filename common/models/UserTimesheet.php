@@ -34,7 +34,7 @@ class UserTimesheet extends \yii\db\ActiveRecord
     {
         return [
             [['user_id'], 'integer'],
-            [['time_in_am', 'time_out_am', 'time_in_pm', 'time_out_pm', 'date','status'], 'safe'],
+            [['time_in_am', 'time_out_am', 'time_in_pm', 'time_out_pm', 'date','status','user_timesheet_time'], 'safe'],
             [['remarks'], 'string', 'max' => 50],
         ];
     }

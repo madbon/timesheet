@@ -74,4 +74,14 @@ class UserCompany extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Company::class, ['id' => 'ref_company_id']);
     }
+
+           /**
+     * Gets query for [[CmsRoleActions]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUsers()
+    {
+        return $this->hasMany(UserData::class, ['id' => 'user_id']);
+    }
 }

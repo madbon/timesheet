@@ -275,7 +275,7 @@ class SubmissionThreadController extends Controller
                  }
                  else
                  {
-                    print_r($modelUpload->errors); exit;
+                    // print_r($modelUpload->errors); exit;
                  }
                  // UPLOADED_FILE_END
 

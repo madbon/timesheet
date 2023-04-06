@@ -9,6 +9,7 @@ use common\models\DocumentAssignment;
 use common\models\DocumentType;
 use common\models\SubmissionThread;
 use common\models\SubmissionThreadSeen;
+use common\models\CoordinatorPrograms;
 use Yii;
 
 /**
@@ -210,7 +211,21 @@ class Module extends \yii\base\Module
     {
         $query = UserData::find()->where(['id' => Yii::$app->user->identity->id])->one();
 
-        return !empty($query->ref_program_id) ? $query->ref_program_id : NULL;
+        if(CoordinatorPrograms::find()
+        ->where(['user_id' => Yii::$app->user->identity->id])->exists())
+        {
+            $coorAssignedProgram = \yii\helpers\ArrayHelper::getColumn(CoordinatorPrograms::find()
+            ->where(['user_id' => Yii::$app->user->identity->id])
+            ->all(),'ref_program_id');
+
+            // print_r($coorAssignedProgram); exit;
+
+            return $coorAssignedProgram;
+        }
+        else
+        {
+            return !empty($query->ref_program_id) ? $query->ref_program_id : NULL;
+        }
     }
 
     public static function GetDepartmentBasedOnCourse()

@@ -90,18 +90,18 @@ class UserDataSearch extends UserData
             ->andFilterWhere(['like', 'password_hash', $this->password_hash])
             ->andFilterWhere(['like', 'password_reset_token', $this->password_reset_token])
             ->andFilterWhere(['like', 'email', $this->email])
-            ->andFilterWhere(['=', 'ref_program_id', $this->ref_program_id])
-            ->andFilterWhere(['=', 'ref_program_major_id', $this->ref_program_major_id])
-            ->andFilterWhere(['=', 'student_year', $this->student_year])
-            ->andFilterWhere(['=', 'student_section', $this->student_section])
-            ->andFilterWhere(['=', 'student_idno', $this->student_idno])
+            ->andFilterWhere(['ref_program_id' => $this->ref_program_id])
+            ->andFilterWhere(['ref_program_major_id' => $this->ref_program_major_id])
+            ->andFilterWhere(['student_year' => $this->student_year])
+            ->andFilterWhere(['student_section' => $this->student_section])
+            ->andFilterWhere(['student_idno' => $this->student_idno])
             ->andFilterWhere(['like', 'verification_token', $this->verification_token])
-            ->andFilterWhere(['=', 'ref_position_id', $this->ref_position_id])
-            ->andFilterWhere(['=', 'ref_department_id', $this->ref_department_id]);
+            ->andFilterWhere(['ref_position_id' => $this->ref_position_id])
+            ->andFilterWhere(['ref_department_id' => $this->ref_department_id]);
 
-            $query->andFilterWhere(['=','ref_department_id', Yii::$app->getModule('admin')->GetAssignedDepartment()]);
+            $query->andFilterWhere(['ref_department_id' => Yii::$app->getModule('admin')->GetAssignedDepartment()]);
 
-            $query->andFilterWhere(['=','user_company.ref_company_id', Yii::$app->getModule('admin')->GetAssignedCompany()]);
+            $query->andFilterWhere(['user_company.ref_company_id' => Yii::$app->getModule('admin')->GetAssignedCompany()]);
 
             if($this->item_name)
             {
@@ -121,7 +121,7 @@ class UserDataSearch extends UserData
                 }
                 else if($this->item_name == "Trainee")
                 {
-                    $query->andFilterWhere(['=','ref_program_id', Yii::$app->getModule('admin')->GetAssignedProgram()]);
+                    $query->andFilterWhere(['ref_program_id' => Yii::$app->getModule('admin')->GetAssignedProgram()]);
                 }
             }
 

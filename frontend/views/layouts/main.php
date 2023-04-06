@@ -11,8 +11,14 @@ use yii\bootstrap5\Nav;
 use yii\bootstrap5\NavBar;
 use common\models\SubmissionThread;
 use common\models\DocumentAssignment;
+use yii\bootstrap5\Modal;
+use yii\web\YiiAsset;
+use yii\bootstrap5\BootstrapAsset;
 
 AppAsset::register($this);
+$this->registerJsFile('@web/js/main.js', ['depends' => [\yii\web\JqueryAsset::class]]);
+YiiAsset::register($this);
+BootstrapAsset::register($this);
 
 $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
 ?>
@@ -22,6 +28,8 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
 <head>
     <meta charset="<?= Yii::$app->charset ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js" crossorigin="anonymous"></script>
     <?php $this->registerCsrfMetaTags() ?>
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
@@ -34,6 +42,31 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
         h1
         {
             font-size:25px;
+        }
+
+        ul.pagination
+        {
+            margin-top:10px;
+        }
+
+        ul.pagination li a
+        {
+            text-decoration: none;
+            color:#af4343;
+            font-size:12px;
+            font-weight: bold;
+        }
+
+        ul.pagination li.active
+        {
+            background: #ffdbdb;
+        }
+
+        ul.pagination li
+        {
+            padding:10px;
+            background:white;
+            border:1px solid #ffdbdb;
         }
 
         .btn-outline-success,.btn-outline-primary,.btn-outline-danger,.btn-outline-secondary
@@ -216,6 +249,21 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
 </head>
 <body class="d-flex flex-column h-100">
 <?php $this->beginBody() ?>
+<?php
+    Modal::begin([
+        // 'header'=>'<h4>Person</h4>',
+            'id'=>'myModal',
+            'size'=>'modal-lg',
+            'options' => [
+            'tabindex' => false, // important for Select2 to work properly
+            'data-keyboard' => false,
+            'data-backdrop' => 'static',
+            ],
+        ]);
+        echo '<div id="modalContent"></div>';
+    Modal::end();
+?>
+
 
 <header>
     <?php
@@ -241,22 +289,40 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
 
         $firstName = !empty(Yii::$app->user->identity->fname) ? "(".Yii::$app->user->identity->fname.")" : "";
 
+        // if(Yii::$app->user->can("Administrator"))
+        // {
+        //     $roleName = "Administrator";
+            
+        // }
+        // else if(Yii::$app->user->can("OjtCoordinator"))
+        // {
+        //     $roleName = "<span id='role-name-container'> OJT Coordinator  </span> of ".$assignedProgram." ".$firstName;
+        // }
+        // else if(Yii::$app->user->can("CompanySupervisor"))
+        // {
+        //     $roleName = "<span id='role-name-container'>Supervisor</span> at ".$assignedCompany.($assignedDepartment == "NOTHING" ? "" : ", ".$assignedDepartment)." ".$firstName;
+        // }
+        // else if(Yii::$app->user->can("Trainee"))
+        // {
+        //     $roleName = "<span id='role-name-container'>Trainee</span> at ".$assignedCompany.($assignedDepartment == "NOTHING" ? "" : ", ".$assignedDepartment)." ".$firstName;
+        // }
+
         if(Yii::$app->user->can("Administrator"))
         {
-            $roleName = "Administrator";
+            $roleName = "Administrator (".$firstName.")";
             
         }
         else if(Yii::$app->user->can("OjtCoordinator"))
         {
-            $roleName = "<span id='role-name-container'> OJT Coordinator  </span> of ".$assignedProgram." ".$firstName;
+            $roleName = "<span id='role-name-container'> OJT Coordinator  ".$firstName."</span> ";
         }
         else if(Yii::$app->user->can("CompanySupervisor"))
         {
-            $roleName = "<span id='role-name-container'>Supervisor</span> at ".$assignedCompany.($assignedDepartment == "NOTHING" ? "" : ", ".$assignedDepartment)." ".$firstName;
+            $roleName = "<span id='role-name-container'>Supervisor ".$firstName."</span> ";
         }
         else if(Yii::$app->user->can("Trainee"))
         {
-            $roleName = "<span id='role-name-container'>Trainee</span> at ".$assignedCompany.($assignedDepartment == "NOTHING" ? "" : ", ".$assignedDepartment)." ".$firstName;
+            $roleName = "<span id='role-name-container'>Trainee ".$firstName." </span> ";
         }
 
         // echo Html::beginForm(['/site/logout'], 'post', ['class' => 'd-flex'])
@@ -270,22 +336,26 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
 
         $menuItemsLeft = [
             [
-                'label' => 'Timesheet', 'url' => ['/user-timesheet'], 'active' => Yii::$app->controller->id == "user-timesheet" ? true : false,
+                'label' => '<i class="fas fa-clock"></i> Timesheet', 'url' => ['/user-timesheet'], 'active' => Yii::$app->controller->id == "user-timesheet" ? true : false,
                 'visible' => Yii::$app->user->can('menu-timesheet'),
             ],
             [
-                'label' => 'User Management', 'url' => ['/user-management','UserDataSearch[item_name]' => 'Trainee'], 'active' => Yii::$app->controller->id == "user-management" ? true : false,
+                'label' => '<i class="fas fa-users-cog"></i> User Management', 'url' => ['/user-management','UserDataSearch[item_name]' => 'Trainee'], 'active' => Yii::$app->controller->id == "user-management" ? true : false,
                 'visible' => Yii::$app->user->can('menu-user-management'),
             ],
             [
-                'label' => 'Map Markers', 'url' => ['/user-company/google-map'], 'active' => Yii::$app->controller->action->id == "google-map" ? true : false,
+                'label' => '<i class="fas fa-map-marker-alt"></i> Map Markers', 'url' => ['/user-company/google-map'], 'active' => Yii::$app->controller->action->id == "google-map" ? true : false,
                 'visible' => Yii::$app->user->can('menu-map-markers'),
             ],
             [
-                'label' => 'Tasks ('.$countTask.')', 'url' => ['/submission-thread/index'], 'active' => Yii::$app->controller->id == "submission-thread" ? true : false,
+                'label' => '<i class="fas fa-bullhorn"></i> Announcement', 'url' => ['/announcement/index', 'AnnouncementSearch[date_time]' => 'today'], 'active' => Yii::$app->controller->id == "announcement" ? true : false,
+                'visible' => Yii::$app->user->can('announcement-menu'),
+            ],
+            [
+                'label' => '<i class="fas fa-tasks"></i> Tasks ('.$countTask.')', 'url' => ['/submission-thread/index'], 'active' => Yii::$app->controller->id == "submission-thread" ? true : false,
                 'visible' => Yii::$app->user->can('menu-tasks'),
             ],
-            ['label' => 'Settings', 'url' => ['/settings'], 'active' => in_array(Yii::$app->controller->id,[
+            ['label' => '<i class="fas fa-cogs"></i> Settings', 'url' => ['/settings'], 'active' => in_array(Yii::$app->controller->id,[
                 'settings',
                 'auth-item',
                 'auth-item-child',
@@ -299,6 +369,7 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
                 'company',
                 'document-type',
                 'document-assignment',
+                'coordinator-programs',
                 ]) ? true : false,
                 'visible' => Yii::$app->user->can('menu-settings'),
             ],
@@ -364,6 +435,8 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
         ?>
         <?= Alert::widget() ?>
 
+       
+
         <?= $content ?>
 
         
@@ -379,6 +452,7 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
 </footer>
 
 <?php $this->endBody() ?>
+
 </body>
 </html>
 <?php $this->endPage();
