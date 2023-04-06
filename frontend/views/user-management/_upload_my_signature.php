@@ -41,7 +41,7 @@ use yii\widgets\ActiveForm;
 
             if(Yii::$app->getModule('admin')->FileExists($uploadedFileName)) 
             {
-                echo Html::img(Yii::$app->request->baseUrl.$uploadedFile, ['alt'=>'My Image', 'style' => 'margin-bottom:20px;' ]);
+                echo Html::img(Yii::$app->request->baseUrl.$uploadedFile, ['alt'=>'My Image', 'style' => 'margin-bottom:20px; width:100%;']);
             }
             else
             {
