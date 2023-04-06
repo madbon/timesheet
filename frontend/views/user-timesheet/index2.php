@@ -523,7 +523,7 @@ date_default_timezone_set('Asia/Manila');
                 
                             if(Yii::$app->getModule('admin')->FileExists($uploadedFileName)) 
                             {
-                                echo Html::img(Yii::$app->request->baseUrl.$uploadedFile, ['alt'=>'My Image', 'style' => '', 'height' => '100', 'width' => '100']);
+                                echo Html::img(Yii::$app->request->baseUrl.$uploadedFile, ['alt'=>'Signature', 'style' => '', 'height' => '100', 'width' => '100']);
                             }
                             else
                             {
@@ -549,7 +549,7 @@ date_default_timezone_set('Asia/Manila');
                     
                                 if(Yii::$app->getModule('admin')->FileExists($uploadedFileNameCP)) 
                                 {
-                                    echo Html::img(Yii::$app->request->baseUrl.$uploadedFileCP, ['alt'=>'My Image', 'style' => '', 'height' => '100', 'width' => '100']);
+                                    echo Html::img(Yii::$app->request->baseUrl.$uploadedFileCP, ['alt'=>'Signature', 'style' => '', 'height' => '100', 'width' => '100']);
                                 }
                                 else
                                 {
@@ -567,7 +567,7 @@ date_default_timezone_set('Asia/Manila');
                     <td style="border-bottom:1px solid black; text-align:center; font-weight:bold; text-transform:uppercase; font-size:15px;"><?= Yii::$app->getModule('admin')->GetSupervisorByTraineeUserId($model->user_id); ?></td>
                 </tr>
                 <tr>
-                    <td style="font-size:11px; font-weight:bold;">Immidiate Supervisor Signature over printed name</td>
+                    <td style="font-size:11px; font-weight:bold;">Immediate Supervisor Signature over printed name</td>
                 </tr>
             </tbody>
         </table>
