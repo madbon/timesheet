@@ -124,7 +124,7 @@ date_default_timezone_set('Asia/Manila');
             </p>
         </div>
         <div style="text-align:right;">
-            <?= Html::a('PREVIEW PDF',['preview-pdf',
+            <?= Html::a('<i class="fas fa-file-pdf"></i> PREVIEW PDF',['preview-pdf',
             'user_id' => $model->user->id,
             'year' => $year,
             'month' => $month,
@@ -355,12 +355,20 @@ date_default_timezone_set('Asia/Manila');
                             // echo "\nYou have {$overtime_hours} hours and {$overtime_minutes} minutes of overtime.";
                         }
 
+                        $view_photo_in_am = !empty($model->time_in_am) ? Html::button($formatted_in_am, ['value'=>Url::to('@web/user-timesheet/preview-photo?model_id='.$model->id.'&time='.$model->time_in_am), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => 'border:none;']) : "";
+
+                        $view_photo_out_am = !empty($model->time_out_am) ? Html::button($formatted_out_am, ['value'=>Url::to('@web/user-timesheet/preview-photo?model_id='.$model->id.'&time='.$model->time_out_am), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => 'border:none;']) : "";
+
+                        $view_photo_in_pm = !empty($model->time_in_pm) ? Html::button($formatted_in_pm, ['value'=>Url::to('@web/user-timesheet/preview-photo?model_id='.$model->id.'&time='.$model->time_in_pm), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => 'border:none;']) : "";
+
+                        $view_photo_out_pm = !empty($model->time_out_pm) ? Html::button($formatted_out_pm, ['value'=>Url::to('@web/user-timesheet/preview-photo?model_id='.$model->id.'&time='.$model->time_out_pm), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => 'border:none;']) : "";
+
                         echo "<tr>";
                             echo "<td>" . Html::encode(date('j', strtotime($model->date))) . "</td>";
-                            echo "<td>" . Html::encode($formatted_in_am) . "</td>";
-                            echo "<td>" . Html::encode($formatted_out_am) . "</td>";
-                            echo "<td>" . Html::encode($formatted_in_pm) . "</td>";
-                            echo "<td>" . Html::encode($formatted_out_pm) . "</td>";
+                            echo "<td>" . ($view_photo_in_am) . "</td>";
+                            echo "<td>" . ($view_photo_out_am).  "</td>";
+                            echo "<td>" . ($view_photo_in_pm) . "</td>";
+                            echo "<td>" . ($view_photo_out_pm) . "</td>";
                             
 
                             if(empty($model->time_out_am) && empty($model->time_out_pm))
@@ -415,12 +423,12 @@ date_default_timezone_set('Asia/Manila');
 
                                     echo "<td>";
                                     
-                                    echo Html::a('VALIDATED',['validate-timesheet','id' => $model->id],['class' => 'btn btn-success btn-sm']);
+                                    echo Html::a('<i class="fas fa-undo"></i> VALIDATED',['validate-timesheet','id' => $model->id],['class' => 'btn btn-primary btn-sm']);
                                     echo "</td>";
                                 }
                                 else{
                                     echo "<td>";
-                                    echo Html::a('VALIDATE',['validate-timesheet','id' => $model->id],['class' => 'btn btn-outline-success btn-sm']);
+                                    echo Html::a('<i class="fas fa-thumbs-up"></i> VALIDATE',['validate-timesheet','id' => $model->id],['class' => 'btn btn-outline-primary btn-sm']);
                                     echo "</td>";
                                 }
                             }
@@ -442,10 +450,12 @@ date_default_timezone_set('Asia/Manila');
                                 {
                                     if(empty($model->status))
                                     {
-                                        echo Html::a('EDIT TIME',['update-timeout','id' => $model->id,'count_complete_time' => $countCompleteTime],['class' => 'btn btn-outline-primary btn-sm'])." ";
+                                        // echo Html::a('<i class="fas fa-edit"></i> TIME',['update-timeout','id' => $model->id,'count_complete_time' => $countCompleteTime],['class' => 'btn btn-outline-primary btn-sm'])." ";
+
+                                        echo Html::button('<i class="fas fa-edit"></i> TIME', ['value'=>Url::to('@web/user-timesheet/update-timeout?id='.$model->id.'&count_complete_time='.$countCompleteTime), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => ''])." ";
                                     }
                                 }
-                                echo Html::a('EDIT REMARKS',['update', 'id' => $model->id],['class' => 'btn btn-sm btn-outline-primary btn-sm']) . "</td>";
+                                echo Html::button('<i class="fas fa-edit"></i> REMARKS', ['value'=>Url::to('@web/user-timesheet/update?id='.$model->id), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => '']) . "</td>";
                             }
                             else
                             {

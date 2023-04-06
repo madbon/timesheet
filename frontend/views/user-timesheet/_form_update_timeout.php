@@ -14,15 +14,20 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'user_id')->hiddenInput()->label(false) ?>
 
-    <?php 
-        echo $form->field($model, 'time_in_am')->textInput(); 
-
-        echo $form->field($model, 'time_out_am')->textInput();
-
-        echo $form->field($model, 'time_in_pm')->textInput(); 
-        echo $form->field($model, 'time_out_pm')->textInput();
-        
-    ?>
+    <div class="row">
+        <div class="col-sm-3">
+            <?= $form->field($model, 'time_in_am')->textInput(['disabled' => !empty($model->time_in_am) ? true : false, 'type' => 'time']) ?>
+        </div>
+        <div class="col-sm-3">
+            <?= $form->field($model, 'time_out_am')->textInput(['disabled' => !empty($model->time_out_am) ? true : false,'type' => 'time']) ?>
+        </div>
+        <div class="col-sm-3">
+            <?= $form->field($model, 'time_in_pm')->textInput(['disabled' => !empty($model->time_in_pm) ? true : false,'type' => 'time']) ?>
+        </div>
+        <div class="col-sm-3">
+            <?= $form->field($model, 'time_out_pm')->textInput(['disabled' => !empty($model->time_out_pm) ? true : false,'type' => 'time']) ?>
+        </div>
+    </div>
 
     <?= $form->field($model, 'date')->hiddenInput()->label(false) ?>
 

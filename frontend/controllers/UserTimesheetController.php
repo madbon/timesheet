@@ -8,6 +8,8 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use kartik\mpdf\Pdf;
+use common\models\Files;
+use yii\helpers\Url;
 use Yii;
 
 /**
@@ -26,7 +28,7 @@ class UserTimesheetController extends Controller
                 // 'only' => ['logout', 'signup'],
                 'rules' => [
                     [
-                        'actions' => ['index','create','update','view','delete','time-in','preview-pdf','record','record-time'],
+                        'actions' => ['index','create','update','view','delete','time-in','preview-pdf','record','record-time','preview-photo','preview-captured-photo'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -50,6 +52,38 @@ class UserTimesheetController extends Controller
                 ],
             ],
         ];
+    }
+
+    public function actionPreviewPhoto($model_id,$time)
+    {
+        $query = UserTimesheet::findOne(['id' => $model_id]);
+
+        $formatted_time = !empty($time) ? date('g:i:s A', strtotime($time)) : "";
+        return $this->renderAjax('preview_photo',[
+            'model_id' => $model_id,
+            'time' => $time,
+            'formatted_time' => $formatted_time,
+            'date' => !empty($query->date) ? $query->date : null,
+        ]);
+    }
+
+    public function actionPreviewCapturedPhoto($model_id,$time)
+    {
+        $file = Files::find()
+        ->where(['model_id' => $model_id,'user_timesheet_time' => $time,'model_name' => 'UserTimesheet'])
+        ->one();
+
+        if ($file !== null) {
+            $filePath = Url::to('@backend/web/uploads/' . $file->file_hash);
+
+            if (file_exists($filePath)) {
+                return Yii::$app->response->sendFile($filePath, $file->file_name, ['inline' => true]);
+            } else {
+                throw new \yii\web\NotFoundHttpException('File not found.');
+            }
+        } else {
+            throw new \yii\web\NotFoundHttpException('File not found.');
+        }
     }
 
     public function actionValidateTimesheet($id)
@@ -618,10 +652,10 @@ class UserTimesheetController extends Controller
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
 
             \Yii::$app->getSession()->setFlash('success', 'Remarks has been saved');
-            return $this->redirect(['index']);
+            return $this->redirect(Yii::$app->request->referrer);
         }
 
-        return $this->render('update', [
+        return $this->renderAjax('update', [
             'model' => $model,
         ]);
     }
@@ -640,10 +674,10 @@ class UserTimesheetController extends Controller
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
 
             \Yii::$app->getSession()->setFlash('success', 'Time Out has been saved');
-            return $this->redirect(['index','trainee_user_id' => $model->user->id]);
+            return $this->redirect(Yii::$app->request->referrer);
         }
 
-        return $this->render('update_time_out', [
+        return $this->renderAjax('update_time_out', [
             'model' => $model,
         ]);
     }
