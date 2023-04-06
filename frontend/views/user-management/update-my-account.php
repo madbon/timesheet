@@ -37,43 +37,45 @@ $this->title = 'My Account';
         }
     ?>
 
-    <?php if(CoordinatorPrograms::find()->where(['user_id' => Yii::$app->user->identity->id])->exists()){ ?>
-    <div class="row">
-        <div class="col-sm-6">
-            <div class="card" style="margin-bottom:10px;">
-                
-                <div class="card-body">
-                    <h5>Assigned Program(s)/Course(s)</h5>
-                    <table class="table table-hover">
-                        <tbody>
-                            <?php
-                                $query = CoordinatorPrograms::find()->where(['user_id' => Yii::$app->user->identity->id])->all();
-                                foreach ($query as $row) {
-                                    $major = !empty($row->program->abbreviation) ? "[".$row->program->abbreviation."] " : "";
-                                    echo "
-                                        <tr>
-                                            <td><code> * </code> ".$major." ".(!empty($row->program->title) ? $row->program->title : "")."</td>
-                                        </tr>
-                                    ";
-                                }
-                            ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    <?php }else{ ?>
+    <?php if($model->authAssignment->item_name == "OjtCoordinator"){ ?>
+        <?php if(CoordinatorPrograms::find()->where(['user_id' => Yii::$app->user->identity->id])->exists()){ ?>
         <div class="row">
             <div class="col-sm-6">
                 <div class="card" style="margin-bottom:10px;">
                     
                     <div class="card-body">
-                        <h5>Assigned Program(s)/Course(s): NO ASSIGNMENT</h5>
+                        <h5>Assigned Program(s)/Course(s)</h5>
+                        <table class="table table-hover">
+                            <tbody>
+                                <?php
+                                    $query = CoordinatorPrograms::find()->where(['user_id' => Yii::$app->user->identity->id])->all();
+                                    foreach ($query as $row) {
+                                        $major = !empty($row->program->abbreviation) ? "[".$row->program->abbreviation."] " : "";
+                                        echo "
+                                            <tr>
+                                                <td><code> * </code> ".$major." ".(!empty($row->program->title) ? $row->program->title : "")."</td>
+                                            </tr>
+                                        ";
+                                    }
+                                ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
+        <?php }else{ ?>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="card" style="margin-bottom:10px;">
+                        
+                        <div class="card-body">
+                            <h5>Assigned Program(s)/Course(s): NO ASSIGNMENT</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php } ?>
     <?php } ?>
 
     <?= $this->render('_form', [
