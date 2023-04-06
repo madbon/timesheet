@@ -403,7 +403,7 @@ use common\models\UserTimesheet;
             <td style="border-bottom:1px solid black; text-align:center; font-weight:bold; text-transform:uppercase; font-size:10px;"><?= Yii::$app->getModule('admin')->GetSupervisorByTraineeUserId($model->user_id); ?></td>
         </tr>
         <tr>
-            <td style="font-size:10px; font-weight:bold;">Immidiate Supervisor Signature over printed name</td>
+            <td style="font-size:10px; font-weight:bold;">Immediate Supervisor Signature over printed name</td>
         </tr>
     </tbody>
 </table>

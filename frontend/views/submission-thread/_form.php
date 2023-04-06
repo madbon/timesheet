@@ -43,7 +43,7 @@ use yii\widgets\ActiveForm;
                     <code><strong>Max no. of files per upload:</strong> 5 files</code>
                 </p>
                 <hr>
-                <?= $form->field($modelUpload, 'imageFiles[]')->fileInput(['multiple' => true]) ?>
+                <?= $form->field($modelUpload, 'imageFiles[]')->fileInput(['multiple' => true])->label(false) ?>
             </div>
 
             <?php // $form->field($model, 'ref_document_type_id')->textInput() ?>
