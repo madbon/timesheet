@@ -575,7 +575,7 @@ date_default_timezone_set('Asia/Manila');
     <?php } else{ ?>
 
         <h3 style="text-align: center;">
-            You have no record of time in/out for this month
+            You have no record of time in/out
                 <?php //  Yii::$app->user->can('record-time-in-out') ? Html::a("RECORD TIME IN/OUT", ['time-in'], ['class' => 'btn btn-outline-warning']) : "" ?>
         </h3>
 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 31, 2023 at 04:37 PM
+-- Generation Time: Apr 06, 2023 at 11:17 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -20,6 +20,33 @@ SET time_zone = "+00:00";
 --
 -- Database: `db_bpsu_timesheet`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `announcement`
+--
+
+CREATE TABLE `announcement` (
+  `id` int(11) NOT NULL,
+  `viewer_type` varchar(50) DEFAULT '0',
+  `user_id` int(11) DEFAULT NULL,
+  `content_title` varchar(250) DEFAULT NULL,
+  `content` text DEFAULT NULL,
+  `date_time` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `announcement_program_tags`
+--
+
+CREATE TABLE `announcement_program_tags` (
+  `id` int(11) NOT NULL,
+  `announcement_id` int(11) DEFAULT NULL,
+  `ref_program_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -67,6 +94,13 @@ INSERT INTO `auth_item` (`name`, `type`, `description`, `rule_name`, `data`, `cr
 ('access-ojt-coordinator-index', 2, '', NULL, NULL, NULL, NULL),
 ('access-trainee-index', 2, '', NULL, NULL, NULL, NULL),
 ('Administrator', 1, '', NULL, NULL, NULL, NULL),
+('announcement-create', 2, '', NULL, NULL, NULL, NULL),
+('announcement-index', 2, '', NULL, NULL, NULL, NULL),
+('announcement-menu', 2, '', NULL, NULL, NULL, NULL),
+('announcement-search-program', 2, '', NULL, NULL, NULL, NULL),
+('announcement-viewer-type-all-programs', 2, '', NULL, NULL, NULL, NULL),
+('announcement-viewer-type-assigned-program', 2, '', NULL, NULL, NULL, NULL),
+('announcement-viewer-type-select-programs', 2, '', NULL, NULL, NULL, NULL),
 ('CompanySupervisor', 1, '', NULL, NULL, NULL, NULL),
 ('create-activity-reminder', 2, '', NULL, NULL, NULL, NULL),
 ('create-button-administrator', 2, '', NULL, NULL, NULL, NULL),
@@ -86,8 +120,10 @@ INSERT INTO `auth_item` (`name`, `type`, `description`, `rule_name`, `data`, `cr
 ('receive_trainees_evaluation', 2, '', NULL, NULL, NULL, NULL),
 ('record-time-in-out', 2, '', NULL, NULL, NULL, NULL),
 ('SETTINGS', 2, 'SETTINGS MODULE', NULL, NULL, NULL, NULL),
+('settings-coordinator-assigned-programs-container', 2, '', NULL, NULL, NULL, NULL),
 ('settings-index', 2, '', NULL, NULL, NULL, NULL),
 ('settings-list-companies', 2, '', NULL, NULL, NULL, NULL),
+('settings-list-coordinator-programs', 2, '', NULL, NULL, NULL, NULL),
 ('settings-list-departments', 2, '', NULL, NULL, NULL, NULL),
 ('settings-list-majors', 2, '', NULL, NULL, NULL, NULL),
 ('settings-list-positions', 2, '', NULL, NULL, NULL, NULL),
@@ -120,6 +156,7 @@ INSERT INTO `auth_item` (`name`, `type`, `description`, `rule_name`, `data`, `cr
 ('user-management-upload-file', 2, '', NULL, NULL, NULL, NULL),
 ('user-management-view', 2, '', NULL, NULL, NULL, NULL),
 ('validate-timesheet', 2, '', NULL, NULL, NULL, NULL),
+('view-column-course-program', 2, NULL, NULL, NULL, NULL, NULL),
 ('view-other-timesheet', 2, '', NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
@@ -150,8 +187,10 @@ INSERT INTO `auth_item_child` (`parent`, `child`) VALUES
 ('Administrator', 'menu-settings'),
 ('Administrator', 'menu-user-management'),
 ('Administrator', 'SETTINGS'),
+('Administrator', 'settings-coordinator-assigned-programs-container'),
 ('Administrator', 'settings-index'),
 ('Administrator', 'settings-list-companies'),
+('Administrator', 'settings-list-coordinator-programs'),
 ('Administrator', 'settings-list-departments'),
 ('Administrator', 'settings-list-majors'),
 ('Administrator', 'settings-list-positions'),
@@ -169,6 +208,7 @@ INSERT INTO `auth_item_child` (`parent`, `child`) VALUES
 ('Administrator', 'settings-user-accounts-form-reference-container'),
 ('Administrator', 'upload-others-esig'),
 ('Administrator', 'USER-MANAGEMENT-MODULE'),
+('Administrator', 'view-column-course-program'),
 ('Administrator', 'view-other-timesheet'),
 ('CompanySupervisor', 'access-trainee-index'),
 ('CompanySupervisor', 'create-activity-reminder'),
@@ -182,9 +222,17 @@ INSERT INTO `auth_item_child` (`parent`, `child`) VALUES
 ('CompanySupervisor', 'upload-signature'),
 ('CompanySupervisor', 'user-management-index'),
 ('CompanySupervisor', 'validate-timesheet'),
+('CompanySupervisor', 'view-column-course-program'),
 ('CompanySupervisor', 'view-other-timesheet'),
 ('OjtCoordinator', 'access-company-supervisor-index'),
 ('OjtCoordinator', 'access-trainee-index'),
+('OjtCoordinator', 'announcement-create'),
+('OjtCoordinator', 'announcement-index'),
+('OjtCoordinator', 'announcement-menu'),
+('OjtCoordinator', 'announcement-search-program'),
+('OjtCoordinator', 'announcement-viewer-type-all-programs'),
+('OjtCoordinator', 'announcement-viewer-type-assigned-program'),
+('OjtCoordinator', 'announcement-viewer-type-select-programs'),
 ('OjtCoordinator', 'create-button-company-supervisor'),
 ('OjtCoordinator', 'create-button-trainee'),
 ('OjtCoordinator', 'menu-map-markers'),
@@ -207,9 +255,12 @@ INSERT INTO `auth_item_child` (`parent`, `child`) VALUES
 ('OjtCoordinator', 'user-management-update'),
 ('OjtCoordinator', 'user-management-upload-file'),
 ('OjtCoordinator', 'user-management-view'),
+('OjtCoordinator', 'view-column-course-program'),
 ('OjtCoordinator', 'view-other-timesheet'),
 ('SETTINGS', 'settings-index'),
 ('SETTINGS', 'settings-list-positions'),
+('Trainee', 'announcement-index'),
+('Trainee', 'announcement-menu'),
 ('Trainee', 'create-transaction'),
 ('Trainee', 'menu-tasks'),
 ('Trainee', 'menu-timesheet'),
@@ -241,6 +292,19 @@ CREATE TABLE `auth_rule` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `coordinator_programs`
+--
+
+CREATE TABLE `coordinator_programs` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `ref_program_id` int(11) DEFAULT NULL,
+  `ref_program_major_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `files`
 --
 
@@ -253,7 +317,8 @@ CREATE TABLE `files` (
   `extension` varchar(10) DEFAULT NULL,
   `file_hash` varchar(150) DEFAULT NULL,
   `remarks` text DEFAULT NULL,
-  `created_at` int(11) DEFAULT NULL
+  `created_at` int(11) DEFAULT NULL,
+  `user_timesheet_time` time DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- --------------------------------------------------------
@@ -278,35 +343,10 @@ INSERT INTO `migration` (`version`, `apply_time`) VALUES
 ('m170907_052038_rbac_add_index_on_auth_assignment_user_id', 1678417445),
 ('m180523_151638_rbac_updates_indexes_without_prefix', 1678417445),
 ('m190124_110200_add_verification_token_column_to_user_table', 1678168169),
-('m200409_110543_rbac_update_mssql_trigger', 1678417445);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `post`
---
-
-CREATE TABLE `post` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `content` text DEFAULT NULL,
-  `created_at` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `post_tags`
---
-
-CREATE TABLE `post_tags` (
-  `id` int(11) NOT NULL,
-  `post_id` int(11) DEFAULT NULL,
-  `ref_program_id` int(11) DEFAULT NULL,
-  `ref_program_major_id` int(11) DEFAULT NULL,
-  `ref_department_id` int(11) DEFAULT NULL,
-  `user_id` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+('m200409_110543_rbac_update_mssql_trigger', 1678417445),
+('m230401_054400_another_permission', 1680328127),
+('m230402_020608_update_program_id', 1680401805),
+('m230402_125314_add_permission_assignment', 1680440013);
 
 -- --------------------------------------------------------
 
@@ -498,8 +538,6 @@ CREATE TABLE `student_year` (
 --
 
 INSERT INTO `student_year` (`year`, `title`) VALUES
-(1, '1st Year'),
-(2, '2nd Year'),
 (3, '3rd Year'),
 (4, '4th Year'),
 (5, '5th Year');
@@ -648,6 +686,21 @@ CREATE TABLE `user_timesheet` (
 --
 
 --
+-- Indexes for table `announcement`
+--
+ALTER TABLE `announcement`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `id` (`id`),
+  ADD KEY `created_at` (`date_time`) USING BTREE;
+
+--
+-- Indexes for table `announcement_program_tags`
+--
+ALTER TABLE `announcement_program_tags`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `auth_assignment`
 --
 ALTER TABLE `auth_assignment`
@@ -679,6 +732,12 @@ ALTER TABLE `auth_rule`
   ADD PRIMARY KEY (`name`);
 
 --
+-- Indexes for table `coordinator_programs`
+--
+ALTER TABLE `coordinator_programs`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `files`
 --
 ALTER TABLE `files`
@@ -694,26 +753,6 @@ ALTER TABLE `files`
 --
 ALTER TABLE `migration`
   ADD PRIMARY KEY (`version`);
-
---
--- Indexes for table `post`
---
-ALTER TABLE `post`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `created_at` (`created_at`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `id` (`id`);
-
---
--- Indexes for table `post_tags`
---
-ALTER TABLE `post_tags`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `post_id` (`post_id`),
-  ADD KEY `ref_department_id` (`ref_department_id`),
-  ADD KEY `ref_program_id` (`ref_program_id`),
-  ADD KEY `ref_program_major_id` (`ref_program_major_id`),
-  ADD KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `ref_company`
@@ -867,21 +906,27 @@ ALTER TABLE `user_timesheet`
 --
 
 --
+-- AUTO_INCREMENT for table `announcement`
+--
+ALTER TABLE `announcement`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `announcement_program_tags`
+--
+ALTER TABLE `announcement_program_tags`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `coordinator_programs`
+--
+ALTER TABLE `coordinator_programs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `files`
 --
 ALTER TABLE `files`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `post`
---
-ALTER TABLE `post`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `post_tags`
---
-ALTER TABLE `post_tags`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -948,7 +993,7 @@ ALTER TABLE `submission_thread_seen`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
 -- AUTO_INCREMENT for table `user_company`
@@ -965,6 +1010,12 @@ ALTER TABLE `user_timesheet`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `announcement`
+--
+ALTER TABLE `announcement`
+  ADD CONSTRAINT `announcement_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `auth_assignment`
@@ -990,22 +1041,6 @@ ALTER TABLE `auth_item_child`
 --
 ALTER TABLE `files`
   ADD CONSTRAINT `files_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
-
---
--- Constraints for table `post`
---
-ALTER TABLE `post`
-  ADD CONSTRAINT `post_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
-
---
--- Constraints for table `post_tags`
---
-ALTER TABLE `post_tags`
-  ADD CONSTRAINT `post_tags_ibfk_1` FOREIGN KEY (`post_id`) REFERENCES `post` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  ADD CONSTRAINT `post_tags_ibfk_2` FOREIGN KEY (`ref_department_id`) REFERENCES `ref_department` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `post_tags_ibfk_3` FOREIGN KEY (`ref_program_id`) REFERENCES `ref_program` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `post_tags_ibfk_4` FOREIGN KEY (`ref_program_major_id`) REFERENCES `ref_program_major` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `post_tags_ibfk_5` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `submission_thread`
