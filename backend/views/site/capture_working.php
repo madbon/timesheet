@@ -128,41 +128,31 @@ $this->registerJs(<<<JS
         return minDistance;
     }
 
-    async function fetchStoredImages() {
-        const response = await fetch('site/get-images');
-        const storedImages = await response.json();
-        return storedImages;
-    }
-
     (async function() {
         // Replace with the list of stored images paths
-        // const storedImages = [
-        //     '/timesheet/backend/web/uploads/1.png',
-        //     '/timesheet/backend/web/uploads/2.png',
-        //     '/timesheet/backend/web/uploads/3.png',
-        //     '/timesheet/backend/web/uploads/4.png',
-        //     '/timesheet/backend/web/uploads/5.png',
-        //     '/timesheet/backend/web/uploads/6.png',
-        //     '/timesheet/backend/web/uploads/7.png',
-        //     '/timesheet/backend/web/uploads/8.png',
-        //     '/timesheet/backend/web/uploads/9.png',
-        //     '/timesheet/backend/web/uploads/10.png',
-        //     '/timesheet/backend/web/uploads/11.png',
-        //     '/timesheet/backend/web/uploads/12.png',
-        //     '/timesheet/backend/web/uploads/13.png',
-        //     '/timesheet/backend/web/uploads/14.png',
-        //     '/timesheet/backend/web/uploads/15.png',
-        //     '/timesheet/backend/web/uploads/16.png',
-        //     '/timesheet/backend/web/uploads/17.png',
-        //     '/timesheet/backend/web/uploads/18.png',
-        //     '/timesheet/backend/web/uploads/19.png',
-        //     '/timesheet/backend/web/uploads/20.png',
-        //     // Add more image paths if needed
-        // ];
-
-        const storedImages = await fetchStoredImages();
-
-        console.log(storedImages);
+        const storedImages = [
+            '/timesheet/backend/web/uploads/1.png',
+            '/timesheet/backend/web/uploads/2.png',
+            '/timesheet/backend/web/uploads/3.png',
+            '/timesheet/backend/web/uploads/4.png',
+            '/timesheet/backend/web/uploads/5.png',
+            '/timesheet/backend/web/uploads/6.png',
+            '/timesheet/backend/web/uploads/7.png',
+            '/timesheet/backend/web/uploads/8.png',
+            '/timesheet/backend/web/uploads/9.png',
+            '/timesheet/backend/web/uploads/10.png',
+            '/timesheet/backend/web/uploads/11.png',
+            '/timesheet/backend/web/uploads/12.png',
+            '/timesheet/backend/web/uploads/13.png',
+            '/timesheet/backend/web/uploads/14.png',
+            '/timesheet/backend/web/uploads/15.png',
+            '/timesheet/backend/web/uploads/16.png',
+            '/timesheet/backend/web/uploads/17.png',
+            '/timesheet/backend/web/uploads/18.png',
+            '/timesheet/backend/web/uploads/19.png',
+            '/timesheet/backend/web/uploads/20.png',
+            // Add more image paths if needed
+        ];
 
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
@@ -186,6 +176,7 @@ $this->registerJs(<<<JS
             capturedImage = canvas.toDataURL('image/png');
             capturedDescriptor = await getFaceDescriptor(capturedImage);
 
+            // const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
 
             if (!capturedDescriptor) {
                 alert('No face detected. Please capture a clear image of your face.');
@@ -195,13 +186,13 @@ $this->registerJs(<<<JS
                 const threshold = 0.30; // Change this value to a lower number if needed
                 const distance = await isFaceSimilar(capturedDescriptor, storedImages);
                 
-                if (distance < threshold) {
-                alert('Similar face found! Distance: ' + distance.toFixed(4));
-                } else {
-                alert('No similar face found. Distance: ' + distance.toFixed(4) + '. Please try again.');
-                capturedImage = null;
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                }
+                // if (distance < threshold) {
+                // alert('Similar face found! Distance: ' + distance.toFixed(4));
+                // } else {
+                // alert('No similar face found. Distance: ' + distance.toFixed(4) + '. Please try again.');
+                // capturedImage = null;
+                // ctx.clearRect(0, 0, canvas.width, canvas.height);
+                // }
             }
         });
 

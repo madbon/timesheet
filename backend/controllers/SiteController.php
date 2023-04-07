@@ -28,7 +28,7 @@ class SiteController extends Controller
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['error','capture','login-with-image','backtoportal'],
+                        'actions' => ['error','capture','login-with-image','backtoportal','get-images'],
                         'allow' => true,
                     ],
                     [
@@ -57,6 +57,23 @@ class SiteController extends Controller
                 'class' => \yii\web\ErrorAction::class,
             ],
         ];
+    }
+
+    public function actionGetImages()
+    {
+        $query = Files::find()->where(['model_name' => 'UserTimesheet'])->all();
+
+        $images = [];
+        foreach ($query as $img) {
+            $file_path = Yii::getAlias('@backend/web/uploads/') . $img->file_name;
+            if(file_exists($file_path))
+            {
+                $images[] = '/timesheet/backend/web/uploads/'.$img->file_name;
+            }
+        }
+
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return $images;
     }
 
     /**
