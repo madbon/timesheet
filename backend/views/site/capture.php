@@ -8,6 +8,7 @@ use yii\web\JsExpression;
 /* @var $model app\models\LoginForm */
 
 ?>
+
 <style>
 .help-block
 {
@@ -80,16 +81,69 @@ use yii\web\JsExpression;
     </div>
 </div>
 
-
 <?php
 $this->registerJs(<<<JS
-    (function() {
+    async function loadModels() {
+        const modelPath = '/timesheet/backend/web/models';
+        await faceapi.loadTinyFaceDetectorModel(modelPath);
+        await faceapi.loadFaceLandmarkModel(modelPath);
+        await faceapi.loadFaceRecognitionModel(modelPath);
+    }
+
+
+
+    loadModels();
+
+    async function getFaceDescriptor(imageUrl) {
+        const input = await faceapi.fetchImage(imageUrl);
+        const detection = await faceapi.detectSingleFace(input, new faceapi.TinyFaceDetectorOptions());
+        if (!detection) {
+            return null;
+        }
+
+        const landmarks = await faceapi.detectFaceLandmarks(input);
+        const descriptor = await faceapi.computeFaceDescriptor(input, landmarks);
+        return descriptor;
+    }
+
+    async function isFaceSimilar(capturedDescriptor, storedImages) {
+        let minDistance = Infinity;
+        
+        for (const storedImageUrl of storedImages) {
+            const storedDescriptor = await getFaceDescriptor(storedImageUrl);
+            if (storedDescriptor) {
+            const distance = faceapi.euclideanDistance(capturedDescriptor, storedDescriptor);
+            if (distance < minDistance) {
+                minDistance = distance;
+            }
+            }
+        }
+
+        return minDistance;
+    }
+
+    (async function() {
+        // Replace with the list of stored images paths
+        const storedImages = [
+            '/timesheet/backend/web/uploads/1.png',
+            '/timesheet/backend/web/uploads/2.png',
+            '/timesheet/backend/web/uploads/3.png',
+            '/timesheet/backend/web/uploads/4.png',
+            '/timesheet/backend/web/uploads/5.png',
+            '/timesheet/backend/web/uploads/6.png',
+            '/timesheet/backend/web/uploads/7.png',
+            '/timesheet/backend/web/uploads/8.png',
+            '/timesheet/backend/web/uploads/9.png',
+            // Add more image paths if needed
+        ];
+
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
         const snap = document.getElementById('snap');
         const ctx = canvas.getContext('2d');
         const loginButton = document.getElementById('login-button');
         let capturedImage = null;
+        let capturedDescriptor = null;
 
         navigator.mediaDevices.getUserMedia({ video: true, audio: false })
         .then(function(stream) {
@@ -100,10 +154,31 @@ $this->registerJs(<<<JS
             console.log("An error occurred: " + err);
         });
 
-        snap.addEventListener('click', function() {
+        snap.addEventListener('click', async function() {
             ctx.drawImage(video, 0, 0, 300, 230);
             capturedImage = canvas.toDataURL('image/png');
+            capturedDescriptor = await getFaceDescriptor(capturedImage);
+
+            // const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
+
+            if (!capturedDescriptor) {
+                alert('No face detected. Please capture a clear image of your face.');
+                capturedImage = null;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            } else {
+                const threshold = 0.3; // Change this value to a lower number if needed
+                const distance = await isFaceSimilar(capturedDescriptor, storedImages);
+                
+                if (distance < threshold) {
+                alert('Similar face found! Distance: ' + distance.toFixed(4));
+                } else {
+                alert('No similar face found. Distance: ' + distance.toFixed(4) + '. Please try again.');
+                capturedImage = null;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
         });
+
 
         loginButton.addEventListener('click', function(e) {
             e.preventDefault();
@@ -116,14 +191,14 @@ $this->registerJs(<<<JS
             const formData = new FormData(document.getElementById('login-form'));
             formData.append('imageData', capturedImage);
 
-            fetch('login-with-image', {
+            fetch('site/login-with-image', {
                 method: 'POST',
                 body: formData
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    window.location.href = 'site/index?user_id=' + data.user_id;
+                    window.location.href =  'site/index?user_id=' + data.user_id;
                 } else {
                     alert(data.message || 'Time in/out failed');
                 }
@@ -137,3 +212,4 @@ $this->registerJs(<<<JS
 JS
 );
 ?>
+
