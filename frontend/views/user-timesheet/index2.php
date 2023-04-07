@@ -12,7 +12,7 @@ use yii\helpers\FormatConverter;
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
 $this->title = 'Timesheet';
-$this->params['breadcrumbs'][] = $this->title;
+// $this->params['breadcrumbs'][] = $this->title;
 date_default_timezone_set('Asia/Manila');
 ?>
 <style>

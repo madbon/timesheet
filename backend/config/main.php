@@ -42,11 +42,11 @@ return [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                'capture' => 'site/capture',
+                'capture-login-no-facial-recog' => 'site/capture-login-no-facial-recog',
                 'login-with-image' => 'site/login-with-image', // Add this line
             ],
         ],
     ],
-    'defaultRoute' => 'site/capture',
+    'defaultRoute' => 'site/capture-login-no-facial-recog',
     'params' => $params,
 ];

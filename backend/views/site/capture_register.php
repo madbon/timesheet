@@ -183,8 +183,8 @@ $this->registerJs(<<<JS
                 capturedImage = null;
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
             } else {
-                const threshold = 0.30; // Change this value to a lower number if needed
-                const distance = await isFaceSimilar(capturedDescriptor, storedImages);
+                // const threshold = 0.30; // Change this value to a lower number if needed
+                // const distance = await isFaceSimilar(capturedDescriptor, storedImages);
                 
                 // if (distance < threshold) {
                 // alert('Similar face found! Distance: ' + distance.toFixed(4));
@@ -205,26 +205,30 @@ $this->registerJs(<<<JS
                 return;
             }
 
+            const userId = '2'; // Replace 'someUserId' with the actual user ID you want to send
             const formData = new FormData(document.getElementById('login-form'));
             formData.append('imageData', capturedImage);
+            formData.append('user_id', userId); // Add user ID to the POST request
 
-            fetch('site/login-with-image', {
+            fetch('site/register-image', {
                 method: 'POST',
                 body: formData
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    window.location.href =  'site/index?user_id=' + data.user_id;
+                    alert('Image saved successfully');
                 } else {
-                    alert(data.message || 'Time in/out failed');
+                    alert(data.message || 'Failed to save image');
                 }
             })
             .catch(err => {
                 console.error('Error:', err);
-                alert('Login failed');
+                alert('Failed to save image');
             });
         });
+
+
     })();
 JS
 );

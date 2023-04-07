@@ -28,7 +28,7 @@ class SiteController extends Controller
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['error','capture','login-with-image','backtoportal','get-images'],
+                        'actions' => ['error','capture','login-with-image','backtoportal','get-images','register-image','capture-login-no-facial-recog'],
                         'allow' => true,
                     ],
                     [
@@ -61,7 +61,7 @@ class SiteController extends Controller
 
     public function actionGetImages()
     {
-        $query = Files::find()->where(['model_name' => 'UserTimesheet'])->all();
+        $query = Files::find()->where(['model_name' => 'UserFacialRegister'])->all();
 
         $images = [];
         foreach ($query as $img) {
@@ -111,6 +111,67 @@ class SiteController extends Controller
         } else {
             return ['success' => false];
         }
+    }
+
+    public function actionRegisterImage()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $request = Yii::$app->request;
+
+        // Get the user ID from POST data
+        $userId = $request->post('user_id');
+
+        $imageData = Yii::$app->request->post('imageData');
+        $imagePath = null;
+
+        if ($imageData) {
+            $imagePath = $this->saveCapturedImage($imageData);
+
+        }
+
+        
+
+        if ($imagePath) {
+            date_default_timezone_set('Asia/Manila');
+            // Save the captured image data to the table_file
+            $file = new Files();
+            $file->model_name = "UserFacialRegister";
+            $file->file_name = basename($imagePath);
+            $file->extension = pathinfo($imagePath, PATHINFO_EXTENSION);
+            $file->file_hash = basename($imagePath);
+            $file->user_id = $userId;
+            $file->model_id = $userId;
+            $file->created_at = time();
+            $file->save(false);
+
+            // if($file->save())
+            // {
+                return [
+                    'success' => true,
+                    'user_id' => $userId, // Return the user_id
+                    // 'error' => $file->errors
+                ];
+                
+            // }
+            // else
+            // {
+            //     return [
+            //         'success' => false,
+            //         'message' => $userId,
+            //     ];
+            // }
+
+            
+        }
+        else
+        {
+            return [
+                'success' => false,
+                'message' => 'Something wrong',
+            ];
+        }
+        
     }
 
     public function actionLoginWithImage()
@@ -267,7 +328,7 @@ class SiteController extends Controller
         return $imagePath;
     }
 
-    public function actionCapture()
+    public function actionCaptureLoginNoFacialRecog()
     {
         $model = new LoginForm();
 
@@ -280,7 +341,7 @@ class SiteController extends Controller
             setInterval(updateTime, 1000);
         JS;
         $this->getView()->registerJs($js, View::POS_READY);
-        return $this->render('capture',['model' => $model]);
+        return $this->render('capture_login_no_facial_recog',['model' => $model]);
     }
 
     /**
