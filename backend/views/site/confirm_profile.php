@@ -41,7 +41,7 @@ table.student-details tbody tr td
         <div class="row">
             <div class="col-sm-6" style="text-align: left;">
                     <?php 
-                        echo Html::a('<strong><i class="fas fa-times"></i> NO, THIS IS NOT ME.</strong> Cancel Recording Time In/Out and I want to use my login credentials instead',['/capture-login-no-facial-recog','prev_user_id' => $user_id],['class' => 'btn btn-danger btn-lg', 'style' => 'border-radius:25px;']);
+                        echo Html::a('<strong><i class="fas fa-times"></i> NO, THIS IS NOT ME.</strong> I would prefer to time in/out with my credentials to track my time.',['/capture-login-no-facial-recog','prev_user_id' => $user_id],['class' => 'btn btn-danger btn-lg', 'style' => 'border-radius:25px;']);
                     ?>
             </div>
             <div class="col-sm-6" style="text-align: right;">
