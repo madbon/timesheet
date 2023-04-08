@@ -509,7 +509,7 @@ date_default_timezone_set('Asia/Manila');
                     </td>
                 </tr>
                 <tr>
-                    <td style="border-bottom:1px solid black; text-align:center; font-size:15px; "><?= !empty($model->user->UserFullNameWithMiddleInitial) ? $model->user->UserFullNameWithMiddleInitial : "" ?></td>
+                    <td style="border-bottom:1px solid black; text-align:center; font-size:15px; text-transform:uppercase;"><?= !empty($model->user->UserFullNameWithMiddleInitial) ? $model->user->UserFullNameWithMiddleInitial : "" ?></td>
                 </tr>
                 <tr>
                     <td style="font-size:11px; font-weight:bold; text-align:center;">Intern Signature over printed name</td>
