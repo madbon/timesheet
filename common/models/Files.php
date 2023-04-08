@@ -72,4 +72,14 @@ class Files extends \yii\db\ActiveRecord
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);
     }
+
+     /**
+     * Gets query for [[User]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUserData()
+    {
+        return $this->hasOne(UserData::class, ['id' => 'user_id']);
+    }
 }

@@ -28,11 +28,11 @@ class SiteController extends Controller
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['error','capture','login-with-image','backtoportal','get-images','register-image','capture-login-no-facial-recog'],
+                        'actions' => ['error','capture','login-with-image','backtoportal','get-images','register-image','capture-login-no-facial-recog','capture-login-with-facial-recog','capture-register','index','confirm-sending-image','confirm-profile'],
                         'allow' => true,
                     ],
                     [
-                        'actions' => ['logout', 'index'],
+                        'actions' => ['logout'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -59,9 +59,163 @@ class SiteController extends Controller
         ];
     }
 
+    public function actionConfirmSendingImage()
+    {
+        $request = Yii::$app->request;
+        $jsonData = json_decode($request->getRawBody(), true);
+    
+        $matchedFilename = $jsonData['matchedFilename'];
+
+        $imageData = $jsonData['capturedImage'];
+        
+
+        if ($imageData) {
+            $imagePath = $this->saveCapturedImage($imageData);
+        }
+
+        // TIMESHEET RECORDING_START
+
+        $file = Files::find()
+        ->select(['model_id'])
+        ->where(['file_name' => $matchedFilename])
+        ->andWhere(['model_name' => ['UserTimesheet','UserFacialRegister']])
+        ->one();
+
+        $userId = !empty($file->model_id) ? $file->model_id : NULL;
+
+        date_default_timezone_set('Asia/Manila');
+        $time = date('H:i:s');
+        $timestamp = strtotime($time);
+
+        $model = UserTimesheet::find()->where(['user_id' => $userId, 'date' => date('Y-m-d')])->orderBy(['id' => SORT_DESC])->one();
+        if (!$model) {
+            $model = new UserTimesheet();
+            $model->user_id = $userId;
+            $model->date = date('Y-m-d');
+            if (date('a', $timestamp) === 'am') {
+                $model->time_in_am = date('H:i:s', $timestamp);
+            }
+            else
+            {
+                $model->time_in_pm = date('H:i:s', $timestamp);
+            }
+        }
+        else
+        {
+            if (date('a', $timestamp) === 'am') {
+                if($model->time_out_am)
+                {
+                    $model = new UserTimesheet();
+                    $model->user_id = $userId;
+                    $model->date = date('Y-m-d');
+                    $model->time_in_am = date('H:i:s', $timestamp);
+                }else{
+                    $model->time_out_am = date('H:i:s', $timestamp);
+                }
+                
+            } else { // PM
+                if($model->time_out_am)
+                {
+                    if($model->time_out_pm)
+                    {
+                        $model = new UserTimesheet();
+                        $model->user_id = $userId;
+                        $model->date = date('Y-m-d');
+                        $model->time_in_pm = date('H:i:s', $timestamp);
+                    }
+                    else
+                    {
+                        if($model->time_in_pm)
+                        {
+                            $model->time_out_pm = date('H:i:s', $timestamp);
+                        }   
+                        else
+                        {
+                            $model->time_in_pm = date('H:i:s', $timestamp);
+                        }
+                    }
+                }
+                else // if empty ung TIME_OUT_AM
+                {
+                    if($model->time_out_pm)
+                    {
+                        $model = new UserTimesheet();
+                        $model->user_id = $userId;
+                        $model->date = date('Y-m-d');
+                        $model->time_in_pm = date('H:i:s', $timestamp);
+                    }
+                    else
+                    {
+                        $model->time_out_pm = date('H:i:s', $timestamp);
+                    }
+                }
+            }
+        }
+        
+            
+            
+        // save the model
+        if ($model->save()) {
+            // If you need to do something with the image path, you can do it here
+            // For example: save the image path to the user's profile
+            if ($imagePath) {
+                date_default_timezone_set('Asia/Manila');
+                // Save the captured image data to the table_file
+                $file = new Files();
+                $file->model_name = "UserTimesheet";
+                $file->user_timesheet_time = date('H:i:s', $timestamp);
+                $file->file_name = basename($imagePath);
+                $file->extension = pathinfo($imagePath, PATHINFO_EXTENSION);
+                $file->file_hash = basename($imagePath);
+                $file->user_id = $userId;
+                $file->model_id = $userId;
+                $file->created_at = time();
+                $file->save();
+            }
+        }
+        // TIMESHEET RECORDING_END
+
+        
+    
+        // Process the matchedFilename as needed
+        // ...
+    
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return [
+            'success' => true,
+            'message' => 'Matched filename received',
+            'user_id' => $userId,
+        ];
+    }
+
+    /**
+     * Displays homepage.
+     *
+     * @return string
+     */
+    public function actionConfirmProfile($user_id)
+    {
+        date_default_timezone_set('Asia/Manila');
+
+        $timeSheet = UserTimesheet::findOne(['user_id' => $user_id,'date' => date('Y-m-d')]);
+
+        $timeSheetAll = UserTimesheet::find()->where(['user_id' => $user_id,'date' => date('Y-m-d')])
+        ->orderBy(['id' => SORT_ASC])->all();
+
+        return $this->render('confirm_profile',[
+            'user_id' => $user_id,
+            'time_in_am' => $timeSheet->time_in_am,
+            'time_in_pm' => $timeSheet->time_in_pm,
+            'time_out_am' => $timeSheet->time_out_am,
+            'time_out_pm' => $timeSheet->time_out_pm,
+            'model' => $timeSheet,
+            'timeSheetAll' => $timeSheetAll,
+        ]);
+    }
+
     public function actionGetImages()
     {
-        $query = Files::find()->where(['model_name' => 'UserFacialRegister'])->all();
+        $query = Files::find()->select(['file_name'])->where(['model_name' => ['UserTimesheet','UserFacialRegister']])->all();
 
         $images = [];
         foreach ($query as $img) {
@@ -173,6 +327,7 @@ class SiteController extends Controller
         }
         
     }
+    
 
     public function actionLoginWithImage()
     {
@@ -298,7 +453,7 @@ class SiteController extends Controller
                     $file->extension = pathinfo($imagePath, PATHINFO_EXTENSION);
                     $file->file_hash = basename($imagePath);
                     $file->user_id = $user_id;
-                    $file->model_id = $model->id;
+                    $file->model_id = $user_id;
                     $file->created_at = time();
                     $file->save();
                 }
@@ -328,8 +483,24 @@ class SiteController extends Controller
         return $imagePath;
     }
 
-    public function actionCaptureLoginNoFacialRecog()
+    public function actionCaptureLoginNoFacialRecog($prev_user_id)
     {
+        $file = Files::find()->where([
+            'model_name' => ['UserFacialRegister','UserTimesheet'],
+            'model_id' => $prev_user_id
+            ])->orderBy(['id' => SORT_DESC])->one();
+        
+        // $file->delete();
+
+        if($file->delete())
+        {
+            if(file_exists(Yii::getAlias('@backend/web/uploads/').$file->file_name))
+            {
+                unlink(Yii::getAlias('@backend/web/uploads/').$file->file_name);
+            }
+        }
+        
+
         $model = new LoginForm();
 
         $js = <<<JS
@@ -342,6 +513,38 @@ class SiteController extends Controller
         JS;
         $this->getView()->registerJs($js, View::POS_READY);
         return $this->render('capture_login_no_facial_recog',['model' => $model]);
+    }
+
+    public function actionCaptureLoginWithFacialRecog()
+    {
+        $model = new LoginForm();
+
+        $js = <<<JS
+            function updateTime() {
+                var now = new Date();
+                var clock = document.getElementById('clock');
+                clock.innerHTML = now.toLocaleTimeString();
+            }
+            setInterval(updateTime, 1000);
+        JS;
+        $this->getView()->registerJs($js, View::POS_READY);
+        return $this->render('capture_login_with_facial_recog',['model' => $model]);
+    }
+
+    public function actionCaptureRegister()
+    {
+        $model = new LoginForm();
+
+        $js = <<<JS
+            function updateTime() {
+                var now = new Date();
+                var clock = document.getElementById('clock');
+                clock.innerHTML = now.toLocaleTimeString();
+            }
+            setInterval(updateTime, 1000);
+        JS;
+        $this->getView()->registerJs($js, View::POS_READY);
+        return $this->render('capture_register',['model' => $model]);
     }
 
     /**
@@ -451,7 +654,8 @@ class SiteController extends Controller
     {
         Yii::$app->user->logout();
 
-        return $this->redirect(['site/capture']);
+        // return $this->redirect(['site/capture']);
+        return $this->goBack();
     }
 
      /**
@@ -463,6 +667,7 @@ class SiteController extends Controller
     {
         Yii::$app->user->logout();
 
-        return $this->redirect(['site/capture']);
+        // return $this->redirect(['site/capture']);
+        return $this->goBack();
     }
 }

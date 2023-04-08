@@ -50,7 +50,7 @@ table.table tbody tr td
                     </tr>
                     <tr>
                         <td colspan="2">
-                            <div class="form-login">
+                            <div class="form-login" style="display:none;">
                                 <?php $form = ActiveForm::begin([
                                     'id' => 'login-form',
                                 ]); ?>
@@ -113,20 +113,21 @@ $this->registerJs(<<<JS
     }
 
     async function isFaceSimilar(capturedDescriptor, storedImages) {
-        let minDistance = Infinity;
-        
+        let closestMatch = { distance: Infinity, imagePath: null };
+
         for (const storedImageUrl of storedImages) {
             const storedDescriptor = await getFaceDescriptor(storedImageUrl);
             if (storedDescriptor) {
-            const distance = faceapi.euclideanDistance(capturedDescriptor, storedDescriptor);
-            if (distance < minDistance) {
-                minDistance = distance;
-            }
+                const distance = faceapi.euclideanDistance(capturedDescriptor, storedDescriptor);
+                if (distance < closestMatch.distance) {
+                    closestMatch.distance = distance;
+                    closestMatch.imagePath = storedImageUrl;
+                }
             }
         }
-
-        return minDistance;
+        return closestMatch;
     }
+
 
     async function fetchStoredImages() {
         const response = await fetch('site/get-images');
@@ -134,31 +135,10 @@ $this->registerJs(<<<JS
         return storedImages;
     }
 
+
+
     (async function() {
         // Replace with the list of stored images paths
-        // const storedImages = [
-        //     '/timesheet/backend/web/uploads/1.png',
-        //     '/timesheet/backend/web/uploads/2.png',
-        //     '/timesheet/backend/web/uploads/3.png',
-        //     '/timesheet/backend/web/uploads/4.png',
-        //     '/timesheet/backend/web/uploads/5.png',
-        //     '/timesheet/backend/web/uploads/6.png',
-        //     '/timesheet/backend/web/uploads/7.png',
-        //     '/timesheet/backend/web/uploads/8.png',
-        //     '/timesheet/backend/web/uploads/9.png',
-        //     '/timesheet/backend/web/uploads/10.png',
-        //     '/timesheet/backend/web/uploads/11.png',
-        //     '/timesheet/backend/web/uploads/12.png',
-        //     '/timesheet/backend/web/uploads/13.png',
-        //     '/timesheet/backend/web/uploads/14.png',
-        //     '/timesheet/backend/web/uploads/15.png',
-        //     '/timesheet/backend/web/uploads/16.png',
-        //     '/timesheet/backend/web/uploads/17.png',
-        //     '/timesheet/backend/web/uploads/18.png',
-        //     '/timesheet/backend/web/uploads/19.png',
-        //     '/timesheet/backend/web/uploads/20.png',
-        //     // Add more image paths if needed
-        // ];
 
         const storedImages = await fetchStoredImages();
 
@@ -186,24 +166,59 @@ $this->registerJs(<<<JS
             capturedImage = canvas.toDataURL('image/png');
             capturedDescriptor = await getFaceDescriptor(capturedImage);
 
-
             if (!capturedDescriptor) {
                 alert('No face detected. Please capture a clear image of your face.');
                 capturedImage = null;
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
             } else {
-                const threshold = 0.30; // Change this value to a lower number if needed
-                const distance = await isFaceSimilar(capturedDescriptor, storedImages);
-                
+                const threshold = 0.20; // Change this value to a lower number if needed
+                const closestMatch = await isFaceSimilar(capturedDescriptor, storedImages);
+                const distance = closestMatch.distance;
+
                 if (distance < threshold) {
-                alert('Similar face found! Distance: ' + distance.toFixed(4));
+                    const matchedFilename = closestMatch.imagePath.split('/').pop();
+                    // alert('Similar face found! Distance: ' + distance.toFixed(4) + ', Matched image: ' + matchedFilename);
+
+                    // console.log(matchedFilename);
+                    // sendMatchedFilename(matchedFilename);
+
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                    const jsonData = {
+                        matchedFilename: matchedFilename,
+                        capturedImage: capturedImage
+                    };
+
+                    fetch('site/confirm-sending-image', {
+                        method: 'POST',
+                        headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-Token': csrfToken,
+                            },
+                        body: JSON.stringify(jsonData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // alert(data.message || 'Success');
+                            window.location.href =  'confirm-profile?user_id=' + data.user_id;
+                        } else {
+                            alert(data.message || 'Failed');
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Error:', err);
+                        alert('Failed Sending Image');
+                    });
+
                 } else {
-                alert('No similar face found. Distance: ' + distance.toFixed(4) + '. Please try again.');
-                capturedImage = null;
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    alert('No similar face found. Distance: ' + distance.toFixed(4) + '. Please try again.');
+                    capturedImage = null;
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
                 }
             }
         });
+
 
 
         loginButton.addEventListener('click', function(e) {
@@ -217,14 +232,14 @@ $this->registerJs(<<<JS
             const formData = new FormData(document.getElementById('login-form'));
             formData.append('imageData', capturedImage);
 
-            fetch('site/login-with-image', {
+            fetch('login-with-image', {
                 method: 'POST',
                 body: formData
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    window.location.href =  'site/index?user_id=' + data.user_id;
+                    window.location.href =  'index?user_id=' + data.user_id;
                 } else {
                     alert(data.message || 'Time in/out failed');
                 }

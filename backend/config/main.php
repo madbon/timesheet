@@ -44,9 +44,13 @@ return [
             'rules' => [
                 'capture-login-no-facial-recog' => 'site/capture-login-no-facial-recog',
                 'login-with-image' => 'site/login-with-image', // Add this line
+                'capture-register' => 'site/capture-register',
+                'capture-login-with-facial-recog' => 'site/capture-login-with-facial-recog',
+                'confirm-profile' => 'site/confirm-profile',
+                'index' => 'site/index',
             ],
         ],
     ],
-    'defaultRoute' => 'site/capture-login-no-facial-recog',
+    'defaultRoute' => 'site/capture-login-with-facial-recog',
     'params' => $params,
 ];

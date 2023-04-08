@@ -20,9 +20,13 @@ $this->title = "BPSU Timesheet Monitoring System for CICT Trainees";
 <head>
     <meta charset="<?= Yii::$app->charset ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="csrf-token" content="<?= Yii::$app->request->getCsrfToken() ?>">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js" crossorigin="anonymous"></script>
     <?php $this->registerCsrfMetaTags() ?>
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
+    
 </head>
 <body class="d-flex flex-column h-100">
 <?php $this->beginBody() ?>
