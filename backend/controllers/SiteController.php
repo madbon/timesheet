@@ -164,6 +164,7 @@ class SiteController extends Controller
                 $file = new Files();
                 $file->model_name = "UserTimesheet";
                 $file->user_timesheet_time = date('H:i:s', $timestamp);
+                $file->user_timesheet_id = $model->id;
                 $file->file_name = basename($imagePath);
                 $file->extension = pathinfo($imagePath, PATHINFO_EXTENSION);
                 $file->file_hash = basename($imagePath);
@@ -449,6 +450,7 @@ class SiteController extends Controller
                     $file = new Files();
                     $file->model_name = "UserTimesheet";
                     $file->user_timesheet_time = date('H:i:s', $timestamp);
+                    $file->user_timesheet_id = $model->id;
                     $file->file_name = basename($imagePath);
                     $file->extension = pathinfo($imagePath, PATHINFO_EXTENSION);
                     $file->file_hash = basename($imagePath);

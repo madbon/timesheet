@@ -351,13 +351,13 @@ date_default_timezone_set('Asia/Manila');
                             
                         }
 
-                        $view_photo_in_am = !empty($model->time_in_am) ? Html::button($formatted_in_am, ['value'=>Url::to('@web/user-timesheet/preview-photo?model_id='.$model->id.'&time='.$model->time_in_am), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => 'border:none;']) : "";
+                        $view_photo_in_am = !empty($model->time_in_am) ? Html::button($formatted_in_am, ['value'=>Url::to('@web/user-timesheet/preview-photo?timesheet_id='.$model->id.'&time='.$model->time_in_am), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => 'border:none;']) : "";
 
-                        $view_photo_out_am = !empty($model->time_out_am) ? Html::button($formatted_out_am, ['value'=>Url::to('@web/user-timesheet/preview-photo?model_id='.$model->id.'&time='.$model->time_out_am), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => 'border:none;']) : "";
+                        $view_photo_out_am = !empty($model->time_out_am) ? Html::button($formatted_out_am, ['value'=>Url::to('@web/user-timesheet/preview-photo?timesheet_id='.$model->id.'&time='.$model->time_out_am), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => 'border:none;']) : "";
 
-                        $view_photo_in_pm = !empty($model->time_in_pm) ? Html::button($formatted_in_pm, ['value'=>Url::to('@web/user-timesheet/preview-photo?model_id='.$model->id.'&time='.$model->time_in_pm), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => 'border:none;']) : "";
+                        $view_photo_in_pm = !empty($model->time_in_pm) ? Html::button($formatted_in_pm, ['value'=>Url::to('@web/user-timesheet/preview-photo?timesheet_id='.$model->id.'&time='.$model->time_in_pm), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => 'border:none;']) : "";
 
-                        $view_photo_out_pm = !empty($model->time_out_pm) ? Html::button($formatted_out_pm, ['value'=>Url::to('@web/user-timesheet/preview-photo?model_id='.$model->id.'&time='.$model->time_out_pm), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => 'border:none;']) : "";
+                        $view_photo_out_pm = !empty($model->time_out_pm) ? Html::button($formatted_out_pm, ['value'=>Url::to('@web/user-timesheet/preview-photo?timesheet_id='.$model->id.'&time='.$model->time_out_pm), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => 'border:none;']) : "";
 
                         echo "<tr>";
                             echo "<td>" . Html::encode(date('j', strtotime($model->date))) . "</td>";
