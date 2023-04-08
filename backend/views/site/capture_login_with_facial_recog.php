@@ -201,7 +201,7 @@ $this->registerJs(<<<JS
                     .then(data => {
                         if (data.success) {
                             // alert(data.message || 'Success');
-                            window.location.href =  'confirm-profile?user_id=' + data.user_id;
+                            window.location.href =  'confirm-profile?user_id=' + data.user_id + '&timesheet_id=' + data.timesheet_id;
                         } else {
                             alert(data.message || 'Failed');
                         }
