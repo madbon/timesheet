@@ -28,7 +28,7 @@ class SiteController extends Controller
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['error','capture','login-with-image','backtoportal','get-images','register-image','capture-login-no-facial-recog','capture-login-with-facial-recog','capture-register','index','confirm-sending-image','confirm-profile'],
+                        'actions' => ['error','capture','login-with-image','backtoportal','get-images','register-image','capture-login-no-facial-recog','capture-login-with-facial-recog','capture-register','index','confirm-sending-image','confirm-profile','confirm-profile-success'],
                         'allow' => true,
                     ],
                     [
@@ -206,6 +206,32 @@ class SiteController extends Controller
         ->orderBy(['id' => SORT_ASC])->all();
 
         return $this->render('confirm_profile',[
+            'user_id' => $user_id,
+            'timesheet_id' => $timesheet_id,
+            'time_in_am' => $timeSheet->time_in_am,
+            'time_in_pm' => $timeSheet->time_in_pm,
+            'time_out_am' => $timeSheet->time_out_am,
+            'time_out_pm' => $timeSheet->time_out_pm,
+            'model' => $timeSheet,
+            'timeSheetAll' => $timeSheetAll,
+        ]);
+    }
+
+    /**
+     * Displays homepage.
+     *
+     * @return string
+     */
+    public function actionConfirmProfileSuccess($user_id,$timesheet_id)
+    {
+        date_default_timezone_set('Asia/Manila');
+
+        $timeSheet = UserTimesheet::findOne(['user_id' => $user_id,'date' => date('Y-m-d')]);
+
+        $timeSheetAll = UserTimesheet::find()->where(['user_id' => $user_id,'date' => date('Y-m-d')])
+        ->orderBy(['id' => SORT_ASC])->all();
+
+        return $this->render('confirm_profile_success',[
             'user_id' => $user_id,
             'timesheet_id' => $timesheet_id,
             'time_in_am' => $timeSheet->time_in_am,
@@ -479,6 +505,7 @@ class SiteController extends Controller
     }
 
 
+
     private function saveCapturedImage($imageData)
     {
         $data = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $imageData));
@@ -488,50 +515,52 @@ class SiteController extends Controller
         return $imagePath;
     }
 
-    public function actionCaptureLoginNoFacialRecog($timesheet_id)
+    public function actionCaptureLoginNoFacialRecog($timesheet_id=null)
     {
-        $file = Files::find()->where([
-            'model_name' => ['UserFacialRegister','UserTimesheet'],
-            'user_timesheet_id' => $timesheet_id,
-            ])->orderBy(['id' => SORT_DESC])->one();
-        
-        // $file->delete();
-
-        if($file->delete())
+        if($timesheet_id)
         {
-            if(file_exists(Yii::getAlias('@backend/web/uploads/').$file->file_name))
+            $file = Files::find()->where([
+                'model_name' => ['UserFacialRegister','UserTimesheet'],
+                'user_timesheet_id' => $timesheet_id,
+                ])->orderBy(['id' => SORT_DESC])->one();
+            
+            // $file->delete();
+    
+            if($file->delete())
             {
-                unlink(Yii::getAlias('@backend/web/uploads/').$file->file_name);
-            }
-
-            $timeSheet = UserTimesheet::find()->where(['id' => $timesheet_id])->one();
-
-            if($timeSheet->time_in_am === $file->user_timesheet_time)
-            {
-                $timeSheet->time_in_am = null;
-            }
-            else if($timeSheet->time_out_am === $file->user_timesheet_time)
-            {
-                $timeSheet->time_out_am = null;
-            }
-            else if($timeSheet->time_in_pm === $file->user_timesheet_time)
-            {
-                $timeSheet->time_in_pm = null;
-            }
-            else if($timeSheet->time_out_pm === $file->user_timesheet_time)
-            {
-                $timeSheet->time_out_pm = null;
-            }
-            $timeSheet->update();
-
-            $timeSheetAfterUpdate = UserTimesheet::find()->where(['id' => $timesheet_id])->one();
-
-            if(empty($timeSheetAfterUpdate->time_in_am) && empty($timeSheetAfterUpdate->time_out_am) && empty($timeSheetAfterUpdate->time_in_pm) && empty($timeSheetAfterUpdate->time_out_pm))
-            {
-                $timeSheetAfterUpdate->delete();
+                if(file_exists(Yii::getAlias('@backend/web/uploads/').$file->file_name))
+                {
+                    unlink(Yii::getAlias('@backend/web/uploads/').$file->file_name);
+                }
+    
+                $timeSheet = UserTimesheet::find()->where(['id' => $timesheet_id])->one();
+    
+                if($timeSheet->time_in_am === $file->user_timesheet_time)
+                {
+                    $timeSheet->time_in_am = null;
+                }
+                else if($timeSheet->time_out_am === $file->user_timesheet_time)
+                {
+                    $timeSheet->time_out_am = null;
+                }
+                else if($timeSheet->time_in_pm === $file->user_timesheet_time)
+                {
+                    $timeSheet->time_in_pm = null;
+                }
+                else if($timeSheet->time_out_pm === $file->user_timesheet_time)
+                {
+                    $timeSheet->time_out_pm = null;
+                }
+                $timeSheet->update();
+    
+                $timeSheetAfterUpdate = UserTimesheet::find()->where(['id' => $timesheet_id])->one();
+    
+                if(empty($timeSheetAfterUpdate->time_in_am) && empty($timeSheetAfterUpdate->time_out_am) && empty($timeSheetAfterUpdate->time_in_pm) && empty($timeSheetAfterUpdate->time_out_pm))
+                {
+                    $timeSheetAfterUpdate->delete();
+                }
             }
         }
-        
 
         $model = new LoginForm();
 
@@ -547,8 +576,53 @@ class SiteController extends Controller
         return $this->render('capture_login_no_facial_recog',['model' => $model]);
     }
 
-    public function actionCaptureLoginWithFacialRecog()
+    public function actionCaptureLoginWithFacialRecog($timesheet_id = null)
     {
+        if($timesheet_id)
+        {
+            $file = Files::find()->where([
+                'model_name' => ['UserFacialRegister','UserTimesheet'],
+                'user_timesheet_id' => $timesheet_id,
+                ])->orderBy(['id' => SORT_DESC])->one();
+            
+            // $file->delete();
+    
+            if($file->delete())
+            {
+                if(file_exists(Yii::getAlias('@backend/web/uploads/').$file->file_name))
+                {
+                    unlink(Yii::getAlias('@backend/web/uploads/').$file->file_name);
+                }
+    
+                $timeSheet = UserTimesheet::find()->where(['id' => $timesheet_id])->one();
+    
+                if($timeSheet->time_in_am === $file->user_timesheet_time)
+                {
+                    $timeSheet->time_in_am = null;
+                }
+                else if($timeSheet->time_out_am === $file->user_timesheet_time)
+                {
+                    $timeSheet->time_out_am = null;
+                }
+                else if($timeSheet->time_in_pm === $file->user_timesheet_time)
+                {
+                    $timeSheet->time_in_pm = null;
+                }
+                else if($timeSheet->time_out_pm === $file->user_timesheet_time)
+                {
+                    $timeSheet->time_out_pm = null;
+                }
+                $timeSheet->update();
+    
+                $timeSheetAfterUpdate = UserTimesheet::find()->where(['id' => $timesheet_id])->one();
+    
+                if(empty($timeSheetAfterUpdate->time_in_am) && empty($timeSheetAfterUpdate->time_out_am) && empty($timeSheetAfterUpdate->time_in_pm) && empty($timeSheetAfterUpdate->time_out_pm))
+                {
+                    $timeSheetAfterUpdate->delete();
+                }
+            }
+        }
+
         $model = new LoginForm();
 
         $js = <<<JS

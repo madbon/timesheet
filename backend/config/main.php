@@ -48,6 +48,7 @@ return [
                 'capture-login-with-facial-recog' => 'site/capture-login-with-facial-recog',
                 'confirm-profile' => 'site/confirm-profile',
                 'index' => 'site/index',
+                'confirm-profile-success' => 'site/confirm-profile-success',
             ],
         ],
     ],

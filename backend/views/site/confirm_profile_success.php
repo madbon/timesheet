@@ -1,6 +1,5 @@
 <?php
 use yii\helpers\Html;
-use yii\web\View;
 
 /** @var yii\web\View $this */
 
@@ -12,6 +11,7 @@ table.time-details tbody tr td
 {
     text-align: center;
     text-transform: uppercase;
+    border:1px solid black;
 }
 
 
@@ -38,23 +38,48 @@ table.student-details tbody tr td
 
     <div class="jumbotron text-center bg-transparent" style="padding-top:20px;">
         <div class="row">
-            <div class="col-sm-12" style="text-align: left;">
+            <div class="col-sm-12" style="text-align: right;">
                     <?php 
-                        echo Html::a('<strong><i class="fas fa-arrow-left"></i> BACK</strong>',['/capture-login-with-facial-recog','timesheet_id' => $timesheet_id],['class' => 'btn btn-outline-danger btn-lg', 'style' => 'border-radius:25px;']);
+                        echo Html::a('<strong><i class="fas fa-times"></i> CLOSE</strong>',['/capture-login-with-facial-recog'],['class' => 'btn btn-outline-danger btn-lg', 'style' => 'border-radius:25px;']);
                     ?>
             </div>
         </div>
     </div>
 
     <div style="text-align: center; margin-top:50px;">
-        <h1 class="display-4" style="font-weight:bold;">IS THIS YOU?</h1>
-        <p class="lead">Please click the buttons below to confirm.</p>
+        <h1 class="display-4" style="font-weight:bold; color:#fbbc04;">SUCCESS!</h1>
+        <p class="lead">You have successfully recorded your time in/out. You can check it below.</p>
     </div>
 
     <div class="body-content">
 
         <div class="row">
             <div class="col-lg-12">
+                <p class="lead" style="font-weight:bold;">TIME IN/OUT DETAILS: <span style="text-align: right; font-weight:normal; font-size:25px; font-weight:bold; text-transform:uppercase;"><?= !empty($model->date) ? date('F j, Y',strtotime($model->date)) : "" ?></span></p>
+                <table class="table table-bordered time-details">
+                    <tbody>
+                        <tr>
+                            <td colspan="2">AM</td>
+                            <td colspan="2">PM</td>
+                        </tr>
+                        <tr>
+                            <td style="background:#fbbc04;">TIME IN</td>
+                            <td style="background:#fbbc04;">TIME OUT</td>
+                            <td style="background:#fbbc04;">TIME IN</td>
+                            <td style="background:#fbbc04;">TIME OUT</td>
+                        </tr>
+
+                        <?php foreach ($timeSheetAll as $row) { ?>
+                            <tr>
+                                <td><?= !empty($row->time_in_am) ? date('g:i:s A', strtotime($row->time_in_am)) : ""; ?></td>
+                                <td><?= !empty($row->time_out_am) ? date('g:i:s A', strtotime($row->time_out_am)) : ""; ?></td>
+                                <td><?= !empty($row->time_in_pm) ? date('g:i:s A', strtotime($row->time_in_pm)) : ""; ?></td>
+                                <td><?= !empty($row->time_out_pm) ? date('g:i:s A', strtotime($row->time_out_pm)) : ""; ?></td>
+                            </tr>
+                        <?php } ?>
+                        
+                    </tbody>
+                </table>
 
                 <p class="lead" style="font-weight:bold;">STUDENT DETAILS</p>
                 <table class="table table-bordered student-details">
@@ -100,22 +125,5 @@ table.student-details tbody tr td
            
         </div>
 
-        <div class="jumbotron text-center bg-transparent" style="padding-top:20px;">
-            <div class="row">
-                <div class="col-sm-6" style="text-align: left;">
-                        <?php 
-                            echo Html::a('<strong style="font-size:25px;"><i class="fas fa-user-times"></i> NO, THIS IS NOT ME.</strong> <br/>I would prefer to time in/out with my Login Credentials.',['/capture-login-no-facial-recog','timesheet_id' => $timesheet_id],['class' => 'btn btn-warning btn-lg', 'style' => 'border-radius:25px;']);
-                        ?>
-                </div>
-                <div class="col-sm-6" style="text-align: right;">
-                        <?php 
-                            echo Html::a('<strong style="font-size:25px;"><i class="fas fa-user-check"></i> YES, THIS IS ME</strong>',['/confirm-profile-success','user_id' => $user_id, 'timesheet_id' => $timesheet_id],['class' => 'btn btn-success btn-lg', 'style' => 'border-radius:25px;']);
-                        ?>
-                </div>
-            </div>
-        </div>
-
     </div>
 </div>
-
-
