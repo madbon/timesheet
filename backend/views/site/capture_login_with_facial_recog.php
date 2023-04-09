@@ -21,7 +21,7 @@ table.table tbody tr td
 </style>
 
 <div>
-    <div class="container">
+    <div class="container" style="margin-top:20px;">
         <div class="d-flex justify-content-center align-items-center">
             <?php  
                 $imageUrl = Yii::$app->request->baseUrl . '/ref/images/logo_university.png';
@@ -45,7 +45,14 @@ table.table tbody tr td
                     </tr>
                     <tr>
                         <td colspan="2" style="text-align: center;">
-                            <button id="snap" class="btn btn-outline-secondary btn-sm" style="width:50%;">CAPTURE PHOTO</button>
+                            <button id="snap" class="btn btn-outline-secondary btn-lg" style="width:50%;"><i class="fas fa-camera"></i> CAPTURE PHOTO</button>
+                        </td>
+                    </tr>
+                    <tr style="display:none;" id="different-timein">
+                        <td colspan="2" style="text-align: center;">
+                            <p style="padding-top:50px;">
+                                <?= Html::a('<i class="fas fa-sign-in-alt"></i> Use Login Credentials to record time in/out',['/capture-login-no-facial-recog'],['class' => 'btn btn-primary btn-lg']); ?>
+                            </p>
                         </td>
                     </tr>
                     <tr>
@@ -78,12 +85,16 @@ table.table tbody tr td
                                     </div>
 
                                 <?php ActiveForm::end(); ?>
+
+                                
                             </div>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
+
+        
     </div>
 </div>
 
@@ -161,6 +172,9 @@ $this->registerJs(<<<JS
             console.log("An error occurred: " + err);
         });
 
+        var countFailedFaceRecog = 0;
+        var contentDifferentTimeIn = document.getElementById("different-timein");
+
         snap.addEventListener('click', async function() {
             ctx.drawImage(video, 0, 0, 600, 450);
             capturedImage = canvas.toDataURL('image/png');
@@ -204,15 +218,25 @@ $this->registerJs(<<<JS
                             window.location.href =  'confirm-profile?user_id=' + data.user_id + '&timesheet_id=' + data.timesheet_id;
                         } else {
                             alert(data.message || 'Failed');
+                            contentDifferentTimeIn.style.display = "";
                         }
                     })
                     .catch(err => {
                         console.error('Error:', err);
                         alert('Failed Sending Image');
+                        contentDifferentTimeIn.style.display = "";
                     });
 
                 } else {
-                    alert('No similar face found. Distance: ' + distance.toFixed(4) + '. Please try again.');
+                    // alert('No similar face found. Distance: ' + distance.toFixed(4) + '. Please try again.');
+                    alert('No Face Found. Please try again.');
+                    countFailedFaceRecog += 1;
+
+                    if(countFailedFaceRecog >= 3)
+                    {
+                        contentDifferentTimeIn.style.display = "";
+                    }
+
                     capturedImage = null;
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                 }

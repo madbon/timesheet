@@ -21,7 +21,8 @@ table.table tbody tr td
 </style>
 
 <div>
-    <div class="container">
+    <div class="container" style="margin-top:20px;">
+        <?= Html::a('<i class="fas fa-arrow-left"></i> BACK',['/capture-login-with-facial-recog'],['class' => 'btn btn-outline-danger btn-lg']); ?>
         <div class="d-flex justify-content-center align-items-center">
             <?php  
                 $imageUrl = Yii::$app->request->baseUrl . '/ref/images/logo_university.png';
@@ -45,7 +46,7 @@ table.table tbody tr td
                     </tr>
                     <tr>
                         <td colspan="2" style="text-align: center;">
-                            <button id="snap" class="btn btn-outline-secondary btn-sm" style="width:50%;">CAPTURE PHOTO</button>
+                            <button id="snap" class="btn btn-outline-secondary btn-lg" style="width:50%; margin-top:-50px;"><i class="fas fa-camera"></i> CAPTURE PHOTO</button>
                         </td>
                     </tr>
                     <tr>
