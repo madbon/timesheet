@@ -230,7 +230,7 @@ $this->registerJs(<<<JS
 
                 } else {
                     // alert('No similar face found. Distance: ' + distance.toFixed(4) + '. Please try again.');
-                    alert('No Face Found. Please try again.');
+                    alert('No similar face found. Please try again.');
                     countFailedFaceRecog += 1;
 
                     if(countFailedFaceRecog >= 3)
