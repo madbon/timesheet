@@ -54,9 +54,12 @@ class Module extends \yii\base\Module
         ->all();
 
         $countTask = 0;
+        $countAr = 0;
+        $countEval = 0;
+        $countActReminder = 0;
         foreach ($documentAssignment as $row) {
             $qrySubThread = SubmissionThread::find()
-            ->select(['submission_thread.id'])
+            ->select(['submission_thread.id','submission_thread.ref_document_type_id'])
             ->joinWith(Yii::$app->getModule('admin')->documentTypeAttrib($row->ref_document_type_id,'enable_tagging') ? 'taggedUser' : 'user')
             ->joinWith('userCompany')
             ->joinWith(['documentAssignment'])
@@ -94,12 +97,35 @@ class Module extends \yii\base\Module
                 ->andWhere(['submission_thread_id' => $thread->id])->exists())
                 {
                     $countTask  += 1;
+                    
+                    if($thread->ref_document_type_id == 1) // Eval Form
+                    {
+                        $countEval += 1;
+                    }
+
+                    if($thread->ref_document_type_id == 3) // Accomplishment Report
+                    {
+                        $countAr += 1;
+                    }
+
+                    if($thread->ref_document_type_id == 5) // Activity Reminder
+                    {
+                        $countActReminder += 1;
+                    }
                 }
             }
             
         }
 
-        return $countTask;
+        return [
+            'countTask' => $countTask,
+            'countAr' => $countAr,
+            'countEval' => $countEval,
+            'countActReminder' => $countActReminder,
+            1 => $countEval,
+            3 => $countAr,
+            5 => $countActReminder,
+        ];
     }
 
     public static function TaskFilterType($ref_document_type_id,$role=[],$filter_type)
