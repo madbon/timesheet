@@ -375,7 +375,17 @@ class UserManagementController extends Controller
         $student_section = ArrayHelper::map(StudentSection::find()->all(), 'section', 'section');
 
         $program = ArrayHelper::map(RefProgram::find()->all(), 'id', 'title');
-        $major =  ArrayHelper::map(ProgramMajor::find()->where(['ref_program_id' => $model->ref_program_id])->all(), 'id', 'title');
+        
+
+        if(ProgramMajor::find()->where(['ref_program_id' => $model->ref_program_id])->exists())
+        {
+            $major =  ArrayHelper::map(ProgramMajor::find()->where(['ref_program_id' => $model->ref_program_id])->all(), 'id', 'title');
+        }
+        else
+        {
+            $major =  ['not_applicable' => '-- NOT APPLICABLE --'];
+            $model->ref_program_major_id = 'not_applicable';
+        }
 
         $position = ArrayHelper::map(Position::find()->all(), 'id', 'position');
         $department = ArrayHelper::map(Department::find()->all(), 'id', 'title');
