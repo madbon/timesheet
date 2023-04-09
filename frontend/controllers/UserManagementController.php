@@ -31,6 +31,8 @@ use yii\data\ActiveDataProvider;
 use yii\helpers\Json;
 use yii\widgets\ActiveForm;
 use yii\web\Response;
+use yii\web\View;
+use yii\helpers\Url;
 use Yii;
 
 /**
@@ -89,7 +91,12 @@ class UserManagementController extends Controller
                         'roles' => ['user-management-create-trainee','user-management-create-ojt-coordinator','user-management-create-company-supervisor','user-management-create-administrator'],
                     ],
                     [
-                        'actions' => ['company-json','update-my-account','upload-my-signature'],
+                        'actions' => ['register-face'],
+                        'allow' => true,
+                        'roles' => ['user-management-register-face'],
+                    ],
+                    [
+                        'actions' => ['company-json','update-my-account','upload-my-signature','register-image','preview-captured-photo','delete-face-photo'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -102,6 +109,130 @@ class UserManagementController extends Controller
                 ],
             ],
         ];
+    }
+
+    public function actionDeleteFacePhoto($id)
+    {
+        $file = Files::findOne(['id' => $id]);
+
+        if ($file !== null) {
+            $filePath = 'uploads/' . $file->file_hash . '.' . $file->extension;
+
+            if ($file->delete()) {
+                if (file_exists($filePath)) {
+                    @unlink($filePath);
+                }
+                Yii::$app->session->setFlash('success', 'Image deleted successfully.');
+            } else {
+                Yii::$app->session->setFlash('error', 'Error deleting file. Please try again.');
+            }
+        } else {
+            throw new \yii\web\NotFoundHttpException('File not found.');
+        }
+
+        return $this->redirect(Yii::$app->request->referrer);
+    }
+
+    public function actionPreviewCapturedPhoto($id)
+    {
+        $file = Files::find()
+        ->where(['id' => $id])
+        ->one();
+        // ->createCommand()->rawSql;
+
+
+        if ($file !== null) {
+            $filePath = Url::to('@backend/web/uploads/' . $file->file_hash);
+
+            if (file_exists($filePath)) {
+                return Yii::$app->response->sendFile($filePath, $file->file_name, ['inline' => true]);
+            } else {
+                throw new \yii\web\NotFoundHttpException('File not found.');
+            }
+        } else {
+            throw new \yii\web\NotFoundHttpException('File not found.');
+        }
+    }
+
+    public function actionRegisterImage()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $request = Yii::$app->request;
+
+        // Get the user ID from POST data
+        $userId = $request->post('user_id');
+
+        $imageData = Yii::$app->request->post('imageData');
+        $imagePath = null;
+
+        if ($imageData) {
+            $imagePath = $this->saveCapturedImage($imageData);
+
+        }
+
+        
+
+        if ($imagePath) {
+            date_default_timezone_set('Asia/Manila');
+            // Save the captured image data to the table_file
+            $file = new Files();
+            $file->model_name = "UserFacialRegister";
+            $file->file_name = basename($imagePath);
+            $file->extension = pathinfo($imagePath, PATHINFO_EXTENSION);
+            $file->file_hash = basename($imagePath);
+            $file->user_id = $userId;
+            $file->model_id = $userId;
+            $file->created_at = time();
+            $file->save(false);
+
+            // if($file->save())
+            // {
+                return [
+                    'success' => true,
+                    'user_id' => $userId, // Return the user_id
+                    // 'error' => $file->errors
+                ];
+                
+            // }
+            // else
+            // {
+            //     return [
+            //         'success' => false,
+            //         'message' => $userId,
+            //     ];
+            // }
+
+            
+        }
+        else
+        {
+            return [
+                'success' => false,
+                'message' => 'Something wrong',
+            ];
+        }
+        
+    }
+
+    public function actionRegisterFace($user_id)
+    {
+        $model = new UserData();
+
+        $userModel = UserData::find()->where(['id' => $user_id])->one();
+
+        $fileModel = Files::find()->where(['model_id' => $user_id, 'model_name' => 'UserFacialRegister'])->all();
+
+        return $this->render('register_face',['model' => $model, 'user_id' => $user_id, 'userModel' => $userModel,'fileModel' => $fileModel,]);
+    }
+
+    private function saveCapturedImage($imageData)
+    {
+        $data = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $imageData));
+        $imageName = uniqid() . '.png';
+        $imagePath = Yii::getAlias('@backend/web/uploads/') . $imageName;
+        file_put_contents($imagePath, $data);
+        return $imagePath;
     }
 
     public function actionCompanyJson($q = null)

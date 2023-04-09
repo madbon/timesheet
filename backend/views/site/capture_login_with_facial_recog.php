@@ -18,6 +18,9 @@ table.table tbody tr td
 {
     padding:0;
 }
+.mirrored {
+    transform: scaleX(-1);
+}
 </style>
 
 <center>
@@ -37,7 +40,7 @@ table.table tbody tr td
                     <tr>
                         <td>
                             <!-- <video id="video" width="300" height="224" autoplay></video> -->
-                            <video id="video" width="600" height="550" autoplay></video>
+                            <video id="video" width="600" height="550" class="mirrored" autoplay></video>
                         </td>
                         <td>
                             <!-- <canvas id="canvas" width="300" height="224" style="border:1px solid black;"></canvas> -->

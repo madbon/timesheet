@@ -333,8 +333,25 @@ $this->params['breadcrumbs'][] = $this->title;
                     // ],
                     [
                         'class' => ActionColumn::className(),
-                        'template' => '{timesheet} {esig} {view} {update} {delete}',
+                        'template' => '{regface} {timesheet} {esig} {view} {update} {delete}',
                         'buttons' => [
+                            'regface' => function ($url, $model) {
+                                if(Yii::$app->user->can('user-management-register-face'))
+                                {
+                                    if($model->authAssignment->item_name == "Trainee")
+                                    {
+                                        if(Yii::$app->getModule('admin')->haveFaceRegistered($model->id))
+                                        {
+                                            return Html::a('<i class="fas fa-pencil-alt"></i> Face',['register-face','user_id' => $model->id],['class' => 'btn btn-primary btn-sm','target' => '_blank']);
+                                        }
+                                        else
+                                        {
+                                            return Html::a('<i class="fas fa-plus"></i> Register Face',['register-face','user_id' => $model->id],['class' => 'btn btn-secondary btn-sm','target' => '_blank']);
+                                        }
+                                        
+                                    }
+                                }
+                            },
                             'timesheet' => function ($url, $model) {
                                 if(Yii::$app->user->can('view-other-timesheet'))
                                 {

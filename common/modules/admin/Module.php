@@ -32,6 +32,18 @@ class Module extends \yii\base\Module
         // custom initialization code goes here
     }
 
+    public static function haveFaceRegistered($user_id)
+    {
+       if(Files::find()->where(['model_id' => $user_id, 'model_name' => 'UserFacialRegister'])->exists())
+       {
+            return 1;
+       }
+       else
+       {
+            return 0;
+       }
+    }
+
     public static function submissionThreadSeen()
     {
 
