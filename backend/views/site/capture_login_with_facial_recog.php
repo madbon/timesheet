@@ -20,6 +20,7 @@ table.table tbody tr td
 }
 </style>
 
+<center>
 <div>
     <div class="container" style="margin-top:20px;">
         <div class="d-flex justify-content-center align-items-center">
@@ -97,7 +98,7 @@ table.table tbody tr td
         
     </div>
 </div>
-
+</center>
 <?php
 $this->registerJs(<<<JS
     async function loadModels() {
