@@ -680,7 +680,7 @@ use yii\helpers\Url;
                 <td colspan="5" style="border-top:none; border-left:none; border-right:none; font-weight:bold;">SUMMARY OF HOURS RENDERED</td>
             </tr>
 
-            <?php if($totalJan){ ?>
+            <?php if($jan_total){ ?>
             <tr>
                 <td>JANUARY</td>
                 <td><?= $totalJan. " hr/s ".$jan_total." min/s "; ?></td>
@@ -690,7 +690,7 @@ use yii\helpers\Url;
             </tr>
             <?php } ?>
 
-            <?php if($totalFeb){ ?>
+            <?php if($feb_total){ ?>
             <tr>
                 <td>FEBRUARY</td>
                 <td><?= $totalFeb. " hr/s ".$feb_total." min/s "; ?></td>
@@ -700,7 +700,7 @@ use yii\helpers\Url;
             </tr>
             <?php } ?>
 
-            <?php if($totalMarch){ ?>
+            <?php if($march_total){ ?>
             <tr>
                 <td>MARCH</td>
                 <td><?= $totalMarch. " hr/s ".$march_total." min/s "; ?></td>
@@ -710,7 +710,7 @@ use yii\helpers\Url;
             </tr>
             <?php } ?>
 
-            <?php if($totalApril){ ?>
+            <?php if($april_total){ ?>
             <tr>
                 <td>APRIL</td>
                 <td><?= $totalApril. " hr/s ".$april_total." min/s "; ?></td>
@@ -720,7 +720,7 @@ use yii\helpers\Url;
             </tr>
             <?php } ?>
 
-            <?php if($totalMay){ ?>
+            <?php if($may_total){ ?>
             <tr>
                 <td>MAY</td>
                 <td><?= $totalMay. " hr/s ".$may_total." min/s "; ?></td>
@@ -730,7 +730,7 @@ use yii\helpers\Url;
             </tr>
             <?php } ?>
 
-            <?php if($totalJune){ ?>
+            <?php if($june_total){ ?>
             <tr>
                 <td>JUNE</td>
                 <td><?= $totalJune. " hr/s ".$june_total." min/s "; ?></td>
@@ -740,7 +740,7 @@ use yii\helpers\Url;
             </tr>
             <?php } ?>
 
-            <?php if($totalJuly){ ?>
+            <?php if($july_total){ ?>
             <tr>
                 <td>JULY</td>
                 <td><?= $totalJuly. " hr/s ".$july_total." min/s "; ?></td>
@@ -750,7 +750,7 @@ use yii\helpers\Url;
             </tr>
             <?php } ?>
 
-            <?php if($totalAug){ ?>
+            <?php if($aug_total){ ?>
             <tr>
                 <td>AUGUST</td>
                 <td><?= $totalAug. " hr/s ".$aug_total." min/s "; ?></td>
@@ -760,7 +760,7 @@ use yii\helpers\Url;
             </tr>
             <?php } ?>
 
-            <?php if($totalSept){ ?>
+            <?php if($sept_total){ ?>
             <tr>
                 <td>SEPTEMBER</td>
                 <td><?= $totalSept. " hr/s ".$sept_total." min/s "; ?></td>
@@ -770,7 +770,7 @@ use yii\helpers\Url;
             </tr>
             <?php } ?>
 
-            <?php if($totalOct){ ?>
+            <?php if($oct_total){ ?>
             <tr>
                 <td>OCTOBER</td>
                 <td><?= $totalOct. " hr/s ".$oct_total." min/s "; ?></td>
@@ -780,7 +780,7 @@ use yii\helpers\Url;
             </tr>
             <?php } ?>
 
-            <?php if($totalNov){ ?>
+            <?php if($nov_total){ ?>
             <tr>
                 <td>NOVEMBER</td>
                 <td><?= $totalNov. " hr/s ".$nov_total." min/s "; ?></td>
@@ -790,7 +790,7 @@ use yii\helpers\Url;
             </tr>
             <?php } ?>
 
-            <?php if($totalDec){ ?>
+            <?php if($dec_total){ ?>
             <tr>
                 <td>DECEMBER</td>
                 <td><?= $totalDec. " hr/s ".$dec_total." min/s "; ?></td>

@@ -271,6 +271,9 @@ class UserTimesheetController extends Controller
         ->groupBy(['month'])
         ->orderBy(['MONTH(date)' => SORT_ASC])
         ->all();
+        // ->createCommand()->rawSql;
+
+        // print_r($queryMonth); exit;
 
         $queryYear = UserTimesheet::find()
         ->select([new \yii\db\Expression('YEAR(date) as year')])
