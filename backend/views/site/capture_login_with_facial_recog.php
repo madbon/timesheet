@@ -44,7 +44,7 @@ table.table tbody tr td
                         </td>
                         <td>
                             <!-- <canvas id="canvas" width="300" height="224" style="border:1px solid black;"></canvas> -->
-                            <canvas id="canvas" width="600" height="450" style="border:1px solid black;"></canvas>
+                            <canvas id="canvas" width="600" height="450" style="border:1px solid black;" class="mirrored"></canvas>
                         </td>
                     </tr>
                     <tr>
