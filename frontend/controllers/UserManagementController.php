@@ -27,12 +27,15 @@ use yii\helpers\ArrayHelper;
 use yii\filters\AccessControl;
 use yii\web\ForbiddenHttpException;
 use common\components\PdfWidget;
+use frontend\models\UploadExcel;
 use yii\data\ActiveDataProvider;
 use yii\helpers\Json;
 use yii\widgets\ActiveForm;
 use yii\web\Response;
 use yii\web\View;
 use yii\helpers\Url;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use common\models\UserImport;
 use Yii;
 
 /**
@@ -96,7 +99,7 @@ class UserManagementController extends Controller
                         'roles' => ['user-management-register-face'],
                     ],
                     [
-                        'actions' => ['company-json','update-my-account','upload-my-signature','register-image','preview-captured-photo','delete-face-photo'],
+                        'actions' => ['company-json','update-my-account','upload-my-signature','register-image','preview-captured-photo','delete-face-photo','import-trainees','save-imported-trainees'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -109,6 +112,63 @@ class UserManagementController extends Controller
                 ],
             ],
         ];
+    }
+
+    public function actionImportTrainees()
+    {
+        $model = new UploadExcel();
+
+        if (Yii::$app->request->isPost) {
+            $model->file = UploadedFile::getInstance($model, 'file');
+            if ($model->upload()) {
+                $inputFileName = 'uploads/' . $model->file->name;
+                $spreadsheet = IOFactory::load($inputFileName);
+                $worksheet = $spreadsheet->getActiveSheet();
+                $rows = $worksheet->toArray();
+
+                // Assuming the first row contains the headers
+
+                // echo "<pre>";
+                
+                array_shift($rows);
+
+                foreach ($rows as $row) {
+                    $student = new UserImport();
+                    $student->fname = $row[0];
+                    $student->mname = $row[1];
+                    $student->sname = $row[2];
+                    $student->student_idno = $row[3];
+                    // $student->save();
+                }
+
+                // print_r($rows); exit;
+
+                Yii::$app->session['imported_trainees'] = $rows;
+
+                return $this->render('import_result', ['rows' => $rows]);
+            }
+        }
+
+        return $this->render('import_trainees', ['model' => $model]);
+    }
+
+    public function actionSaveImportedTrainees()
+    {
+        $rows = Yii::$app->session['imported_trainees'];
+
+        foreach ($rows as $row) {
+            $student = new UserImport();
+            $student->fname = $row[0];
+            $student->mname = $row[1];
+            $student->sname = $row[2];
+            $student->student_idno = $row[3];
+            $student->username = $row[3];
+            $student->email = $row[3].'@gm.com';
+            $student->save();
+        }
+
+        Yii::$app->session->setFlash('success', 'Imported Successfully');
+        return $this->render('import_result', ['rows' => $rows]);
     }
 
     public function actionDeleteFacePhoto($id)
