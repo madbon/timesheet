@@ -45,11 +45,11 @@ table.table tbody tr td
                     <tr>
                         <td>
                             <!-- <video id="video" width="300" height="224" autoplay></video> -->
-                            <video id="video" width="600" height="550" class="mirrored" autoplay></video>
+                            <video id="video" width="600" height="550"  autoplay></video>
                         </td>
                         <td>
                             <!-- <canvas id="canvas" width="300" height="224" style="border:1px solid black;"></canvas> -->
-                            <canvas id="canvas" width="600" height="450" style="border:1px solid black;" class="mirrored"></canvas>
+                            <canvas id="canvas" width="600" height="450" style="border:1px solid black;" ></canvas>
                         </td>
                     </tr>
                     <tr>
