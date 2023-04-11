@@ -52,6 +52,7 @@ return [
             ],
         ],
     ],
-    'defaultRoute' => 'site/capture-login-with-facial-recog',
+    // 'defaultRoute' => 'site/capture-login-with-facial-recog',
+    'defaultRoute' => 'site/capture-login-no-facial-recog',
     'params' => $params,
 ];

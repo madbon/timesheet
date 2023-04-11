@@ -29,7 +29,7 @@ table.table tbody tr td
 <div>
     <div class="container" style="margin-top:20px;">
     <p style="text-align: left; padding-left:30px;">
-    <?= Html::a('<i class="fas fa-arrow-left"></i> BACK',['/capture-login-with-facial-recog'],['class' => 'btn btn-outline-danger btn-lg']); ?>
+    <?php // Html::a('<i class="fas fa-arrow-left"></i> BACK',['/capture-login-with-facial-recog'],['class' => 'btn btn-outline-danger btn-lg']); ?>
     </p>
         <div class="d-flex justify-content-center align-items-center">
             <?php  
