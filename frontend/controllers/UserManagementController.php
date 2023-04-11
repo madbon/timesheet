@@ -99,7 +99,7 @@ class UserManagementController extends Controller
                         'roles' => ['user-management-register-face'],
                     ],
                     [
-                        'actions' => ['company-json','update-my-account','upload-my-signature','register-image','preview-captured-photo','delete-face-photo','import-trainees','save-imported-trainees'],
+                        'actions' => ['company-json','update-my-account','upload-my-signature','register-image','preview-captured-photo','delete-face-photo','import-trainees','save-imported-trainees','download-template'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -114,7 +114,27 @@ class UserManagementController extends Controller
         ];
     }
 
-    public function actionImportTrainees()
+    public function actionDownloadTemplate()
+    {
+        $fileName = 'trainees_import_template.xlsx';
+        $filePath = Yii::getAlias('@frontend/web/excel_template/') . $fileName;
+
+        if (file_exists($filePath)) {
+            // Set headers for download
+            header('Content-Type: application/vnd.ms-excel');
+            header('Content-Disposition: attachment;filename="' . $fileName . '"');
+            header('Cache-Control: max-age=0');
+
+            // Send the file
+            readfile($filePath);
+        } else {
+            throw new \yii\web\NotFoundHttpException("The template file does not exist.");
+        }
+        
+        exit;
+    }
+
+    public function actionImportTrainees($program_id = null)
     {
         $model = new UploadExcel();
 
@@ -131,44 +151,66 @@ class UserManagementController extends Controller
                 // echo "<pre>";
                 
                 array_shift($rows);
-
-                foreach ($rows as $row) {
-                    $student = new UserImport();
-                    $student->fname = $row[0];
-                    $student->mname = $row[1];
-                    $student->sname = $row[2];
-                    $student->student_idno = $row[3];
-                    // $student->save();
-                }
-
+                
                 // print_r($rows); exit;
 
                 Yii::$app->session['imported_trainees'] = $rows;
+                // Yii::$app->session['program_course'] = $program_id;
 
-                return $this->render('import_result', ['rows' => $rows]);
+                return $this->render('import_result', ['rows' => $rows,'program_id' => $program_id]);
             }
         }
 
-        return $this->render('import_trainees', ['model' => $model]);
+        return $this->render('import_trainees', ['model' => $model,'program_id' => $program_id]);
     }
 
-    public function actionSaveImportedTrainees()
+    public function actionSaveImportedTrainees($program_id)
     {
         $rows = Yii::$app->session['imported_trainees'];
+        $program = Yii::$app->session['program_course'];
 
         foreach ($rows as $row) {
             $student = new UserImport();
-            $student->fname = $row[0];
-            $student->mname = $row[1];
-            $student->sname = $row[2];
-            $student->student_idno = $row[3];
-            $student->username = $row[3];
-            $student->email = $row[3].'@gm.com';
-            $student->save();
+            $student->student_idno = $row[0];
+            $student->fname = $row[1];
+            $student->mname = $row[2];
+            $student->sname = $row[3];
+            $student->suffix = $row[4];
+            $student->bday = $row[5];
+            $student->sex = $row[6];
+            $student->mobile_no = $row[7];
+            $student->address = $row[8];
+            $student->ref_program_id =$program_id;
+            $student->ref_program_major_id = Yii::$app->getModule('admin')->getMajorCode($row[9],$program_id);
+            $student->student_year = $row[10];
+            $student->student_section = $row[11];
+            $student->email = $row[12];
+            
+            // $student->ref_program_id = $row[12];
+
+            $student->username = $row[0];
+            $student->password_hash = Yii::$app->security->generatePasswordHash($row[0]);
+
+            if($student->save())
+            {
+                $student_id = $student->id;
+                $authAssignment = new AuthAssignment();
+                $authAssignment->item_name = 'Trainee';
+                $authAssignment->user_id = $student_id;
+                $authAssignment->save(false);
+            }
         }
 
+    //     $student = new UserImport();
+    //     $student->student_idno = $row[0];
+    //     $student->fname = $row[1];
+    //     $student->mname = $row[2];
+    //     $student->sname = $row[3];
+    //     $student->bday = $row
+    // // getMajorCode($major_abbrev,$program_id)
+
         Yii::$app->session->setFlash('success', 'Imported Successfully');
-        return $this->render('import_result', ['rows' => $rows]);
+        return $this->redirect(['index']);
     }
 
     public function actionDeleteFacePhoto($id)

@@ -10,6 +10,8 @@ use common\models\DocumentType;
 use common\models\SubmissionThread;
 use common\models\SubmissionThreadSeen;
 use common\models\CoordinatorPrograms;
+use common\models\ProgramMajor;
+use common\models\RefProgram;
 use Yii;
 
 /**
@@ -30,6 +32,20 @@ class Module extends \yii\base\Module
         parent::init();
 
         // custom initialization code goes here
+    }
+
+    public static function getProgram($program_id)
+    {
+        $query = RefProgram::find()->where(['id' => $program_id])->one();
+
+        return !empty($query->title) ? $query->title : NULL;
+    }
+
+    public static function getMajorCode($major_abbrev,$program_id)
+    {
+        $query = ProgramMajor::find()->where(['abbreviation' => $major_abbrev, 'ref_program_id' => $program_id])->one();
+
+        return !empty($query->id) ? $query->id : NULL;
     }
 
     public static function haveFaceRegistered($user_id)
