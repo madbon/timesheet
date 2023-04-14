@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 06, 2023 at 11:23 AM
+-- Generation Time: Apr 14, 2023 at 02:37 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -36,6 +36,13 @@ CREATE TABLE `announcement` (
   `date_time` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `announcement`
+--
+
+INSERT INTO `announcement` (`id`, `viewer_type`, `user_id`, `content_title`, `content`, `date_time`) VALUES
+(1, 'assigned_program', 37, '', 'Be ready to your thesis defense on Wednesday. Good luck.', '2023-04-09 23:25:05');
+
 -- --------------------------------------------------------
 
 --
@@ -47,6 +54,13 @@ CREATE TABLE `announcement_program_tags` (
   `announcement_id` int(11) DEFAULT NULL,
   `ref_program_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `announcement_program_tags`
+--
+
+INSERT INTO `announcement_program_tags` (`id`, `announcement_id`, `ref_program_id`) VALUES
+(1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -71,13 +85,21 @@ INSERT INTO `auth_assignment` (`item_name`, `user_id`, `created_at`) VALUES
 ('CompanySupervisor', '38', NULL),
 ('CompanySupervisor', '41', NULL),
 ('CompanySupervisor', '47', NULL),
+('OjtCoordinator', '37', NULL),
 ('OjtCoordinator', '42', NULL),
 ('OjtCoordinator', '43', NULL),
 ('OjtCoordinator', '45', NULL),
 ('Trainee', '35', NULL),
-('Trainee', '37', NULL),
 ('Trainee', '44', NULL),
-('Trainee', '46', NULL);
+('Trainee', '46', NULL),
+('Trainee', '64', NULL),
+('Trainee', '65', NULL),
+('Trainee', '66', NULL),
+('Trainee', '67', NULL),
+('Trainee', '68', NULL),
+('Trainee', '69', NULL),
+('Trainee', '70', NULL),
+('Trainee', '71', NULL);
 
 -- --------------------------------------------------------
 
@@ -164,6 +186,7 @@ INSERT INTO `auth_item` (`name`, `type`, `description`, `rule_name`, `data`, `cr
 ('user-management-delete-role-assigned', 2, '', NULL, NULL, NULL, NULL),
 ('user-management-index', 2, '', NULL, NULL, NULL, NULL),
 ('USER-MANAGEMENT-MODULE', 2, 'access to all permissions of user management', NULL, NULL, NULL, NULL),
+('user-management-register-face', 2, '', NULL, NULL, NULL, NULL),
 ('user-management-update', 2, '', NULL, NULL, NULL, NULL),
 ('user-management-upload-file', 2, '', NULL, NULL, NULL, NULL),
 ('user-management-view', 2, '', NULL, NULL, NULL, NULL),
@@ -220,6 +243,7 @@ INSERT INTO `auth_item_child` (`parent`, `child`) VALUES
 ('Administrator', 'settings-user-accounts-form-reference-container'),
 ('Administrator', 'upload-others-esig'),
 ('Administrator', 'USER-MANAGEMENT-MODULE'),
+('Administrator', 'user-management-register-face'),
 ('Administrator', 'view-column-course-program'),
 ('Administrator', 'view-other-timesheet'),
 ('CompanySupervisor', 'access-trainee-index'),
@@ -264,6 +288,7 @@ INSERT INTO `auth_item_child` (`parent`, `child`) VALUES
 ('OjtCoordinator', 'user-management-delete'),
 ('OjtCoordinator', 'user-management-delete-role-assigned'),
 ('OjtCoordinator', 'user-management-index'),
+('OjtCoordinator', 'user-management-register-face'),
 ('OjtCoordinator', 'user-management-update'),
 ('OjtCoordinator', 'user-management-upload-file'),
 ('OjtCoordinator', 'user-management-view'),
@@ -322,7 +347,8 @@ INSERT INTO `coordinator_programs` (`id`, `user_id`, `ref_program_id`, `ref_prog
 (3, 42, 2, NULL),
 (4, 43, 3, NULL),
 (9, 45, 1, NULL),
-(10, 45, 2, NULL);
+(10, 45, 2, NULL),
+(11, 37, 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -340,8 +366,43 @@ CREATE TABLE `files` (
   `file_hash` varchar(150) DEFAULT NULL,
   `remarks` text DEFAULT NULL,
   `created_at` int(11) DEFAULT NULL,
-  `user_timesheet_time` time DEFAULT NULL
+  `user_timesheet_time` time DEFAULT NULL,
+  `user_timesheet_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data for table `files`
+--
+
+INSERT INTO `files` (`id`, `user_id`, `model_name`, `model_id`, `file_name`, `extension`, `file_hash`, `remarks`, `created_at`, `user_timesheet_time`, `user_timesheet_id`) VALUES
+(124, 35, 'UserFacialRegister', 35, '6434e9060fc6f.png', 'png', '6434e9060fc6f.png', NULL, 1681189126, NULL, NULL),
+(125, 35, 'UserFacialRegister', 35, '6434e9778d9c7.png', 'png', '6434e9778d9c7.png', NULL, 1681189239, NULL, NULL),
+(126, 35, 'UserFacialRegister', 35, '6434e9956dbf2.png', 'png', '6434e9956dbf2.png', NULL, 1681189269, NULL, NULL),
+(127, 35, 'UserFacialRegister', 35, '6434e9bf67a0b.png', 'png', '6434e9bf67a0b.png', NULL, 1681189311, NULL, NULL),
+(128, 35, 'UserFacialRegister', 35, '6434e9d411d0c.png', 'png', '6434e9d411d0c.png', NULL, 1681189332, NULL, NULL),
+(129, 46, 'UserFacialRegister', 46, '6434ea0b655d8.png', 'png', '6434ea0b655d8.png', NULL, 1681189387, NULL, NULL),
+(130, 46, 'UserFacialRegister', 46, '6434ea0eec953.png', 'png', '6434ea0eec953.png', NULL, 1681189390, NULL, NULL),
+(131, 46, 'UserFacialRegister', 46, '6434ea127bb90.png', 'png', '6434ea127bb90.png', NULL, 1681189394, NULL, NULL),
+(132, 46, 'UserFacialRegister', 46, '6434ea15957b6.png', 'png', '6434ea15957b6.png', NULL, 1681189397, NULL, NULL),
+(133, 46, 'UserFacialRegister', 46, '6434ea18a66b2.png', 'png', '6434ea18a66b2.png', NULL, 1681189400, NULL, NULL),
+(134, 46, 'UserFacialRegister', 46, '6434ea1dc737f.png', 'png', '6434ea1dc737f.png', NULL, 1681189405, NULL, NULL),
+(135, 46, 'UserFacialRegister', 46, '6434eaa607e01.png', 'png', '6434eaa607e01.png', NULL, 1681189542, NULL, NULL),
+(136, 35, 'UserFacialRegister', 35, '6434eb2408329.png', 'png', '6434eb2408329.png', NULL, 1681189668, NULL, NULL),
+(137, 35, 'UserFacialRegister', 35, '6434eb3c2e9dd.png', 'png', '6434eb3c2e9dd.png', NULL, 1681189692, NULL, NULL),
+(138, 35, 'UserFacialRegister', 35, '6434eb3fc6397.png', 'png', '6434eb3fc6397.png', NULL, 1681189695, NULL, NULL),
+(143, 46, 'UserFacialRegister', 46, '6434eba880710.png', 'png', '6434eba880710.png', NULL, 1681189800, NULL, NULL),
+(144, 46, 'UserFacialRegister', 46, '6434ebe297cff.png', 'png', '6434ebe297cff.png', NULL, 1681189858, NULL, NULL),
+(145, 46, 'UserFacialRegister', 46, '6434ebe7e5d65.png', 'png', '6434ebe7e5d65.png', NULL, 1681189863, NULL, NULL),
+(146, 46, 'UserFacialRegister', 46, '6434ebec059fd.png', 'png', '6434ebec059fd.png', NULL, 1681189868, NULL, NULL),
+(147, 46, 'UserTimesheet', 46, '6434ec6e27829.png', 'png', '6434ec6e27829.png', NULL, 1681189998, '13:13:18', 14),
+(148, 35, 'UserTimesheet', 35, '6434eca67785d.png', 'png', '6434eca67785d.png', NULL, 1681190054, '13:14:14', 15),
+(151, 35, 'UserTimesheet', 35, '6434eebb157d8.png', 'png', '6434eebb157d8.png', NULL, 1681190587, '13:23:07', 15),
+(152, 35, 'UserTimesheet', 35, '6434eed375374.png', 'png', '6434eed375374.png', NULL, 1681190611, '13:23:31', 16),
+(153, 35, 'UserTimesheet', 35, '643500922e17d.png', 'png', '643500922e17d.png', NULL, 1681195154, '14:39:14', 16),
+(154, 35, 'UserTimesheet', 35, '643763c774d27.png', 'png', '643763c774d27.png', NULL, 1681351623, '10:07:03', 17),
+(155, 35, 'UserTimesheet', 35, '643764644223c.png', 'png', '643764644223c.png', NULL, 1681351780, '10:09:40', 17),
+(156, 35, 'UserTimesheet', 35, '6437647a144d5.png', 'png', '6437647a144d5.png', NULL, 1681351802, '10:10:02', 18),
+(157, 35, 'UserTimesheet', 35, '64376499b9d0e.png', 'png', '64376499b9d0e.png', NULL, 1681351833, '10:10:33', 18);
 
 -- --------------------------------------------------------
 
@@ -529,8 +590,7 @@ CREATE TABLE `ref_program_major` (
 --
 
 INSERT INTO `ref_program_major` (`id`, `ref_program_id`, `title`, `abbreviation`) VALUES
-(1, 1, 'Computer Programming', 'CP'),
-(2, 1, 'Information System', 'IS');
+(3, 1, 'Network and Web Application', 'NW');
 
 -- --------------------------------------------------------
 
@@ -604,6 +664,15 @@ CREATE TABLE `submission_thread` (
   `date_time` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `submission_thread`
+--
+
+INSERT INTO `submission_thread` (`id`, `user_id`, `tagged_user_id`, `subject`, `remarks`, `ref_document_type_id`, `created_at`, `date_time`) VALUES
+(1, 35, NULL, NULL, 'AR for April', 3, 1681051540, '2023-04-09 22:45:40'),
+(2, 44, NULL, NULL, 'Hello', 3, 1681053264, '2023-04-09 23:14:24'),
+(3, 38, 44, NULL, 'Please see the attached file', 1, 1681053320, '2023-04-09 23:15:20');
+
 -- --------------------------------------------------------
 
 --
@@ -616,6 +685,13 @@ CREATE TABLE `submission_thread_seen` (
   `user_id` int(11) DEFAULT NULL,
   `date_time` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `submission_thread_seen`
+--
+
+INSERT INTO `submission_thread_seen` (`id`, `submission_thread_id`, `user_id`, `date_time`) VALUES
+(1, 3, 37, '2023-04-09 23:16:36');
 
 -- --------------------------------------------------------
 
@@ -681,7 +757,7 @@ CREATE TABLE `user` (
 
 INSERT INTO `user` (`id`, `student_idno`, `student_year`, `student_section`, `ref_program_id`, `ref_program_major_id`, `ref_department_id`, `ref_position_id`, `fname`, `mname`, `sname`, `suffix`, `bday`, `sex`, `username`, `auth_key`, `password_hash`, `password_reset_token`, `email`, `mobile_no`, `tel_no`, `address`, `status`, `created_at`, `updated_at`, `verification_token`) VALUES
 (2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Juan', 'Reyes', 'Dela Cruz', NULL, '1995-10-12', 'M', 'admin', 'mLv-KdIB84pIgOrOKnopaaXc51uQml-_', '$2y$13$Mg3jk2B0jWku6FC8vR66i.I1HFd.DrEFuPNv9s1z9QTZDF.73ZUv6', NULL, 'admin@gm.com', NULL, '', NULL, 10, 1678168986, 1678168986, 'alqvh-uTo-NSx86JuSUvY_5iG3xkpOQG_1678168986'),
-(35, '120994', 4, 'A', 1, 1, 1, NULL, 'John', '', 'Wick', '', '2005-04-01', 'M', 'trainee', 'AI1i1WwV90rEZNAmjGxS-rTYYrmtxZSy', '$2y$13$wjqWhWecWGBxWDNSErwqQeGbsd7EKKCTtOnDl64kl7q6u/6QybRqi', NULL, 'trainee@gm.com', 1234567890, '2343434', '031 Paris St, Brgy. Pinagbarilan, Bataan City', 10, 0, 0, 'wYE4Gfo3VfeF1blsL_VtQyiZUTrDY96o_1680313003'),
+(35, '120994', 4, 'A', 1, 3, 1, NULL, 'John', '', 'Wick', '', '2005-04-01', 'M', 'johnwick', 'AI1i1WwV90rEZNAmjGxS-rTYYrmtxZSy', '$2y$13$i1T8ERONFUSt2BjuuC4lhu8voClgiPJz.tdJpLuzhUcT5/LiXfdSe', NULL, 'trainee@gm.com', 1234567890, '2343434', '031 Paris St, Brgy. Pinagbarilan, Bataan City', 10, 0, 0, 'wYE4Gfo3VfeF1blsL_VtQyiZUTrDY96o_1680313003'),
 (37, '', NULL, '', NULL, NULL, NULL, NULL, 'Helen', '', 'Wick', '', '2005-03-28', 'F', 'coor', 'kQcZ4MQ_0mncIcJdLY_G3yzqNegC3Udn', '$2y$13$EGGucJYrGZofQvza3X3tmOjxJyCv/hqJRlzso5Knxekwbbi26oddO', NULL, 'coor@gmi.com', 912323232, '23232323', '0934 something st.', 10, 0, 0, '0nXO9Xo1e9juosRRgY7T-h4Leaiq5xB2_1680313634'),
 (38, NULL, NULL, NULL, NULL, NULL, 1, 1, 'Lionelsy', '', 'Wick', '', '2005-03-30', 'M', 'super', 'XM5rIqW7oN9pajeCuNVNPv-OB-hUpEsW', '$2y$13$DCmmrQYvvuf2LjVqVLKp1e/ujon/S0V2ADz8GpdDej9Mvj8oRzvD2', NULL, 'super@gm.com', 912323232, '23232323', '2343 SOmething St.', 10, 0, 0, 'd1UVUsGwsvcpJoAFkw8KUNJaOipQLD3E_1680313693'),
 (39, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Ronaldo', '', 'Wick', 'Sr.', '2004-05-13', 'M', 'admin2', 'WS8Pvipq8dFDWtMSNL52A6SGSp_O0Bsa', '$2y$13$Ius3FGRYNMYEF6t2RVVmjeflXV8sPmfjnaQ8j2NhBE7USqQeSW7T2', NULL, 'admin2@gmi.com', 902343434, '09090234', '90343 something st.', 10, 0, 0, 'CNg0sHuIsRLyeahqrKMrK0818wdExATS_1680313743'),
@@ -689,10 +765,14 @@ INSERT INTO `user` (`id`, `student_idno`, `student_year`, `student_section`, `re
 (41, NULL, NULL, NULL, NULL, NULL, 2, 2, 'super2', '', 'super2', '', '2005-03-31', 'M', 'super2', '0Gzv5hStM575hW4CMIoRuJSpmxTHfFJ7', '$2y$13$CgnUfKZq3kOwxl5otSSRjuq8FKbq4BvzgrzrzRc5TnKOYA1Rvcq7q', NULL, 'super2@gm.com', 901232309, '092434309043', '1343 somewhere st', 10, 0, 0, 'q4S3pbAAw9os3P5Pu7CVAByaz2uStN4__1680316471'),
 (42, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'coor2', '', 'coor2', 'II', '2005-03-31', 'M', 'coor2', 'Q0yEqPX_XTeI0I_ByGttvYKE0i18WMPm', '$2y$13$D/JvM87m5S/tcsHi1RIBfOzJA9c5fHPYy57Q2qMol/yEO.Pel1To6', NULL, 'coor2@gm.com', 901234904, '109023239032323', '12323 somewhere st.', 10, 0, 0, 'gt_BVFGfPbHp4yaicZCjV1CopZSGNVHa_1680316525'),
 (43, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'coor3', '', 'coor3', '', '2005-03-30', 'F', 'coor3', '6WfvkgTJ_yKJgxFgQXkh_xxW23dYNcH4', '$2y$13$ZLQSI3sT9gn4QYkZwIQjRugDV3VZIw7jVi7QhvCib4Py/XUnHS96e', NULL, 'coor3@gm.com', 2147483647, '2343434', '6767 somewhere st.', 10, 0, 0, 'eE8y2WwtERlVjhgtb4VEB2PSNH6fB_lg_1680316634'),
-(44, '120993', 2, 'B', 2, 0, 1, NULL, 'trainee2', 'trainee2', 'trainee2', '', '2005-04-01', 'F', 'trainee2', '2rEZW-2L1SKXcGtQH4WUoRSCSOtMz1EF', '$2y$13$nGNpo6D.zqSGmbx4000fMeGVJApmi2u3I4IY1ZPAFCfAWcvHOyziC', NULL, 'trainee2@gm.com', 912342403, '32535454344', '990 somewhere st.', 10, 0, 0, 'vlVLZ9RDQL34uLDqgL_Iz5RfWOG8MTEF_1680316868'),
+(44, '120993', 4, 'B', 1, 3, 1, NULL, 'Leonardo', '', 'Carpio', '', '2005-04-01', 'F', 'leonardo', '2rEZW-2L1SKXcGtQH4WUoRSCSOtMz1EF', '$2y$13$fQeUXPxCvdcLJa2fwyAUFu8eP6xnpJX5YbAAdBVJ5qhbdMJn7YvRu', NULL, 'trainee2@gm.com', 912342403, '32535454344', '990 somewhere st.', 10, 0, 0, 'vlVLZ9RDQL34uLDqgL_Iz5RfWOG8MTEF_1680316868'),
 (45, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Makie', '', 'Wick', '', '2005-04-01', 'M', 'coor4', 'apTx0SoKm39x1eTPU0_5BbRkElRPbS__', '$2y$13$5BKfl.mrfEj3gW9VXCzqweZq.L3Zp.aeloRR1dQcCHuAEwryh5b3S', NULL, 'coor4@gm.com', 2147483647, '90-2343', '0902 somewhere st.', 10, 0, 0, '2KFGYpUI6W4d1CedkZk_gpKUxtD9-X3M_1680404822'),
-(46, '120995', 4, 'C', 3, 0, 1, NULL, 'Trainee3', '', 'Trainee3', '', '2005-03-08', 'F', 'trainee3', 'PGYJmmpl_4i_kkJXA-g3PFMRw6mO43lC', '$2y$13$aDcU7OHrhPk9BP/KtgqDm.tuskcbZusafl/xSLmbGimNjxbdW7rAq', NULL, 'trainee3@gm.com', 920903290, '123-2323', '94556 somewhere st.', 10, 0, 0, '7y_t9frc6TACW60MjXqPdsfEHc5N80b__1680435026'),
-(47, NULL, NULL, NULL, NULL, NULL, 1, 1, 'super3', '', 'super3', '', '2005-03-31', 'M', 'super3', 'pJep-m_W1QnGSK4v4UOH-uQ3QuoilfVN', '$2y$13$bQMz3mFFWpumnWEifobuhOKPescDJkbOquY.AskHxxtrPcmyxG8hS', NULL, 'super3@gm.com', 912343432, '343-2323', '2344 somewhere st.', 10, 0, 0, 'EPGln7aRFUj56UCoWq0y_zlfWu2F97JV_1680435185');
+(46, '120995', 4, 'C', 2, 0, 1, NULL, 'Myrna', '', 'Reyes', '', '2005-03-08', 'F', 'myrnareyes', 'PGYJmmpl_4i_kkJXA-g3PFMRw6mO43lC', '$2y$13$n2UEn4hRsJ6lWKaxudIPl.8IL/CHm0aSJ5j.izgIiq.RChx9h0Ghy', NULL, 'trainee3@gm.com', 920903290, '123-2323', '94556 somewhere st.', 10, 0, 0, '7y_t9frc6TACW60MjXqPdsfEHc5N80b__1680435026'),
+(47, NULL, NULL, NULL, NULL, NULL, 1, 1, 'super3', '', 'super3', '', '2005-03-31', 'M', 'super3', 'pJep-m_W1QnGSK4v4UOH-uQ3QuoilfVN', '$2y$13$bQMz3mFFWpumnWEifobuhOKPescDJkbOquY.AskHxxtrPcmyxG8hS', NULL, 'super3@gm.com', 912343432, '343-2323', '2344 somewhere st.', 10, 0, 0, 'EPGln7aRFUj56UCoWq0y_zlfWu2F97JV_1680435185'),
+(64, '1209232', 4, 'A', 1, 1, NULL, NULL, 'Rodrigo', 'Roa', 'Duterte', 'Jr.', '0000-00-00', 'M', '1209232', '', '$2y$13$ro64rm1rp4WAV/7/CI7HDOY/xY4AD8cYnkGT5oF1gKXzO09pQ6gTa', NULL, 'duterte@gm.com', 2147483647, '', '033B Somewhere St.', 10, 0, 0, NULL),
+(65, '1209200', 4, 'B', 1, 2, NULL, NULL, 'Leila', NULL, 'De Lima', NULL, '0000-00-00', 'F', '1209200', '', '$2y$13$khcqtiRtXnfnBsx9zwUYV.P8Z3KTivHQnQTygOgADsugN3gX7fFmq', NULL, 'delima@gm.com', 2147483647, '', '031B Somewhere St.', 10, 0, 0, NULL),
+(66, '120990', 4, 'C', 1, 1, NULL, NULL, 'Risa', NULL, 'Hontiveros', NULL, '0000-00-00', 'F', '120990', '', '$2y$13$bVgdLrSkfksFX2yowwiMZOfeGq6RjjumTegt219Bm5nQ3StLJRrna', NULL, 'hontiveros@gm.com', 2147483647, '', '030B Somewhere St.', 10, 0, 0, NULL),
+(67, '19900', 4, 'D', 1, 2, NULL, NULL, 'Leni', 'Gerona', 'Robredro', NULL, '0000-00-00', 'F', '19900', '', '$2y$13$m3Fwk3e/2RXQKJnBJYp4TurCLs4CM3yhrZ75znrZo0idTYcQOBgsa', NULL, 'robredo@gm.com', 2147483647, '', '042B Somewhere St.', 10, 0, 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -743,6 +823,25 @@ CREATE TABLE `user_timesheet` (
   `remarks` varchar(50) DEFAULT NULL,
   `status` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `user_timesheet`
+--
+
+INSERT INTO `user_timesheet` (`id`, `user_id`, `time_in_am`, `time_out_am`, `time_in_pm`, `time_out_pm`, `date`, `remarks`, `status`) VALUES
+(1, 35, NULL, NULL, '18:42:37', '18:48:13', '2023-03-08', NULL, 0),
+(2, 35, NULL, NULL, '18:48:39', '19:27:37', '2023-04-08', NULL, 0),
+(4, 35, '08:11:34', '09:20:41', '19:53:48', '19:57:56', '2023-04-09', NULL, 0),
+(5, 35, NULL, NULL, '22:15:04', NULL, '2023-04-09', NULL, 0),
+(6, 35, NULL, NULL, '22:20:27', '22:24:16', '2023-04-10', NULL, 0),
+(7, 35, NULL, NULL, '22:26:06', '22:26:24', '2023-04-10', NULL, 0),
+(8, 35, NULL, NULL, '12:44:16', '12:44:33', '2023-04-11', NULL, 0),
+(9, 35, NULL, NULL, '12:45:04', '12:56:47', '2023-04-11', NULL, 0),
+(14, 46, NULL, NULL, '13:13:18', NULL, '2023-04-11', NULL, 0),
+(15, 35, NULL, NULL, '13:14:14', '13:23:07', '2023-04-11', NULL, 0),
+(16, 35, NULL, NULL, '13:23:31', '14:39:14', '2023-04-11', NULL, 0),
+(17, 35, '10:07:03', '10:09:40', NULL, NULL, '2023-04-13', NULL, 0),
+(18, 35, '10:10:02', '10:10:33', NULL, NULL, '2023-04-13', NULL, 0);
 
 --
 -- Indexes for dumped tables
@@ -809,7 +908,11 @@ ALTER TABLE `files`
   ADD KEY `id` (`id`),
   ADD KEY `model_id` (`model_id`),
   ADD KEY `created_at` (`created_at`),
-  ADD KEY `model_name` (`model_name`);
+  ADD KEY `model_name` (`model_name`),
+  ADD KEY `file_name` (`file_name`),
+  ADD KEY `extension` (`extension`),
+  ADD KEY `file_hash` (`file_hash`),
+  ADD KEY `user_timesheet_time` (`user_timesheet_time`);
 
 --
 -- Indexes for table `migration`
@@ -972,25 +1075,25 @@ ALTER TABLE `user_timesheet`
 -- AUTO_INCREMENT for table `announcement`
 --
 ALTER TABLE `announcement`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `announcement_program_tags`
 --
 ALTER TABLE `announcement_program_tags`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `coordinator_programs`
 --
 ALTER TABLE `coordinator_programs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `files`
 --
 ALTER TABLE `files`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=158;
 
 --
 -- AUTO_INCREMENT for table `ref_company`
@@ -1032,7 +1135,7 @@ ALTER TABLE `ref_program`
 -- AUTO_INCREMENT for table `ref_program_major`
 --
 ALTER TABLE `ref_program_major`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `submission_reply`
@@ -1044,19 +1147,19 @@ ALTER TABLE `submission_reply`
 -- AUTO_INCREMENT for table `submission_thread`
 --
 ALTER TABLE `submission_thread`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `submission_thread_seen`
 --
 ALTER TABLE `submission_thread_seen`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
 
 --
 -- AUTO_INCREMENT for table `user_company`
@@ -1068,7 +1171,7 @@ ALTER TABLE `user_company`
 -- AUTO_INCREMENT for table `user_timesheet`
 --
 ALTER TABLE `user_timesheet`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- Constraints for dumped tables

@@ -80,13 +80,15 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php } ?>
     </p>
 
+    <?php  $countTask = Yii::$app->getModule('admin')->submissionThreadSeen(); ?>
+
     <p style="text-align: center;">
     <?php foreach ($documentAss as $key => $row) { ?>
         
        <?php 
         if($searchModel->ref_document_type_id == $row['ref_document_type_id'])
         {
-            echo Html::a($row['title'],['index',
+            echo Html::a($row['title'].($countTask[$row['ref_document_type_id']] ? ' ('.$countTask[$row['ref_document_type_id']].')' : ''),['index',
             'SubmissionThreadSearch[ref_document_type_id]' => $row['ref_document_type_id'],
             ],
             [
@@ -97,7 +99,7 @@ $this->params['breadcrumbs'][] = $this->title;
         }
         else
         {
-            echo Html::a($row['title'],['index',
+            echo Html::a($row['title'].($countTask[$row['ref_document_type_id']] ? ' ('.$countTask[$row['ref_document_type_id']].')' : ''),['index',
             'SubmissionThreadSearch[ref_document_type_id]' => $row['ref_document_type_id'],
             ],
             [

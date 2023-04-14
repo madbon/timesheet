@@ -352,7 +352,7 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
                 'visible' => Yii::$app->user->can('announcement-menu'),
             ],
             [
-                'label' => '<i class="fas fa-tasks"></i> Tasks ('.$countTask.')', 'url' => ['/submission-thread/index'], 'active' => Yii::$app->controller->id == "submission-thread" ? true : false,
+                'label' => '<i class="fas fa-tasks"></i> Tasks ('.$countTask['countTask'].')', 'url' => ['/submission-thread/index'], 'active' => Yii::$app->controller->id == "submission-thread" ? true : false,
                 'visible' => Yii::$app->user->can('menu-tasks'),
             ],
             ['label' => '<i class="fas fa-cogs"></i> Settings', 'url' => ['/settings'], 'active' => in_array(Yii::$app->controller->id,[

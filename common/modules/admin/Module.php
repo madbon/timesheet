@@ -10,6 +10,8 @@ use common\models\DocumentType;
 use common\models\SubmissionThread;
 use common\models\SubmissionThreadSeen;
 use common\models\CoordinatorPrograms;
+use common\models\ProgramMajor;
+use common\models\RefProgram;
 use Yii;
 
 /**
@@ -32,6 +34,32 @@ class Module extends \yii\base\Module
         // custom initialization code goes here
     }
 
+    public static function getProgram($program_id)
+    {
+        $query = RefProgram::find()->where(['id' => $program_id])->one();
+
+        return !empty($query->title) ? $query->title : NULL;
+    }
+
+    public static function getMajorCode($major_abbrev,$program_id)
+    {
+        $query = ProgramMajor::find()->where(['abbreviation' => $major_abbrev, 'ref_program_id' => $program_id])->one();
+
+        return !empty($query->id) ? $query->id : NULL;
+    }
+
+    public static function haveFaceRegistered($user_id)
+    {
+       if(Files::find()->where(['model_id' => $user_id, 'model_name' => 'UserFacialRegister'])->exists())
+       {
+            return 1;
+       }
+       else
+       {
+            return 0;
+       }
+    }
+
     public static function submissionThreadSeen()
     {
 
@@ -42,9 +70,12 @@ class Module extends \yii\base\Module
         ->all();
 
         $countTask = 0;
+        $countAr = 0;
+        $countEval = 0;
+        $countActReminder = 0;
         foreach ($documentAssignment as $row) {
             $qrySubThread = SubmissionThread::find()
-            ->select(['submission_thread.id'])
+            ->select(['submission_thread.id','submission_thread.ref_document_type_id'])
             ->joinWith(Yii::$app->getModule('admin')->documentTypeAttrib($row->ref_document_type_id,'enable_tagging') ? 'taggedUser' : 'user')
             ->joinWith('userCompany')
             ->joinWith(['documentAssignment'])
@@ -82,12 +113,35 @@ class Module extends \yii\base\Module
                 ->andWhere(['submission_thread_id' => $thread->id])->exists())
                 {
                     $countTask  += 1;
+                    
+                    if($thread->ref_document_type_id == 1) // Eval Form
+                    {
+                        $countEval += 1;
+                    }
+
+                    if($thread->ref_document_type_id == 3) // Accomplishment Report
+                    {
+                        $countAr += 1;
+                    }
+
+                    if($thread->ref_document_type_id == 5) // Activity Reminder
+                    {
+                        $countActReminder += 1;
+                    }
                 }
             }
             
         }
 
-        return $countTask;
+        return [
+            'countTask' => $countTask,
+            'countAr' => $countAr,
+            'countEval' => $countEval,
+            'countActReminder' => $countActReminder,
+            1 => $countEval,
+            3 => $countAr,
+            5 => $countActReminder,
+        ];
     }
 
     public static function TaskFilterType($ref_document_type_id,$role=[],$filter_type)

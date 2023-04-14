@@ -46,13 +46,14 @@ table.student-details tbody tr td
         //     ['class' => 'btn btn-outline-primary btn-lg', 'style' => 'text-align:center']
         // )
         // . Html::endForm(); 
-        echo Html::a('X',['/site/backtoportal'],['class' => 'btn btn-danger btn-lg']);
+        echo Html::a('<i class="fas fa-times"></i> CLOSE',['/site/backtoportal'],['class' => 'btn btn-outline-danger btn-lg']);
     ?>
 </div>
 
-        <h1 class="display-4">SUCCESS!</h1>
-
+<div style="text-align: center; margin-top:50px;">
+        <h1 class="display-4" style="font-weight:bold; color:#fbbc04;">SUCCESS!</h1>
         <p class="lead">You have successfully recorded your time in/out. You can check it below.</p>
+    </div>
         
 
     </div>
@@ -61,7 +62,7 @@ table.student-details tbody tr td
 
         <div class="row">
             <div class="col-lg-12">
-                <p class="lead" style="font-weight:bold;">TIME IN/OUT DETAILS: <span style="text-align: right; font-weight:normal;"><?= !empty($model->date) ? date('F j, Y',strtotime($model->date)) : "" ?></span></p>
+                <p class="lead" style="font-weight:bold;">TIME IN/OUT DETAILS: <span style="text-align: right; font-weight:normal; font-size:25px; font-weight:bold; text-transform:uppercase;"><?= !empty($model->date) ? date('F j, Y',strtotime($model->date)) : "" ?></span></p>
                 <table class="table table-bordered time-details">
                     <tbody>
                         <tr>
@@ -69,10 +70,10 @@ table.student-details tbody tr td
                             <td colspan="2">PM</td>
                         </tr>
                         <tr>
-                            <td>TIME IN</td>
-                            <td>TIME OUT</td>
-                            <td>TIME IN</td>
-                            <td>TIME OUT</td>
+                            <td style="background:#fbbc04;">TIME IN</td>
+                            <td style="background:#fbbc04;">TIME OUT</td>
+                            <td style="background:#fbbc04;">TIME IN</td>
+                            <td style="background:#fbbc04;">TIME OUT</td>
                         </tr>
 
                         <?php foreach ($timeSheetAll as $row) { ?>
@@ -92,11 +93,11 @@ table.student-details tbody tr td
                     <tbody>
                         <tr>
                             <td colspan="2">STUDENT NO. </td>
-                            <td colspan="2"><?= !empty($model->user->student_idno) ? $model->user->student_idno : "" ?></td>
+                            <td colspan="2" style="font-weight:bold; font-size:20px;"><?= !empty($model->user->student_idno) ? $model->user->student_idno : "" ?></td>
                         </tr>
                         <tr>
                             <td colspan="2">NAME</td>
-                            <td colspan="2"><?= !empty($model->user->userFullName) ? $model->user->userFullName : "" ?></td>
+                            <td colspan="2" style="font-weight:bold; font-size:25px;"><?= !empty($model->user->userFullName) ? $model->user->userFullName : "" ?></td>
                         </tr>
                         <tr>
                             <td>PROGRAM/COURSE</td>

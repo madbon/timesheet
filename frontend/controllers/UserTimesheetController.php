@@ -54,24 +54,26 @@ class UserTimesheetController extends Controller
         ];
     }
 
-    public function actionPreviewPhoto($model_id,$time)
+    public function actionPreviewPhoto($timesheet_id,$time)
     {
-        $query = UserTimesheet::findOne(['id' => $model_id]);
+        $query = UserTimesheet::findOne(['id' => $timesheet_id]);
 
         $formatted_time = !empty($time) ? date('g:i:s A', strtotime($time)) : "";
         return $this->renderAjax('preview_photo',[
-            'model_id' => $model_id,
+            'timesheet_id' => $timesheet_id,
             'time' => $time,
             'formatted_time' => $formatted_time,
             'date' => !empty($query->date) ? $query->date : null,
         ]);
     }
 
-    public function actionPreviewCapturedPhoto($model_id,$time)
+    public function actionPreviewCapturedPhoto($timesheet_id,$time)
     {
         $file = Files::find()
-        ->where(['model_id' => $model_id,'user_timesheet_time' => $time,'model_name' => 'UserTimesheet'])
+        ->where(['user_timesheet_id' => $timesheet_id,'user_timesheet_time' => $time,'model_name' => 'UserTimesheet'])
         ->one();
+        // ->createCommand()->rawSql;
+
 
         if ($file !== null) {
             $filePath = Url::to('@backend/web/uploads/' . $file->file_hash);
@@ -269,6 +271,9 @@ class UserTimesheetController extends Controller
         ->groupBy(['month'])
         ->orderBy(['MONTH(date)' => SORT_ASC])
         ->all();
+        // ->createCommand()->rawSql;
+
+        // print_r($queryMonth); exit;
 
         $queryYear = UserTimesheet::find()
         ->select([new \yii\db\Expression('YEAR(date) as year')])

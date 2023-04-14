@@ -62,7 +62,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <!-- <div class="card-body"> -->
                     <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]) ?>
 
-                    <?= $form->field($modelUpload, 'imageFile')->fileInput(['class' => 'btn btn-outline-primary']) ?>
+                    <?= $form->field($modelUpload, 'imageFile')->fileInput(['class' => 'btn btn-outline-primary'])->label(false) ?>
 
                     <br/>
                     <button class="btn btn-success"><?= Yii::$app->getModule("admin")->GetIcon("upload-cloud") ?> Upload Signature</button>

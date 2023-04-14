@@ -12,7 +12,7 @@ use yii\helpers\FormatConverter;
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
 $this->title = 'Timesheet';
-$this->params['breadcrumbs'][] = $this->title;
+// $this->params['breadcrumbs'][] = $this->title;
 date_default_timezone_set('Asia/Manila');
 ?>
 <style>
@@ -230,138 +230,134 @@ date_default_timezone_set('Asia/Manila');
                         $formatted_in_pm = !empty($model->time_in_pm) ? date('g:i:s A', strtotime($model->time_in_pm)) : "";
                         $formatted_out_pm = !empty($model->time_out_pm) ? date('g:i:s A', strtotime($model->time_out_pm)) : "";
 
+                        $start_time = new DateTime($formatted_in_am);
+                        $end_time = new DateTime($formatted_out_am);
+
+                        $start_time2 = new DateTime($formatted_in_pm);
+                        $end_time2 = new DateTime($formatted_out_pm);
+
+                        $interval = $end_time->diff($start_time);
+                        $interval2 = $end_time2->diff($start_time2);
+
                         if($model->time_in_am && $model->time_out_am && $model->time_in_pm && $model->time_out_pm)
-                        {
-                            $start_time2 = !empty($model->time_in_pm) ? new DateTime($formatted_in_pm) : "";
-                            $end_time2 = !empty($model->time_out_pm) ? new DateTime($formatted_out_pm) : "";
+                        { // 1-1-1-1
 
-                            if(empty($model->time_out_am) && empty($model->time_out_pm))
+                            if(new DateTime($formatted_out_pm) >= new DateTime('12:00 PM') && new DateTime($formatted_out_pm) < new DateTime('1:00 PM'))
                             {
-
+                                $end_time2 = new DateTime('12:00 PM');
                             }
-                            else
+
+                            if(new DateTime($formatted_in_pm) >= new DateTime('12:00 PM') && new DateTime($formatted_out_pm) < new DateTime('1:00 PM'))
+                            { // time_in_pm (between 12 and 12:59pm)
+                                $start_time2 = new DateTime('12:00 PM');
+                                $end_time2 = new DateTime('12:00 PM');
+                            }
+
+                            if(new DateTime($formatted_in_pm) >= new DateTime('12:00 PM') && new DateTime($formatted_out_pm) >= new DateTime('1:00 PM'))
                             {
-                                // if (new DateTime($start_time2->format('g:i A')) >= new DateTime('12:00 PM') && new DateTime( $start_time2->format('g:i A')) <= new DateTime('12:59 PM')) {
-                                //     $start_time2 = new DateTime('1:00 PM');
-                                // }
-                                
-                                // // Check if the end time is between 12:00 PM and 12:59 PM
-                                // if (new DateTime($end_time2->format('g:i A')) >= new DateTime('12:00 PM') && new DateTime($end_time2->format('g:i A')) <= new DateTime('12:59 PM')) {
-                                //     $end_time2 = new DateTime('12:00 PM');
-                                // }
-                                
-                                // // Check if the end time is greater than 1:00 PM
-                                // // print_r($end_time->format('g:i A')); exit;
-    
-                                // if (new DateTime($end_time2->format('g:i A')) >= new DateTime('01:00 PM')) {
-                                //     // Subtract one hour from the end time
-    
-                                //     if(!empty($model->time_in_pm))
-                                //     {
-                                //         $end_time2->modify('-1 hour');
-                                //     }
-                                // }
-                            }
-                            
-
-                            
-
-                            
-                        }
-                        else
-                        {
-                            $start_time = !empty($model->time_in_am) ? new DateTime($formatted_in_am) : new DateTime($formatted_in_pm);
-                            $end_time = !empty($model->time_out_pm) ? new DateTime($formatted_out_pm) : new DateTime($formatted_out_am);
-                            
-                            // Check if the start time is between 12:00 PM and 12:59 PM
-                            if (new DateTime($start_time->format('g:i A')) >= new DateTime('12:00 PM') && new DateTime( $start_time->format('g:i A')) <= new DateTime('12:59 PM')) {
-                                $start_time = new DateTime('1:00 PM');
-                            }
-                            
-                            // Check if the end time is between 12:00 PM and 12:59 PM
-                            if (new DateTime($end_time->format('g:i A')) >= new DateTime('12:00 PM') && new DateTime($end_time->format('g:i A')) <= new DateTime('12:59 PM')) {
-                                $end_time = new DateTime('12:00 PM');
-                            }
-                            
-                            // Check if the end time is greater than 1:00 PM
-                            // print_r($end_time->format('g:i A')); exit;
-                            if (new DateTime($end_time->format('g:i A')) >= new DateTime('01:00 PM')) {
-                                // Subtract one hour from the end time
-
-                                if(!empty($model->time_in_am))
+                                if(new DateTime($formatted_in_pm) > new DateTime('1:00 PM'))
                                 {
-                                    $end_time->modify('-1 hour');
+                                    $start_time2 = new DateTime($formatted_in_pm);
                                 }
+                                else
+                                {
+                                    $start_time2 = new DateTime('01:00 PM');
+                                }
+                                
                             }
 
-                            
-                        }
-
-                        if($model->time_in_am && $model->time_out_am && $model->time_in_pm && $model->time_out_pm)
-                        {
                             $interval = $end_time->diff($start_time);
                             $interval2 = $end_time2->diff($start_time2);
-
-                            $total_minutes = $interval->h * 60 + $interval->i;
-
-                            $total_minutes2 = $interval2->h * 60 + $interval2->i;
-
-                            if(empty($model->time_out_am) && empty($model->time_out_pm))
-                            {
-
-                            }
-                            else
-                            {
-                                $totalMinutesRendered += ($total_minutes + $total_minutes2);
-                            }
                         }
                         else
                         {
-                            $interval = $end_time->diff($start_time);
-                            $total_minutes = $interval->h * 60 + $interval->i;
+                            // Check if the start time is between 12:00 PM and 12:59 PM
 
-                            if(empty($model->time_out_am) && empty($model->time_out_pm))
-                            {
+                            if(empty($model->time_in_am) && empty($model->time_out_am) && $model->time_in_pm && $model->time_out_pm)
+                            { // 0-0-1-1
+                                
+                                if(new DateTime($formatted_out_pm) >= new DateTime('12:00 PM') && new DateTime($formatted_out_pm) < new DateTime('1:00 PM'))
+                                {
+                                    $end_time2 = new DateTime('12:00 PM');
+                                }
 
+                                if(new DateTime($formatted_in_pm) >= new DateTime('12:00 PM') && new DateTime($formatted_out_pm) < new DateTime('1:00 PM'))
+                                { // time_in_pm (between 12 and 12:59pm)
+                                    $start_time2 = new DateTime('12:00 PM');
+                                    $end_time2 = new DateTime('12:00 PM');
+                                }
+
+                                if(new DateTime($formatted_in_pm) >= new DateTime('12:00 PM') && new DateTime($formatted_out_pm) >= new DateTime('1:00 PM'))
+                                {
+                                    if(new DateTime($formatted_in_pm) > new DateTime('1:00 PM'))
+                                    {
+                                        $start_time2 = new DateTime($formatted_in_pm);
+                                    }
+                                    else
+                                    {
+                                        $start_time2 = new DateTime('01:00 PM');
+                                    }
+                                    
+                                }
+
+                                $interval = $end_time->diff($start_time);
+                                $interval2 = $end_time2->diff($start_time2);
                             }
                             else
                             {
-                                $totalMinutesRendered += $total_minutes;
+                                if($model->time_in_am && empty($model->time_out_am) &&  empty($model->time_in_pm) && $model->time_out_pm)
+                                { // 1-0-0-1
+                                    $start_time = new DateTime($formatted_in_am);
+                                    $end_time = new DateTime('12:00 PM');
+
+                                    if(new DateTime($formatted_out_pm) >= new DateTime('12:00 PM') && new DateTime($formatted_out_pm) < new DateTime('1:00 PM'))
+                                    {
+                                        $start_time2 = new DateTime('12:00 PM');
+                                        $end_time2 = new DateTime('12:00 PM');
+                                    }
+                                    else
+                                    {
+                                        $start_time2 = new DateTime('1:00 PM');
+                                        $end_time2 = new DateTime($formatted_out_pm);
+                                    }
+
+                                    $interval = $end_time->diff($start_time);
+                                    $interval2 = $end_time2->diff($start_time2);
+
+                                }
                             }
                         }
+
+                        $total_minutes = $interval->h * 60 + $interval->i;
+
+                        $total_minutes2 = $interval2->h * 60 + $interval2->i;
+
+                        $main_total_minutes = $total_minutes + $total_minutes2;
+
+                        $totalMinutesRendered += ($total_minutes + $total_minutes2);
                         
                         // Check if the total duration is greater than 8 hours
                         $overtime_hours = 0;
                         $overtime_minutes = 0;
-                        if ($total_minutes > 8 * 60) {
+                        if ($main_total_minutes > 8 * 60) {
                             // Calculate the overtime in minutes
-                            $overtime_minutes = $total_minutes - 8 * 60;
+                            $overtime_minutes = $main_total_minutes - 8 * 60;
 
-                            if(empty($model->time_out_am) && empty($model->time_out_pm))
-                            {
-
-                            }
-                            else
-                            {
-                                $totalMinutesOvertime += $total_minutes - 8 * 60;
-                            }
-                            
+                            $totalMinutesOvertime += $main_total_minutes - 8 * 60;
                             
                             // Convert the overtime to hours and minutes
                             $overtime_hours = floor($overtime_minutes / 60);
                             $overtime_minutes = $overtime_minutes % 60;
                             
-                            // Output the overtime
-                            // echo "\nYou have {$overtime_hours} hours and {$overtime_minutes} minutes of overtime.";
                         }
 
-                        $view_photo_in_am = !empty($model->time_in_am) ? Html::button($formatted_in_am, ['value'=>Url::to('@web/user-timesheet/preview-photo?model_id='.$model->id.'&time='.$model->time_in_am), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => 'border:none;']) : "";
+                        $view_photo_in_am = !empty($model->time_in_am) ? Html::button($formatted_in_am, ['value'=>Url::to('@web/user-timesheet/preview-photo?timesheet_id='.$model->id.'&time='.$model->time_in_am), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => 'border:none;']) : "";
 
-                        $view_photo_out_am = !empty($model->time_out_am) ? Html::button($formatted_out_am, ['value'=>Url::to('@web/user-timesheet/preview-photo?model_id='.$model->id.'&time='.$model->time_out_am), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => 'border:none;']) : "";
+                        $view_photo_out_am = !empty($model->time_out_am) ? Html::button($formatted_out_am, ['value'=>Url::to('@web/user-timesheet/preview-photo?timesheet_id='.$model->id.'&time='.$model->time_out_am), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => 'border:none;']) : "";
 
-                        $view_photo_in_pm = !empty($model->time_in_pm) ? Html::button($formatted_in_pm, ['value'=>Url::to('@web/user-timesheet/preview-photo?model_id='.$model->id.'&time='.$model->time_in_pm), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => 'border:none;']) : "";
+                        $view_photo_in_pm = !empty($model->time_in_pm) ? Html::button($formatted_in_pm, ['value'=>Url::to('@web/user-timesheet/preview-photo?timesheet_id='.$model->id.'&time='.$model->time_in_pm), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => 'border:none;']) : "";
 
-                        $view_photo_out_pm = !empty($model->time_out_pm) ? Html::button($formatted_out_pm, ['value'=>Url::to('@web/user-timesheet/preview-photo?model_id='.$model->id.'&time='.$model->time_out_pm), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => 'border:none;']) : "";
+                        $view_photo_out_pm = !empty($model->time_out_pm) ? Html::button($formatted_out_pm, ['value'=>Url::to('@web/user-timesheet/preview-photo?timesheet_id='.$model->id.'&time='.$model->time_out_pm), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => 'border:none;']) : "";
 
                         echo "<tr>";
                             echo "<td>" . Html::encode(date('j', strtotime($model->date))) . "</td>";
@@ -369,29 +365,9 @@ date_default_timezone_set('Asia/Manila');
                             echo "<td>" . ($view_photo_out_am).  "</td>";
                             echo "<td>" . ($view_photo_in_pm) . "</td>";
                             echo "<td>" . ($view_photo_out_pm) . "</td>";
-                            
 
-                            if(empty($model->time_out_am) && empty($model->time_out_pm))
-                            {
-                                echo "<td></td>";
-                                echo "<td></td>";
-                            }
-                            else
-                            {
-                                echo "<td>" . ($overtime_hours." hrs. ".$overtime_minutes." mins. ") . "</td>";
-
-                                // echo "<td>" . ($interval->h. " hrs. ". $interval->i." mins. ") . "</td>";
-
-                                if($model->time_in_am && $model->time_out_am && $model->time_in_pm && $model->time_out_pm)
-                                {
-                                    echo "<td>" . (($interval->h + $interval2->h). " hrs. ". ($interval->i + $interval2->i)." mins. ") . "</td>";
-                                }
-                                else
-                                {
-                                    echo "<td>" . ($interval->h. " hrs. ". $interval->i." mins. ") . "</td>";
-                                }
-                               
-                            }
+                            echo "<td>" . ($overtime_hours." hrs. ".$overtime_minutes." mins. ") . "</td>";
+                            echo "<td>" . (($interval->h + $interval2->h). " hrs. ". ($interval->i + $interval2->i)." mins. ") . "</td>";
                             
 
                             echo "<td>" . Html::encode($model->remarks) . "</td>";
@@ -533,7 +509,7 @@ date_default_timezone_set('Asia/Manila');
                     </td>
                 </tr>
                 <tr>
-                    <td style="border-bottom:1px solid black; text-align:center; font-size:15px; "><?= !empty($model->user->UserFullNameWithMiddleInitial) ? $model->user->UserFullNameWithMiddleInitial : "" ?></td>
+                    <td style="border-bottom:1px solid black; text-align:center; font-size:15px; text-transform:uppercase;"><?= !empty($model->user->UserFullNameWithMiddleInitial) ? $model->user->UserFullNameWithMiddleInitial : "" ?></td>
                 </tr>
                 <tr>
                     <td style="font-size:11px; font-weight:bold; text-align:center;">Intern Signature over printed name</td>
@@ -633,204 +609,156 @@ date_default_timezone_set('Asia/Manila');
                     $formatted_in_pm2 = !empty($model2->time_in_pm) ? date('g:i:s A', strtotime($model2->time_in_pm)) : "";
                     $formatted_out_pm2 = !empty($model2->time_out_pm) ? date('g:i:s A', strtotime($model2->time_out_pm)) : "";
 
-                    if($model2->time_in_am && $model2->time_out_am && $model2->time_in_pm && $model2->time_out_pm)
-                    {
-                        $start_time2 = !empty($model2->time_in_pm) ? new DateTime($formatted_in_pm2) : "";
-                        $end_time2 = !empty($model2->time_out_pm) ? new DateTime($formatted_out_pm2) : "";
-
-                        // if (new DateTime($start_time2->format('g:i A')) >= new DateTime('12:00 PM') && new DateTime( $start_time2->format('g:i A')) <= new DateTime('12:59 PM')) {
-                        //     $start_time2 = new DateTime('1:00 PM');
-                        // }
-                        
-                        // // Check if the end time is between 12:00 PM and 12:59 PM
-                        // if (new DateTime($end_time2->format('g:i A')) >= new DateTime('12:00 PM') && new DateTime($end_time2->format('g:i A')) <= new DateTime('12:59 PM')) {
-                        //     $end_time2 = new DateTime('12:00 PM');
-                        // }
-                        
-                        // // Check if the end time is greater than 1:00 PM
-                        // // print_r($end_time->format('g:i A')); exit;
-
-                        // if (new DateTime($end_time2->format('g:i A')) >= new DateTime('01:00 PM')) {
-                        //     // Subtract one hour from the end time
-
-                        //     if(!empty($model2->time_in_pm))
-                        //     {
-                        //         $end_time2->modify('-1 hour');
-                        //     }
-                        // }
-
-                        
-                    }
-                    else
-                    {
-                        $start_time3 = !empty($model2->time_in_am) ? new DateTime($formatted_in_am2) : new DateTime($formatted_in_pm2);
-                        $end_time3 = !empty($model2->time_out_pm) ? new DateTime($formatted_out_pm2) : new DateTime($formatted_out_am2);
-                        
-                        // Check if the start time is between 12:00 PM and 12:59 PM
-                        if (new DateTime($start_time3->format('g:i A')) >= new DateTime('12:00 PM') && new DateTime( $start_time3->format('g:i A')) <= new DateTime('12:59 PM')) {
-                            $start_time3 = new DateTime('1:00 PM');
-                        }
-                        
-                        // Check if the end time is between 12:00 PM and 12:59 PM
-                        if (new DateTime($end_time3->format('g:i A')) >= new DateTime('12:00 PM') && new DateTime($end_time3->format('g:i A')) <= new DateTime('12:59 PM')) {
-                            $end_time3 = new DateTime('12:00 PM');
-                        }
-                        
-                        // Check if the end time is greater than 1:00 PM
-                        // print_r($end_time->format('g:i A')); exit;
-                        if (new DateTime($end_time3->format('g:i A')) >= new DateTime('01:00 PM')) {
-                            // Subtract one hour from the end time
-
-                            if(!empty($model2->time_in_am))
-                            {
-                                $end_time3->modify('-1 hour');
-                            }
-                        }
-                    }
-
                     
+
+                    $start_time3 = new DateTime($formatted_in_am2);
+                    $end_time3 = new DateTime($formatted_out_am2);
+
+                    $start_time2 = new DateTime($formatted_in_pm2);
+                    $end_time2 = new DateTime($formatted_out_pm2);
+
+                    $interval3 = $end_time3->diff($start_time3);
+                    $interval2 = $end_time2->diff($start_time2);
+
                     if($model2->time_in_am && $model2->time_out_am && $model2->time_in_pm && $model2->time_out_pm)
-                    {
+                    { // 1-1-1-1
+
+                        if(new DateTime($formatted_out_pm2) >= new DateTime('12:00 PM') && new DateTime($formatted_out_pm2) < new DateTime('1:00 PM'))
+                        {
+                            $end_time2 = new DateTime('12:00 PM');
+                        }
+
+                        if(new DateTime($formatted_in_pm) >= new DateTime('12:00 PM') && new DateTime($formatted_out_pm2) < new DateTime('1:00 PM'))
+                        { // time_in_pm (between 12 and 12:59pm)
+                            $start_time2 = new DateTime('12:00 PM');
+                            $end_time2 = new DateTime('12:00 PM');
+                        }
+
+                        if(new DateTime($formatted_in_pm2) >= new DateTime('12:00 PM') && new DateTime($formatted_out_pm2) >= new DateTime('1:00 PM'))
+                        {
+                            if(new DateTime($formatted_in_pm2) > new DateTime('1:00 PM'))
+                            {
+                                $start_time2 = new DateTime($formatted_in_pm2);
+                            }
+                            else
+                            {
+                                $start_time2 = new DateTime('01:00 PM');
+                            }
+                            
+                        }
+
                         $interval3 = $end_time3->diff($start_time3);
                         $interval2 = $end_time2->diff($start_time2);
-                   
-                        // Calculate the total duration in minutes
-                        
-
-                        if(empty($model2->time_out_am) && empty($model2->time_out_pm))
-                        {
-
-                        }
-                        else
-                        {
-                            $total_minutes2 = $interval3->h * 60 + $interval->i;
-                            $total_minutes1 = $interval2->h * 60 + $interval2->i;
-
-                            $totalMinutesRendered2 += ($total_minutes2 + $total_minutes1);
-                        }
-
-                        
                     }
                     else
                     {
-                        $interval3 = $end_time3->diff($start_time3);
-                   
-                        // Calculate the total duration in minutes
-                        
+                        // Check if the start time is between 12:00 PM and 12:59 PM
 
-                        if(empty($model2->time_out_am) && empty($model2->time_out_pm))
-                        {
+                        if(empty($model2->time_in_am) && empty($model2->time_out_am) && $model2->time_in_pm && $model2->time_out_pm)
+                        { // 0-0-1-1
+                            
+                            if(new DateTime($formatted_out_pm2) >= new DateTime('12:00 PM') && new DateTime($formatted_out_pm2) < new DateTime('1:00 PM'))
+                            {
+                                $end_time2 = new DateTime('12:00 PM');
+                            }
 
+                            if(new DateTime($formatted_in_pm2) >= new DateTime('12:00 PM') && new DateTime($formatted_out_pm2) < new DateTime('1:00 PM'))
+                            { // time_in_pm (between 12 and 12:59pm)
+                                $start_time2 = new DateTime('12:00 PM');
+                                $end_time2 = new DateTime('12:00 PM');
+                            }
+
+                            if(new DateTime($formatted_in_pm2) >= new DateTime('12:00 PM') && new DateTime($formatted_out_pm2) >= new DateTime('1:00 PM'))
+                            {
+                                if(new DateTime($formatted_in_pm2) > new DateTime('1:00 PM'))
+                                {
+                                    $start_time2 = new DateTime($formatted_in_pm2);
+                                }
+                                else
+                                {
+                                    $start_time2 = new DateTime('01:00 PM');
+                                }
+                                
+                            }
+
+                            $interval3 = $end_time3->diff($start_time3);
+                            $interval2 = $end_time2->diff($start_time2);
                         }
                         else
                         {
-                            $total_minutes2 = $interval3->h * 60 + $interval->i;
-                            $totalMinutesRendered2 += $total_minutes2;
-                        }
-                        
-                    }
-                    
-                  
-                    if(empty($model2->time_out_am) && empty($model2->time_out_pm))
-                    {
+                            if($model2->time_in_am && empty($model2->time_out_am) &&  empty($model2->time_in_pm) && $model2->time_out_pm)
+                            { // 1-0-0-1
+                                $start_time3 = new DateTime($formatted_in_am2);
+                                $end_time3 = new DateTime('12:00 PM');
 
-                    }
-                    else
-                    {
-                        if($model2->time_in_am && $model2->time_out_am && $model2->time_in_pm && $model2->time_out_pm)
-                        {
-                            switch ($model2->month_val) {
-                                case '1':
-                                    $jan_total  += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
-                                break;
-                                case '2':
-                                    $feb_total  += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
-                                break;
-                                case '3':
-                                    $march_total  += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
-                                break;
-                                case '4':
-                                    $april_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
-                                break;
-                                case '5':
-                                    $may_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
-                                break;
-                                case '6':
-                                    $june_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
-                                break;
-                                case '7':
-                                    $july_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
-                                break;
-                                case '8':
-                                    $aug_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
-                                break;
-                                case '9':
-                                    $sept_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
-                                break;
-                                case '10':
-                                    $oct_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
-                                break;
-                                case '11':
-                                    $nov_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
-                                break;
-                                case '12':
-                                    $dec_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
-                                break;
-                                
-                                default:
-                                    # code...
-                                    break;
-                            }                            
-                        }
-                        else
-                        {
-                            switch ($model2->month_val) {
-                                case '1':
-                                    $jan_total  += $interval3->h * 60 + $interval3->i; 
-                                break;
-                                case '2':
-                                    $feb_total  += $interval3->h * 60 + $interval3->i; 
-                                break;
-                                case '3':
-                                    $march_total  += $interval3->h * 60 + $interval3->i; 
-                                break;
-                                case '4':
-                                    $april_total += $interval3->h * 60 + $interval3->i; 
-                                break;
-                                case '5':
-                                    $may_total += $interval3->h * 60 + $interval3->i; 
-                                break;
-                                case '6':
-                                    $june_total += $interval3->h * 60 + $interval3->i; 
-                                break;
-                                case '7':
-                                    $july_total += $interval3->h * 60 + $interval3->i; 
-                                break;
-                                case '8':
-                                    $aug_total  += $interval3->h * 60 + $interval3->i; 
-                                break;
-                                case '9':
-                                    $sept_total  += $interval3->h * 60 + $interval3->i; 
-                                break;
-                                case '10':
-                                    $oct_total  += $interval3->h * 60 + $interval3->i; 
-                                break;
-                                case '11':
-                                    $nov_total  += $interval3->h * 60 + $interval3->i; 
-                                break;
-                                case '12':
-                                    $dec_total  += $interval3->h * 60 + $interval3->i; 
-                                break;
-                                
-                                default:
-                                    # code...
-                                    break;
+                                if(new DateTime($formatted_out_pm2) >= new DateTime('12:00 PM') && new DateTime($formatted_out_pm2) < new DateTime('1:00 PM'))
+                                {
+                                    $start_time2 = new DateTime('12:00 PM');
+                                    $end_time2 = new DateTime('12:00 PM');
+                                }
+                                else
+                                {
+                                    $start_time2 = new DateTime('1:00 PM');
+                                    $end_time2 = new DateTime($formatted_out_pm2);
+                                }
+
+                                $interval3 = $end_time3->diff($start_time3);
+                                $interval2 = $end_time2->diff($start_time2);
+
                             }
                         }
-                        
                     }
                     
+                    
 
+                    $total_minutes2 = $interval3->h * 60 + $interval->i;
+                    $total_minutes1 = $interval2->h * 60 + $interval2->i;
+
+                    $totalMinutesRendered2 += ($total_minutes2 + $total_minutes1);
+                    
+                  
+                    switch ($model2->month_val) {
+                        case '1':
+                            $jan_total  += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                        break;
+                        case '2':
+                            $feb_total  += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                        break;
+                        case '3':
+                            $march_total  += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                        break;
+                        case '4':
+                            $april_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                        break;
+                        case '5':
+                            $may_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                        break;
+                        case '6':
+                            $june_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                        break;
+                        case '7':
+                            $july_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                        break;
+                        case '8':
+                            $aug_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                        break;
+                        case '9':
+                            $sept_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                        break;
+                        case '10':
+                            $oct_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                        break;
+                        case '11':
+                            $nov_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                        break;
+                        case '12':
+                            $dec_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                        break;
+                        
+                        default:
+                            # code...
+                            break;
+                    }
                 
                 ?>
                 
@@ -897,7 +825,7 @@ date_default_timezone_set('Asia/Manila');
                 <td colspan="5" style="border-top:none; border-left:none; border-right:none; font-weight:bold;">SUMMARY OF HOURS RENDERED</td>
             </tr>
 
-            <?php if($totalJan){ ?>
+            <?php if($jan_total){ ?>
             <tr>
                 <td>JANUARY</td>
                 <td><?= $totalJan. " hr/s ".$jan_total." min/s "; ?></td>
@@ -907,7 +835,7 @@ date_default_timezone_set('Asia/Manila');
             </tr>
             <?php } ?>
 
-            <?php if($totalFeb){ ?>
+            <?php if($feb_total){ ?>
             <tr>
                 <td>FEBRUARY</td>
                 <td><?= $totalFeb. " hr/s ".$feb_total." min/s "; ?></td>
@@ -917,7 +845,7 @@ date_default_timezone_set('Asia/Manila');
             </tr>
             <?php } ?>
 
-            <?php if($totalMarch){ ?>
+            <?php if($march_total){ ?>
             <tr>
                 <td>MARCH</td>
                 <td><?= $totalMarch. " hr/s ".$march_total." min/s "; ?></td>
@@ -927,7 +855,7 @@ date_default_timezone_set('Asia/Manila');
             </tr>
             <?php } ?>
 
-            <?php if($totalApril){ ?>
+            <?php if($april_total){ ?>
             <tr>
                 <td>APRIL</td>
                 <td><?= $totalApril. " hr/s ".$april_total." min/s "; ?></td>
@@ -937,7 +865,7 @@ date_default_timezone_set('Asia/Manila');
             </tr>
             <?php } ?>
 
-            <?php if($totalMay){ ?>
+            <?php if($may_total){ ?>
             <tr>
                 <td>MAY</td>
                 <td><?= $totalMay. " hr/s ".$may_total." min/s "; ?></td>
@@ -947,7 +875,7 @@ date_default_timezone_set('Asia/Manila');
             </tr>
             <?php } ?>
 
-            <?php if($totalJune){ ?>
+            <?php if($june_total){ ?>
             <tr>
                 <td>JUNE</td>
                 <td><?= $totalJune. " hr/s ".$june_total." min/s "; ?></td>
@@ -957,7 +885,7 @@ date_default_timezone_set('Asia/Manila');
             </tr>
             <?php } ?>
 
-            <?php if($totalJuly){ ?>
+            <?php if($july_total){ ?>
             <tr>
                 <td>JULY</td>
                 <td><?= $totalJuly. " hr/s ".$july_total." min/s "; ?></td>
@@ -967,7 +895,7 @@ date_default_timezone_set('Asia/Manila');
             </tr>
             <?php } ?>
 
-            <?php if($totalAug){ ?>
+            <?php if($aug_total){ ?>
             <tr>
                 <td>AUGUST</td>
                 <td><?= $totalAug. " hr/s ".$aug_total." min/s "; ?></td>
@@ -977,7 +905,7 @@ date_default_timezone_set('Asia/Manila');
             </tr>
             <?php } ?>
 
-            <?php if($totalSept){ ?>
+            <?php if($sept_total){ ?>
             <tr>
                 <td>SEPTEMBER</td>
                 <td><?= $totalSept. " hr/s ".$sept_total." min/s "; ?></td>
@@ -987,7 +915,7 @@ date_default_timezone_set('Asia/Manila');
             </tr>
             <?php } ?>
 
-            <?php if($totalOct){ ?>
+            <?php if($oct_total){ ?>
             <tr>
                 <td>OCTOBER</td>
                 <td><?= $totalOct. " hr/s ".$oct_total." min/s "; ?></td>
@@ -997,7 +925,7 @@ date_default_timezone_set('Asia/Manila');
             </tr>
             <?php } ?>
 
-            <?php if($totalNov){ ?>
+            <?php if($nov_total){ ?>
             <tr>
                 <td>NOVEMBER</td>
                 <td><?= $totalNov. " hr/s ".$nov_total." min/s "; ?></td>
@@ -1007,7 +935,7 @@ date_default_timezone_set('Asia/Manila');
             </tr>
             <?php } ?>
 
-            <?php if($totalDec){ ?>
+            <?php if($dec_total){ ?>
             <tr>
                 <td>DECEMBER</td>
                 <td><?= $totalDec. " hr/s ".$dec_total." min/s "; ?></td>

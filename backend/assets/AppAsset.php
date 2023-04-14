@@ -15,6 +15,12 @@ class AppAsset extends AssetBundle
         'css/site.css',
     ];
     public $js = [
+        'js/face-api.js',
+        'js/bbt.js',
+        'js/commons.js',
+        'js/faceDetectionControls.js',
+        'js/imageSelectionControls.js',
+        
     ];
     public $depends = [
         'yii\web\YiiAsset',

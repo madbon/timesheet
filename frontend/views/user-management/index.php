@@ -20,6 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <!-- <h1><?php // Html::encode($this->title) ?></h1> -->
 
     <p>
+        <?= Yii::$app->user->can('import-button-trainees') ? Html::a('<i class="fas fa-upload"></i> Import Trainees', ['import-trainees'], ['class' => 'btn btn-outline-success btn-sm']) : "" ?>
         <?= Yii::$app->user->can('create-button-trainee') ? Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' Trainee', ['create', 'account_type' => 'trainee'], ['class' => 'btn btn-outline-success btn-sm']) : "" ?>
 
         <?= Yii::$app->user->can('create-button-ojt-coordinator') ? Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' OJT Coordinator', ['create','account_type' => 'ojtcoordinator'], ['class' => 'btn btn-outline-success btn-sm']) : "" ?>
@@ -27,6 +28,8 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Yii::$app->user->can('create-button-company-supervisor') ?  Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' Company Supervisor', ['create','account_type' => 'companysupervisor'], ['class' => 'btn btn-outline-success btn-sm']) : "" ?>
 
         <?= Yii::$app->user->can('create-button-administrator') ? Html::a((Yii::$app->getModule('admin')->GetIcon('person-plus-fill')).' Administrator', ['create','account_type' => 'administrator'], ['class' => 'btn btn-outline-primary btn-sm']) : "" ?>
+
+        
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
@@ -333,8 +336,25 @@ $this->params['breadcrumbs'][] = $this->title;
                     // ],
                     [
                         'class' => ActionColumn::className(),
-                        'template' => '{timesheet} {esig} {view} {update} {delete}',
+                        'template' => '{regface} {timesheet} {esig} {view} {update} {delete}',
                         'buttons' => [
+                            'regface' => function ($url, $model) {
+                                if(Yii::$app->user->can('user-management-register-face'))
+                                {
+                                    if($model->authAssignment->item_name == "Trainee")
+                                    {
+                                        if(Yii::$app->getModule('admin')->haveFaceRegistered($model->id))
+                                        {
+                                            return Html::a('<i class="fas fa-pencil-alt"></i> Face',['register-face','user_id' => $model->id],['class' => 'btn btn-primary btn-sm','target' => '_blank']);
+                                        }
+                                        else
+                                        {
+                                            return Html::a('<i class="fas fa-plus"></i> Register Face',['register-face','user_id' => $model->id],['class' => 'btn btn-secondary btn-sm','target' => '_blank']);
+                                        }
+                                        
+                                    }
+                                }
+                            },
                             'timesheet' => function ($url, $model) {
                                 if(Yii::$app->user->can('view-other-timesheet'))
                                 {

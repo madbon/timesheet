@@ -27,10 +27,15 @@ use yii\helpers\ArrayHelper;
 use yii\filters\AccessControl;
 use yii\web\ForbiddenHttpException;
 use common\components\PdfWidget;
+use frontend\models\UploadExcel;
 use yii\data\ActiveDataProvider;
 use yii\helpers\Json;
 use yii\widgets\ActiveForm;
 use yii\web\Response;
+use yii\web\View;
+use yii\helpers\Url;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use common\models\UserImport;
 use Yii;
 
 /**
@@ -89,7 +94,12 @@ class UserManagementController extends Controller
                         'roles' => ['user-management-create-trainee','user-management-create-ojt-coordinator','user-management-create-company-supervisor','user-management-create-administrator'],
                     ],
                     [
-                        'actions' => ['company-json','update-my-account','upload-my-signature'],
+                        'actions' => ['register-face'],
+                        'allow' => true,
+                        'roles' => ['user-management-register-face'],
+                    ],
+                    [
+                        'actions' => ['company-json','update-my-account','upload-my-signature','register-image','preview-captured-photo','delete-face-photo','import-trainees','save-imported-trainees','download-template'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -102,6 +112,229 @@ class UserManagementController extends Controller
                 ],
             ],
         ];
+    }
+
+    public function actionDownloadTemplate()
+    {
+        $fileName = 'trainees_import_template.xlsx';
+        $filePath = Yii::getAlias('@frontend/web/excel_template/') . $fileName;
+
+        if (file_exists($filePath)) {
+            // Set headers for download
+            header('Content-Type: application/vnd.ms-excel');
+            header('Content-Disposition: attachment;filename="' . $fileName . '"');
+            header('Cache-Control: max-age=0');
+
+            // Send the file
+            readfile($filePath);
+        } else {
+            throw new \yii\web\NotFoundHttpException("The template file does not exist.");
+        }
+        
+        exit;
+    }
+
+    public function actionImportTrainees($program_id = null)
+    {
+        $model = new UploadExcel();
+
+        if (Yii::$app->request->isPost) {
+            $model->file = UploadedFile::getInstance($model, 'file');
+            if ($model->upload()) {
+                $inputFileName = 'uploads/' . $model->file->name;
+                $spreadsheet = IOFactory::load($inputFileName);
+                $worksheet = $spreadsheet->getActiveSheet();
+                $rows = $worksheet->toArray();
+
+                // Assuming the first row contains the headers
+
+                // echo "<pre>";
+                
+                array_shift($rows);
+                
+                // print_r($rows); exit;
+
+                Yii::$app->session['imported_trainees'] = $rows;
+                // Yii::$app->session['program_course'] = $program_id;
+
+                return $this->render('import_result', ['rows' => $rows,'program_id' => $program_id]);
+            }
+        }
+
+        return $this->render('import_trainees', ['model' => $model,'program_id' => $program_id]);
+    }
+
+    public function actionSaveImportedTrainees($program_id)
+    {
+        $rows = Yii::$app->session['imported_trainees'];
+        $program = Yii::$app->session['program_course'];
+
+        foreach ($rows as $row) {
+            $student = new UserImport();
+            $student->student_idno = $row[0];
+            $student->fname = $row[1];
+            $student->mname = $row[2];
+            $student->sname = $row[3];
+            $student->suffix = $row[4];
+            $student->bday = $row[5];
+            $student->sex = $row[6];
+            $student->mobile_no = $row[7];
+            $student->address = $row[8];
+            $student->ref_program_id =$program_id;
+            $student->ref_program_major_id = Yii::$app->getModule('admin')->getMajorCode($row[9],$program_id);
+            $student->student_year = $row[10];
+            $student->student_section = $row[11];
+            $student->email = $row[12];
+            
+            // $student->ref_program_id = $row[12];
+
+            $student->username = $row[0];
+            $student->password_hash = Yii::$app->security->generatePasswordHash($row[0]);
+
+            if($student->save())
+            {
+                $student_id = $student->id;
+                $authAssignment = new AuthAssignment();
+                $authAssignment->item_name = 'Trainee';
+                $authAssignment->user_id = $student_id;
+                $authAssignment->save(false);
+            }
+        }
+
+    //     $student = new UserImport();
+    //     $student->student_idno = $row[0];
+    //     $student->fname = $row[1];
+    //     $student->mname = $row[2];
+    //     $student->sname = $row[3];
+    //     $student->bday = $row
+    // // getMajorCode($major_abbrev,$program_id)
+
+        Yii::$app->session->setFlash('success', 'Imported Successfully');
+        return $this->redirect(['index']);
+    }
+
+    public function actionDeleteFacePhoto($id)
+    {
+        $file = Files::findOne(['id' => $id]);
+
+        if ($file !== null) {
+            $filePath = 'uploads/' . $file->file_hash . '.' . $file->extension;
+
+            if ($file->delete()) {
+                if (file_exists($filePath)) {
+                    @unlink($filePath);
+                }
+                Yii::$app->session->setFlash('success', 'Image deleted successfully.');
+            } else {
+                Yii::$app->session->setFlash('error', 'Error deleting file. Please try again.');
+            }
+        } else {
+            throw new \yii\web\NotFoundHttpException('File not found.');
+        }
+
+        return $this->redirect(Yii::$app->request->referrer);
+    }
+
+    public function actionPreviewCapturedPhoto($id)
+    {
+        $file = Files::find()
+        ->where(['id' => $id])
+        ->one();
+        // ->createCommand()->rawSql;
+
+
+        if ($file !== null) {
+            $filePath = Url::to('@backend/web/uploads/' . $file->file_hash);
+
+            if (file_exists($filePath)) {
+                return Yii::$app->response->sendFile($filePath, $file->file_name, ['inline' => true]);
+            } else {
+                throw new \yii\web\NotFoundHttpException('File not found.');
+            }
+        } else {
+            throw new \yii\web\NotFoundHttpException('File not found.');
+        }
+    }
+
+    public function actionRegisterImage()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $request = Yii::$app->request;
+
+        // Get the user ID from POST data
+        $userId = $request->post('user_id');
+
+        $imageData = Yii::$app->request->post('imageData');
+        $imagePath = null;
+
+        if ($imageData) {
+            $imagePath = $this->saveCapturedImage($imageData);
+
+        }
+
+        
+
+        if ($imagePath) {
+            date_default_timezone_set('Asia/Manila');
+            // Save the captured image data to the table_file
+            $file = new Files();
+            $file->model_name = "UserFacialRegister";
+            $file->file_name = basename($imagePath);
+            $file->extension = pathinfo($imagePath, PATHINFO_EXTENSION);
+            $file->file_hash = basename($imagePath);
+            $file->user_id = $userId;
+            $file->model_id = $userId;
+            $file->created_at = time();
+            $file->save(false);
+
+            // if($file->save())
+            // {
+                return [
+                    'success' => true,
+                    'user_id' => $userId, // Return the user_id
+                    // 'error' => $file->errors
+                ];
+                
+            // }
+            // else
+            // {
+            //     return [
+            //         'success' => false,
+            //         'message' => $userId,
+            //     ];
+            // }
+
+            
+        }
+        else
+        {
+            return [
+                'success' => false,
+                'message' => 'Something wrong',
+            ];
+        }
+        
+    }
+
+    public function actionRegisterFace($user_id)
+    {
+        $model = new UserData();
+
+        $userModel = UserData::find()->where(['id' => $user_id])->one();
+
+        $fileModel = Files::find()->where(['model_id' => $user_id, 'model_name' => 'UserFacialRegister'])->all();
+
+        return $this->render('register_face',['model' => $model, 'user_id' => $user_id, 'userModel' => $userModel,'fileModel' => $fileModel,]);
+    }
+
+    private function saveCapturedImage($imageData)
+    {
+        $data = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $imageData));
+        $imageName = uniqid() . '.png';
+        $imagePath = Yii::getAlias('@backend/web/uploads/') . $imageName;
+        file_put_contents($imagePath, $data);
+        return $imagePath;
     }
 
     public function actionCompanyJson($q = null)
@@ -375,7 +608,17 @@ class UserManagementController extends Controller
         $student_section = ArrayHelper::map(StudentSection::find()->all(), 'section', 'section');
 
         $program = ArrayHelper::map(RefProgram::find()->all(), 'id', 'title');
-        $major =  ArrayHelper::map(ProgramMajor::find()->where(['ref_program_id' => $model->ref_program_id])->all(), 'id', 'title');
+        
+
+        if(ProgramMajor::find()->where(['ref_program_id' => $model->ref_program_id])->exists())
+        {
+            $major =  ArrayHelper::map(ProgramMajor::find()->where(['ref_program_id' => $model->ref_program_id])->all(), 'id', 'title');
+        }
+        else
+        {
+            $major =  ['not_applicable' => '-- NOT APPLICABLE --'];
+            $model->ref_program_major_id = 'not_applicable';
+        }
 
         $position = ArrayHelper::map(Position::find()->all(), 'id', 'position');
         $department = ArrayHelper::map(Department::find()->all(), 'id', 'title');

@@ -16,16 +16,16 @@ use yii\widgets\ActiveForm;
 
     <div class="row">
         <div class="col-sm-3">
-            <?= $form->field($model, 'time_in_am')->textInput(['disabled' => !empty($model->time_in_am) ? true : false, 'type' => 'time']) ?>
+            <?= $form->field($model, 'time_in_am')->textInput(['type' => 'time']) ?>
         </div>
         <div class="col-sm-3">
-            <?= $form->field($model, 'time_out_am')->textInput(['disabled' => !empty($model->time_out_am) ? true : false,'type' => 'time']) ?>
+            <?= $form->field($model, 'time_out_am')->textInput(['type' => 'time']) ?>
         </div>
         <div class="col-sm-3">
-            <?= $form->field($model, 'time_in_pm')->textInput(['disabled' => !empty($model->time_in_pm) ? true : false,'type' => 'time']) ?>
+            <?= $form->field($model, 'time_in_pm')->textInput(['type' => 'time']) ?>
         </div>
         <div class="col-sm-3">
-            <?= $form->field($model, 'time_out_pm')->textInput(['disabled' => !empty($model->time_out_pm) ? true : false,'type' => 'time']) ?>
+            <?= $form->field($model, 'time_out_pm')->textInput(['type' => 'time']) ?>
         </div>
     </div>
 
