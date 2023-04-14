@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 06, 2023 at 11:17 AM
+-- Generation Time: Apr 14, 2023 at 02:42 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -65,7 +65,27 @@ CREATE TABLE `auth_assignment` (
 --
 
 INSERT INTO `auth_assignment` (`item_name`, `user_id`, `created_at`) VALUES
-('Administrator', '2', NULL);
+('Administrator', '2', NULL),
+('Administrator', '39', NULL),
+('Administrator', '40', NULL),
+('CompanySupervisor', '38', NULL),
+('CompanySupervisor', '41', NULL),
+('CompanySupervisor', '47', NULL),
+('OjtCoordinator', '37', NULL),
+('OjtCoordinator', '42', NULL),
+('OjtCoordinator', '43', NULL),
+('OjtCoordinator', '45', NULL),
+('Trainee', '35', NULL),
+('Trainee', '44', NULL),
+('Trainee', '46', NULL),
+('Trainee', '64', NULL),
+('Trainee', '65', NULL),
+('Trainee', '66', NULL),
+('Trainee', '67', NULL),
+('Trainee', '68', NULL),
+('Trainee', '69', NULL),
+('Trainee', '70', NULL),
+('Trainee', '71', NULL);
 
 -- --------------------------------------------------------
 
@@ -152,6 +172,7 @@ INSERT INTO `auth_item` (`name`, `type`, `description`, `rule_name`, `data`, `cr
 ('user-management-delete-role-assigned', 2, '', NULL, NULL, NULL, NULL),
 ('user-management-index', 2, '', NULL, NULL, NULL, NULL),
 ('USER-MANAGEMENT-MODULE', 2, 'access to all permissions of user management', NULL, NULL, NULL, NULL),
+('user-management-register-face', 2, '', NULL, NULL, NULL, NULL),
 ('user-management-update', 2, '', NULL, NULL, NULL, NULL),
 ('user-management-upload-file', 2, '', NULL, NULL, NULL, NULL),
 ('user-management-view', 2, '', NULL, NULL, NULL, NULL),
@@ -208,6 +229,7 @@ INSERT INTO `auth_item_child` (`parent`, `child`) VALUES
 ('Administrator', 'settings-user-accounts-form-reference-container'),
 ('Administrator', 'upload-others-esig'),
 ('Administrator', 'USER-MANAGEMENT-MODULE'),
+('Administrator', 'user-management-register-face'),
 ('Administrator', 'view-column-course-program'),
 ('Administrator', 'view-other-timesheet'),
 ('CompanySupervisor', 'access-trainee-index'),
@@ -252,6 +274,7 @@ INSERT INTO `auth_item_child` (`parent`, `child`) VALUES
 ('OjtCoordinator', 'user-management-delete'),
 ('OjtCoordinator', 'user-management-delete-role-assigned'),
 ('OjtCoordinator', 'user-management-index'),
+('OjtCoordinator', 'user-management-register-face'),
 ('OjtCoordinator', 'user-management-update'),
 ('OjtCoordinator', 'user-management-upload-file'),
 ('OjtCoordinator', 'user-management-view'),
@@ -318,7 +341,8 @@ CREATE TABLE `files` (
   `file_hash` varchar(150) DEFAULT NULL,
   `remarks` text DEFAULT NULL,
   `created_at` int(11) DEFAULT NULL,
-  `user_timesheet_time` time DEFAULT NULL
+  `user_timesheet_time` time DEFAULT NULL,
+  `user_timesheet_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- --------------------------------------------------------
@@ -498,8 +522,7 @@ CREATE TABLE `ref_program_major` (
 --
 
 INSERT INTO `ref_program_major` (`id`, `ref_program_id`, `title`, `abbreviation`) VALUES
-(1, 1, 'Computer Programming', 'CP'),
-(2, 1, 'Information System', 'IS');
+(3, 1, 'Network and Web Application', 'NW');
 
 -- --------------------------------------------------------
 
@@ -746,7 +769,11 @@ ALTER TABLE `files`
   ADD KEY `id` (`id`),
   ADD KEY `model_id` (`model_id`),
   ADD KEY `created_at` (`created_at`),
-  ADD KEY `model_name` (`model_name`);
+  ADD KEY `model_name` (`model_name`),
+  ADD KEY `file_name` (`file_name`),
+  ADD KEY `extension` (`extension`),
+  ADD KEY `file_hash` (`file_hash`),
+  ADD KEY `user_timesheet_time` (`user_timesheet_time`);
 
 --
 -- Indexes for table `migration`
@@ -969,7 +996,7 @@ ALTER TABLE `ref_program`
 -- AUTO_INCREMENT for table `ref_program_major`
 --
 ALTER TABLE `ref_program_major`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `submission_reply`
@@ -993,7 +1020,7 @@ ALTER TABLE `submission_thread_seen`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
 
 --
 -- AUTO_INCREMENT for table `user_company`
