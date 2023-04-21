@@ -40,7 +40,7 @@ table.student-details tbody tr td
         <div class="row">
             <div class="col-sm-12" style="text-align: left;">
                     <?php 
-                        echo Html::a('<strong><i class="fas fa-arrow-left"></i> BACK</strong>',['/capture-login-with-facial-recog','timesheet_id' => $timesheet_id],['class' => 'btn btn-outline-danger btn-lg', 'style' => 'border-radius:25px;']);
+                        echo Html::a('<strong><i class="fas fa-arrow-left"></i> BACK</strong>',['/facial-recognition','timesheet_id' => $timesheet_id],['class' => 'btn btn-outline-danger btn-lg', 'style' => 'border-radius:25px;']);
                     ?>
             </div>
         </div>

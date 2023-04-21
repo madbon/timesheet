@@ -38,6 +38,9 @@ table.table tbody tr td
             <table>
                 <tbody>
                     <tr>
+                        <td colspan="2" style="text-align: center; font-size:25px; font-weight:normal;"><span style="background:#ae0505; color:white; padding:10px; border-radius:25px;"><i class="fas fa-clock"></i> <span  id="clock"></span></span></td>
+                    </tr>
+                    <tr>
                         <td>
                             <!-- <video id="video" width="300" height="224" autoplay></video> -->
                             <video id="video" width="600" height="550"  autoplay></video>
@@ -45,6 +48,11 @@ table.table tbody tr td
                         <td style="display:none;">
                             <!-- <canvas id="canvas" width="300" height="224" style="border:1px solid black;"></canvas> -->
                             <canvas id="canvas" width="600" height="450" style="border:1px solid black;" ></canvas>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">    
+                            <div id="faceMessage" style="text-align: center; font-size:25px; color:red;">Waiting for face detection...</div>
                         </td>
                     </tr>
                     <tr style="display: none;">
@@ -85,7 +93,7 @@ table.table tbody tr td
                                     <?php // $form->field($model, 'rememberMe')->checkbox() ?>
 
                                     <div class="form-group" style="margin-top: 10px; text-align:center;">
-                                        <?= Html::submitButton('TIME IN/OUT: '.'<span style="font-weight:bold;" id="clock"></span>', ['class' => 'btn btn-outline-danger', 'name' => 'login-button', 'id' => 'login-button', 'style' => 'width:100%; border-radius:25px;']) ?>
+                                        <?php // Html::submitButton('TIME IN/OUT: '.'<span style="font-weight:bold;" id="clock"></span>', ['class' => 'btn btn-outline-danger', 'name' => 'login-button', 'id' => 'login-button', 'style' => 'width:100%; border-radius:25px;']) ?>
                                     </div>
 
                                 <?php ActiveForm::end(); ?>
@@ -150,54 +158,77 @@ $this->registerJs(<<<JS
         return storedImages;
     }
 
+    let faceFoundSent = false;
+
     async function processVideoFrame() {
-        
+
+        const faceMessage = document.getElementById('faceMessage');
 
         if (!video.paused && !video.ended) {
-
             const ctx = canvas.getContext('2d');
-            
-
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
             const currentFrame = canvas.toDataURL('image/png');
             const currentDescriptor = await getFaceDescriptor(currentFrame);
 
             if (currentDescriptor) {
                 console.log('face detected');
+                faceMessage.textContent = 'Face not recognized. Please try again.';
                 const response = await fetch('site/get-images');
                 const storedImages = await response.json();
                 const threshold = 0.30;
                 const closestMatch = await isFaceSimilar(currentDescriptor, storedImages);
                 const distance = closestMatch.distance;
-                const matchedFilename = closestMatch.imagePath.split('/').pop();
 
-                if (distance < threshold) {
+                if (distance < threshold && !faceFoundSent) {
                     // Save the captured photo
                     capturedPhoto = currentFrame;
+                    const matchedFilename = closestMatch.imagePath.split('/').pop();
 
-                    // Do something when a similar face is found, e.g., display a message
-                    console.log('Similar face found! Distance:', distance.toFixed(4), matchedFilename);
+                    // Set the flag to true, so no more requests will be sent
+                    faceFoundSent = true;
 
-                    // Optional: stop the video stream and facial recognition processing
-                    // video.pause();
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                    const jsonData = {
+                        matchedFilename: matchedFilename,
+                        capturedImage: capturedPhoto
+                    };
+
+                    fetch('site/confirm-sending-image', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-Token': csrfToken,
+                        },
+                        body: JSON.stringify(jsonData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.href = 'confirm-profile?user_id=' + data.user_id + '&timesheet_id=' + data.timesheet_id;
+                        } else {
+                            alert(data.message || 'Failed');
+                            contentDifferentTimeIn.style.display = "";
+                            faceFoundSent = false;
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Error:', err);
+                        alert('Failed Sending Image');
+                        contentDifferentTimeIn.style.display = "";
+                        faceFoundSent = false;
+                    });
                 } else {
-                    // Do something when no similar face is found, e.g., clear the captured photo
-                    // console.log('No Face Found..');
-                                    
-                // console.log('processvideoframe');
-            // console.log('processvideoframe');
                     capturedPhoto = null;
                 }
-            }
-            else
-            {
+            } else {
+                faceMessage.textContent = 'No face detected..';
                 console.log('no face detected..');
             }
-
         }
-        // Schedule the next frame processing
         requestAnimationFrame(processVideoFrame);
     }
+
 
 
 
