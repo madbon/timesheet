@@ -267,10 +267,13 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
 
 <header>
     <?php
-    
+    $logoUniversity = Html::img(Yii::$app->request->baseUrl.'/ref/images/logo_university.png', ['alt'=>'BPSU', 'style'=>" display: inline-block; vertical-align: middle; padding:0; margin:0; margin-top:-16px;", 'width' => '40', 'height' => '40']);
+
     NavBar::begin([
-        'brandLabel' => false,
+        'brandLabel' => $logoUniversity." <span style='color:white; font-size:12px; font-weight:bold;'>OJT TMS for CICT Trainees</span>",
         'brandUrl' => Yii::$app->homeUrl,
+        // 'encodeLabels' => false,
+        'brandOptions' => ['class' => 'navbar-brand'],
         'options' => [
             'class' => 'navbar navbar-expand-md fixed-top navbar-inverse',
             'style' => Yii::$app->user->isGuest ? 'display:none;' : 'background:#ae0505;',
@@ -324,6 +327,8 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
         {
             $roleName = "<span id='role-name-container'>Trainee ".$firstName." </span> ";
         }
+
+        
 
         // echo Html::beginForm(['/site/logout'], 'post', ['class' => 'd-flex'])
         //     . Html::submitButton(
