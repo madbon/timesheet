@@ -43,7 +43,7 @@ table.table tbody tr td
                     <tr>
                         <td>
                             <!-- <video id="video" width="300" height="224" autoplay></video> -->
-                            <video id="video" width="600" height="550"  autoplay></video>
+                            <video id="video" width="500" height="450"  autoplay></video>
                         </td>
                         <td style="display:none;">
                             <!-- <canvas id="canvas" width="300" height="224" style="border:1px solid black;"></canvas> -->

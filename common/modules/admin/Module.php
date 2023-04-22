@@ -378,6 +378,13 @@ class Module extends \yii\base\Module
         return !empty($model->file_name) ? '/uploads/'.$model->file_hash.'.'.$model->extension : 'noimage.png';
     }
 
+    public static function GetFacialRegister($model_name,$id)
+    {
+        $model = Files::find()->where(['model_name' => $model_name, 'model_id' => $id])->orderBy(['id' => SORT_DESC])->one();
+
+        return !empty($model->file_hash) ? $model->file_hash : 'noimage.png';
+    }
+
     public static function GetFileNameExt($model_name,$id)
     {
         $model = Files::find()->where(['model_name' => $model_name, 'model_id' => $id])->orderBy(['id' => SORT_DESC])->one();
