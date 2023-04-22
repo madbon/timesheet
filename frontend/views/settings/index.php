@@ -105,4 +105,19 @@ ul li a:hover
             </div>
         </div>
     <?php } ?>
+
+    <?php  if(Yii::$app->user->can('settings-system-other-feature')){ ?>
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">System Other Feature</h5>
+                    <p class="card-text">
+                        <ul>
+                            <?=  "<li>".Html::a('Index',['/system-other-feature']) ."</li>"  ?>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+        </div>
+    <?php } ?>
 </div>
