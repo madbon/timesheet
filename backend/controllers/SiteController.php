@@ -519,47 +519,54 @@ class SiteController extends Controller
     {
         if($timesheet_id)
         {
-            $file = Files::find()->where([
+            if($file = Files::find()->where([
                 'model_name' => ['UserFacialRegister','UserTimesheet'],
                 'user_timesheet_id' => $timesheet_id,
-                ])->orderBy(['id' => SORT_DESC])->one();
-            
-            // $file->delete();
-    
-            if($file->delete())
+                ])->orderBy(['id' => SORT_DESC])->exists())
             {
-                if(file_exists(Yii::getAlias('@backend/web/uploads/').$file->file_name))
+                $file = Files::find()->where([
+                    'model_name' => ['UserFacialRegister','UserTimesheet'],
+                    'user_timesheet_id' => $timesheet_id,
+                    ])->orderBy(['id' => SORT_DESC])->one();
+                
+                // $file->delete();
+        
+                if($file->delete())
                 {
-                    unlink(Yii::getAlias('@backend/web/uploads/').$file->file_name);
-                }
-    
-                $timeSheet = UserTimesheet::find()->where(['id' => $timesheet_id])->one();
-    
-                if($timeSheet->time_in_am === $file->user_timesheet_time)
-                {
-                    $timeSheet->time_in_am = null;
-                }
-                else if($timeSheet->time_out_am === $file->user_timesheet_time)
-                {
-                    $timeSheet->time_out_am = null;
-                }
-                else if($timeSheet->time_in_pm === $file->user_timesheet_time)
-                {
-                    $timeSheet->time_in_pm = null;
-                }
-                else if($timeSheet->time_out_pm === $file->user_timesheet_time)
-                {
-                    $timeSheet->time_out_pm = null;
-                }
-                $timeSheet->update();
-    
-                $timeSheetAfterUpdate = UserTimesheet::find()->where(['id' => $timesheet_id])->one();
-    
-                if(empty($timeSheetAfterUpdate->time_in_am) && empty($timeSheetAfterUpdate->time_out_am) && empty($timeSheetAfterUpdate->time_in_pm) && empty($timeSheetAfterUpdate->time_out_pm))
-                {
-                    $timeSheetAfterUpdate->delete();
+                    if(file_exists(Yii::getAlias('@backend/web/uploads/').$file->file_name))
+                    {
+                        unlink(Yii::getAlias('@backend/web/uploads/').$file->file_name);
+                    }
+        
+                    $timeSheet = UserTimesheet::find()->where(['id' => $timesheet_id])->one();
+        
+                    if($timeSheet->time_in_am === $file->user_timesheet_time)
+                    {
+                        $timeSheet->time_in_am = null;
+                    }
+                    else if($timeSheet->time_out_am === $file->user_timesheet_time)
+                    {
+                        $timeSheet->time_out_am = null;
+                    }
+                    else if($timeSheet->time_in_pm === $file->user_timesheet_time)
+                    {
+                        $timeSheet->time_in_pm = null;
+                    }
+                    else if($timeSheet->time_out_pm === $file->user_timesheet_time)
+                    {
+                        $timeSheet->time_out_pm = null;
+                    }
+                    $timeSheet->update();
+        
+                    $timeSheetAfterUpdate = UserTimesheet::find()->where(['id' => $timesheet_id])->one();
+        
+                    if(empty($timeSheetAfterUpdate->time_in_am) && empty($timeSheetAfterUpdate->time_out_am) && empty($timeSheetAfterUpdate->time_in_pm) && empty($timeSheetAfterUpdate->time_out_pm))
+                    {
+                        $timeSheetAfterUpdate->delete();
+                    }
                 }
             }
+           
         }
 
         $model = new LoginForm();
@@ -641,47 +648,54 @@ class SiteController extends Controller
     {
         if($timesheet_id)
         {
-            $file = Files::find()->where([
+            if(Files::find()->where([
                 'model_name' => ['UserFacialRegister','UserTimesheet'],
                 'user_timesheet_id' => $timesheet_id,
-                ])->orderBy(['id' => SORT_DESC])->one();
-            
-            // $file->delete();
-    
-            if($file->delete())
+                ])->orderBy(['id' => SORT_DESC])->exists())
             {
-                if(file_exists(Yii::getAlias('@backend/web/uploads/').$file->file_name))
+                $file = Files::find()->where([
+                    'model_name' => ['UserFacialRegister','UserTimesheet'],
+                    'user_timesheet_id' => $timesheet_id,
+                    ])->orderBy(['id' => SORT_DESC])->one();
+                
+                // $file->delete();
+        
+                if($file->delete())
                 {
-                    unlink(Yii::getAlias('@backend/web/uploads/').$file->file_name);
-                }
-    
-                $timeSheet = UserTimesheet::find()->where(['id' => $timesheet_id])->one();
-    
-                if($timeSheet->time_in_am === $file->user_timesheet_time)
-                {
-                    $timeSheet->time_in_am = null;
-                }
-                else if($timeSheet->time_out_am === $file->user_timesheet_time)
-                {
-                    $timeSheet->time_out_am = null;
-                }
-                else if($timeSheet->time_in_pm === $file->user_timesheet_time)
-                {
-                    $timeSheet->time_in_pm = null;
-                }
-                else if($timeSheet->time_out_pm === $file->user_timesheet_time)
-                {
-                    $timeSheet->time_out_pm = null;
-                }
-                $timeSheet->update();
-    
-                $timeSheetAfterUpdate = UserTimesheet::find()->where(['id' => $timesheet_id])->one();
-    
-                if(empty($timeSheetAfterUpdate->time_in_am) && empty($timeSheetAfterUpdate->time_out_am) && empty($timeSheetAfterUpdate->time_in_pm) && empty($timeSheetAfterUpdate->time_out_pm))
-                {
-                    $timeSheetAfterUpdate->delete();
+                    if(file_exists(Yii::getAlias('@backend/web/uploads/').$file->file_name))
+                    {
+                        unlink(Yii::getAlias('@backend/web/uploads/').$file->file_name);
+                    }
+        
+                    $timeSheet = UserTimesheet::find()->where(['id' => $timesheet_id])->one();
+        
+                    if($timeSheet->time_in_am === $file->user_timesheet_time)
+                    {
+                        $timeSheet->time_in_am = null;
+                    }
+                    else if($timeSheet->time_out_am === $file->user_timesheet_time)
+                    {
+                        $timeSheet->time_out_am = null;
+                    }
+                    else if($timeSheet->time_in_pm === $file->user_timesheet_time)
+                    {
+                        $timeSheet->time_in_pm = null;
+                    }
+                    else if($timeSheet->time_out_pm === $file->user_timesheet_time)
+                    {
+                        $timeSheet->time_out_pm = null;
+                    }
+                    $timeSheet->update();
+        
+                    $timeSheetAfterUpdate = UserTimesheet::find()->where(['id' => $timesheet_id])->one();
+        
+                    if(empty($timeSheetAfterUpdate->time_in_am) && empty($timeSheetAfterUpdate->time_out_am) && empty($timeSheetAfterUpdate->time_in_pm) && empty($timeSheetAfterUpdate->time_out_pm))
+                    {
+                        $timeSheetAfterUpdate->delete();
+                    }
                 }
             }
+            
         }
 
         $model = new LoginForm();
