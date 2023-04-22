@@ -196,7 +196,7 @@ $this->registerJs(<<<JS
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Image saved successfully');
+                        alert('Image saved successfully. Refresh this page to see captured photo.');
                     } else {
                         alert(data.message || 'Failed to save image');
                     }
