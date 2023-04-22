@@ -99,7 +99,7 @@ class UserManagementController extends Controller
                         'roles' => ['user-management-register-face'],
                     ],
                     [
-                        'actions' => ['company-json','update-my-account','upload-my-signature','register-image','preview-captured-photo','delete-face-photo','import-trainees','save-imported-trainees','download-template'],
+                        'actions' => ['company-json','update-my-account','upload-my-signature','register-image','preview-captured-photo','delete-face-photo','import-trainees','save-imported-trainees','download-template','upload-profile-photo'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -319,6 +319,11 @@ class UserManagementController extends Controller
 
     public function actionRegisterFace($user_id)
     {
+        if($user_id != Yii::$app->user->identity->id)
+        {
+            throw new \yii\web\NotFoundHttpException('The requested page does not exist.');
+        }
+        
         $model = new UserData();
 
         $userModel = UserData::find()->where(['id' => $user_id])->one();
@@ -326,6 +331,7 @@ class UserManagementController extends Controller
         $fileModel = Files::find()->where(['model_id' => $user_id, 'model_name' => 'UserFacialRegister'])->all();
 
         return $this->render('register_face',['model' => $model, 'user_id' => $user_id, 'userModel' => $userModel,'fileModel' => $fileModel,]);
+        
     }
 
     private function saveCapturedImage($imageData)
@@ -563,11 +569,47 @@ class UserManagementController extends Controller
             if ($modelUpload->upload()) {
                 // file is uploaded successfully
                 \Yii::$app->getSession()->setFlash('success', 'e-Signature has been uploaded');
-                return $this->redirect(['upload-my-signature', 'id' => $id, 'message' => $message]);
+                return $this->redirect(Yii::$app->request->referrer);
             }
         }
 
         return $this->render('_upload_my_signature', [
+            'model' => $this->findModel($id),
+            'modelUpload' => $modelUpload,
+            'message' => $message,
+        ]);
+    }
+
+    /**
+     * Displays a single UserData model.
+     * @param int $id ID
+     * @return string
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionUploadProfilePhoto($id,$message="Upload Profile Picture")
+    {
+        if(Yii::$app->user->identity->id != $id)
+        {
+            throw new NotFoundHttpException("Page not found");
+        }
+
+
+        $modelUpload = new UploadForm();
+
+        if (Yii::$app->request->isPost) {
+
+            $modelUpload->model_name = 'ProfilePhoto';
+            $modelUpload->model_id = $id;
+
+            $modelUpload->imageFile = UploadedFile::getInstance($modelUpload, 'imageFile');
+            if ($modelUpload->uploadprofilephoto()) {
+                // file is uploaded successfully
+                \Yii::$app->getSession()->setFlash('success', 'Profile picture has been uploaded');
+                return $this->redirect(Yii::$app->request->referrer);
+            }
+        }
+
+        return $this->render('_upload_profile_photo', [
             'model' => $this->findModel($id),
             'modelUpload' => $modelUpload,
             'message' => $message,

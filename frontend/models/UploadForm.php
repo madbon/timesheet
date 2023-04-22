@@ -46,32 +46,96 @@ class UploadForm extends Model
             $model->file_hash = $hashValue;
             $model->created_at = $datetimeInteger;
 
-            if(Files::find()->where(['model_id' => $this->model_id, 'model_name' => $this->model_name])->exists())
-            {
+            // if(Files::find()->where(['model_id' => $this->model_id, 'model_name' => $this->model_name])->exists())
+            // {
                 
-                $queryFileOne = Files::find()->where(['model_id' => $this->model_id, 'model_name' => $this->model_name])->one();
+            //     $queryFileOne = Files::find()->where(['model_id' => $this->model_id, 'model_name' => $this->model_name])->one();
 
-                $getFileName = $queryFileOne->file_hash.'.'.$queryFileOne->extension;
+            //     $getFileName = $queryFileOne->file_hash.'.'.$queryFileOne->extension;
 
-                 // Delete uploaded file if existing
+            //      // Delete uploaded file if existing
                  
-                // $file_path = Yii::getAlias('@frontend/web/uploads/') . $getFileName; 
-                $file_path = Yii::getAlias('@webroot')."/uploads/".$getFileName;
-                //assuming $file_name is the name of the file to be deleted
+            //     // $file_path = Yii::getAlias('@frontend/web/uploads/') . $getFileName; 
+            //     $file_path = Yii::getAlias('@webroot')."/uploads/".$getFileName;
+            //     //assuming $file_name is the name of the file to be deleted
 
-                if (file_exists($file_path)) {
-                    unlink($file_path);
-                    Files::deleteAll(['model_id' => $this->model_id, 'model_name' => $this->model_name]);
-                    // return true;
-                    // file was successfully deleted
-                } else {
-                    // return true;
-                }
+            //     if (file_exists($file_path)) {
+            //         unlink($file_path);
+            //         Files::deleteAll(['model_id' => $this->model_id, 'model_name' => $this->model_name]);
+            //         // return true;
+            //         // file was successfully deleted
+            //     } else {
+            //         // return true;
+            //     }
+            // }
+            // else
+            // {
+            //     // return true;
+            // }
+
+           
+
+            if($model->save(false))
+            {
+                $this->imageFile->saveAs('uploads/' . $hashValue.'.'.$this->imageFile->extension);
+                return true;
             }
             else
             {
-                // return true;
+                return false;
             }
+            
+        } else {
+            return false;
+        }
+    }
+
+    public function uploadprofilephoto()
+    {
+        if ($this->validate()) {
+
+            $model = new Files();
+            date_default_timezone_set("Asia/Manila");
+            $datetimeInteger = time();
+
+            $model->user_id = Yii::$app->user->identity->id;
+            $model->model_name = "ProfilePhoto";
+            $model->model_id = $this->model_id;
+            $model->file_name = $this->imageFile->baseName;
+            $model->extension = $this->imageFile->extension;
+
+            $compositionHash = (Yii::$app->user->identity->id)."-".($this->model_name)."-".($this->model_id).($this->imageFile->baseName)."-".($datetimeInteger);
+            $hashValue = md5($compositionHash);
+
+            $model->file_hash = $hashValue;
+            $model->created_at = $datetimeInteger;
+
+            // if(Files::find()->where(['model_id' => $this->model_id, 'model_name' => 'ProfilePhoto'])->exists())
+            // {
+                
+            //     $queryFileOne = Files::find()->where(['model_id' => $this->model_id, 'model_name' => $this->model_name])->one();
+
+            //     $getFileName = $queryFileOne->file_hash.'.'.$queryFileOne->extension;
+
+            //      // Delete uploaded file if existing
+                 
+            //     // $file_path = Yii::getAlias('@frontend/web/uploads/') . $getFileName; 
+            //     $file_path = Yii::getAlias('@webroot')."/uploads/".$getFileName;
+            //     //assuming $file_name is the name of the file to be deleted
+
+            //     if (file_exists($file_path)) {
+            //         unlink($file_path);
+            //         Files::deleteAll(['model_id' => $this->model_id, 'model_name' => $this->model_name]);
+            //         // return true;
+            //         // file was successfully deleted
+            //     } else {
+            //         // return true;
+            //     }
+            // }
+            // else
+            // {
+            //     // return true;
+            // }
 
            
 
