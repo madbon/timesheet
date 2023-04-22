@@ -63,7 +63,7 @@ table.table tbody tr td
                     <tr style="display:none;" id="different-timein">
                         <td colspan="2" style="text-align: center;">
                             <p style="padding-top:50px;">
-                                <?= Html::a('<i class="fas fa-sign-in-alt"></i> Use Login Credentials to record time in/out',['/capture-login-no-facial-recog'],['class' => 'btn btn-primary btn-lg']); ?>
+                                <?= Html::a('<i class="fas fa-sign-in-alt"></i> Use Login Credentials to record time in/out',['/capture-login-no-facial-recog'],['class' => 'btn btn-primary btn-sm']); ?>
                             </p>
                         </td>
                     </tr>
@@ -163,6 +163,7 @@ $this->registerJs(<<<JS
     async function processVideoFrame() {
 
         const faceMessage = document.getElementById('faceMessage');
+        var contentDifferentTimeIn = document.getElementById("different-timein");
 
         if (!video.paused && !video.ended) {
             const ctx = canvas.getContext('2d');
@@ -173,6 +174,7 @@ $this->registerJs(<<<JS
             if (currentDescriptor) {
                 console.log('face detected');
                 faceMessage.textContent = 'Face not recognized. Please try again.';
+                contentDifferentTimeIn.style.display = "";
                 const response = await fetch('site/get-images');
                 const storedImages = await response.json();
                 const threshold = 0.30;
