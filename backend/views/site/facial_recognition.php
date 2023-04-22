@@ -52,7 +52,7 @@ table.table tbody tr td
                     </tr>
                     <tr>
                         <td colspan="2">    
-                            <div id="faceMessage" style="text-align: center; font-size:25px; color:red;">Waiting for face detection...</div>
+                            <span id="faceMessage" style="text-align: center; font-size:25px; color:red;">Waiting for face detection...</span>
                         </td>
                     </tr>
                     <tr style="display: none;">
@@ -173,7 +173,8 @@ $this->registerJs(<<<JS
 
             if (currentDescriptor) {
                 console.log('face detected');
-                faceMessage.textContent = 'Face not recognized. Please try again.';
+                faceMessage.textContent = "Face Recognizing. Please wait..";
+                
                 contentDifferentTimeIn.style.display = "";
                 const response = await fetch('site/get-images');
                 const storedImages = await response.json();
@@ -221,6 +222,7 @@ $this->registerJs(<<<JS
                         faceFoundSent = false;
                     });
                 } else {
+                    faceMessage.textContent = 'Face not recognized. Please try again.';
                     capturedPhoto = null;
                 }
             } else {
