@@ -386,7 +386,7 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
                     ],
                     [
                         'label' => 'Profile Picture', 'url' => ['user-management/upload-profile-photo','id' => Yii::$app->user->identity->id],
-                        // 'visible' => Yii::$app->user->can('upload-signature'),
+                        'visible' => Yii::$app->user->can('upload-profile-photo'),
                     ],
                     [
                         'label' => 'My e-Signature', 'url' => ['user-management/upload-my-signature','id' => Yii::$app->user->identity->id],
