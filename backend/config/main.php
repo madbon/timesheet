@@ -49,10 +49,11 @@ return [
                 'confirm-profile' => 'site/confirm-profile',
                 'index' => 'site/index',
                 'confirm-profile-success' => 'site/confirm-profile-success',
+                'facial-recognition' => 'site/facial-recognition',
             ],
         ],
     ],
-    // 'defaultRoute' => 'site/capture-login-with-facial-recog',
-    'defaultRoute' => 'site/capture-login-no-facial-recog',
+    'defaultRoute' => 'site/facial-recognition',
+    // 'defaultRoute' => 'site/capture-login-no-facial-recog',
     'params' => $params,
 ];

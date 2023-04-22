@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 14, 2023 at 02:37 PM
+-- Generation Time: Apr 22, 2023 at 01:49 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -28,13 +28,13 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `announcement` (
-  `id` int(11) NOT NULL,
-  `viewer_type` varchar(50) DEFAULT '0',
-  `user_id` int(11) DEFAULT NULL,
-  `content_title` varchar(250) DEFAULT NULL,
-  `content` text DEFAULT NULL,
-  `date_time` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `id` int(11) NOT NULL COMMENT 'unique id of announcement (auto generated)',
+  `viewer_type` varchar(50) DEFAULT NULL COMMENT 'serve as identifier to filter who can view the announcement (all courses, only assigned courses, or selected courses)',
+  `user_id` int(11) DEFAULT NULL COMMENT 'foreign key unique id (user table) creator of announcement',
+  `content_title` varchar(250) DEFAULT NULL COMMENT 'optional field (title of announcement)',
+  `content` text DEFAULT NULL COMMENT 'details of announcement',
+  `date_time` datetime DEFAULT NULL COMMENT 'date and time that announcement has been created/posted'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='This table would allow you to store announcement details/content.';
 
 --
 -- Dumping data for table `announcement`
@@ -50,10 +50,10 @@ INSERT INTO `announcement` (`id`, `viewer_type`, `user_id`, `content_title`, `co
 --
 
 CREATE TABLE `announcement_program_tags` (
-  `id` int(11) NOT NULL,
-  `announcement_id` int(11) DEFAULT NULL,
-  `ref_program_id` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `id` int(11) NOT NULL COMMENT 'Unique ID (auto generated)',
+  `announcement_id` int(11) DEFAULT NULL COMMENT 'foreign key (announcement table)',
+  `ref_program_id` int(11) DEFAULT NULL COMMENT 'foreign key (ref_program table)'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='This table will store data on which courses/programs will see the announcement';
 
 --
 -- Dumping data for table `announcement_program_tags`
@@ -69,10 +69,10 @@ INSERT INTO `announcement_program_tags` (`id`, `announcement_id`, `ref_program_i
 --
 
 CREATE TABLE `auth_assignment` (
-  `item_name` varchar(64) NOT NULL,
-  `user_id` varchar(64) NOT NULL,
-  `created_at` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `item_name` varchar(64) NOT NULL COMMENT 'foreign key (unique name of role)',
+  `user_id` varchar(64) NOT NULL COMMENT 'unique id, foreign key from user table',
+  `created_at` int(11) DEFAULT NULL COMMENT 'date and time created'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='this table will store the data of users who have an assigned role or permission to access the system';
 
 --
 -- Dumping data for table `auth_assignment`
@@ -108,14 +108,14 @@ INSERT INTO `auth_assignment` (`item_name`, `user_id`, `created_at`) VALUES
 --
 
 CREATE TABLE `auth_item` (
-  `name` varchar(64) NOT NULL,
-  `type` smallint(6) NOT NULL,
-  `description` text DEFAULT NULL,
-  `rule_name` varchar(64) DEFAULT NULL,
-  `data` blob DEFAULT NULL,
-  `created_at` int(11) DEFAULT NULL,
-  `updated_at` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `name` varchar(64) NOT NULL COMMENT 'unique name of roles/permissions',
+  `type` smallint(6) NOT NULL COMMENT 'type of access (1 - role of the user / 2 - permission to access the specific or special features of the system)',
+  `description` text DEFAULT NULL COMMENT 'description of the role and permission',
+  `rule_name` varchar(64) DEFAULT NULL COMMENT 'disregard this column',
+  `data` blob DEFAULT NULL COMMENT 'disregard this column',
+  `created_at` int(11) DEFAULT NULL COMMENT 'date and time created',
+  `updated_at` int(11) DEFAULT NULL COMMENT 'date and time updated'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='In this table are stored the permissions and roles that can be assigned to users so that they have access to the system and the special features of the system';
 
 --
 -- Dumping data for table `auth_item`
@@ -171,6 +171,7 @@ INSERT INTO `auth_item` (`name`, `type`, `description`, `rule_name`, `data`, `cr
 ('settings-role-assignments', 2, '', NULL, NULL, NULL, NULL),
 ('settings-roles', 2, '', NULL, NULL, NULL, NULL),
 ('settings-roles-permission-container', 2, '', NULL, NULL, NULL, NULL),
+('settings-system-other-feature', 2, '', NULL, NULL, NULL, NULL),
 ('settings-task-container', 2, '', NULL, NULL, NULL, NULL),
 ('settings-user-accounts-form-reference-container', 2, '', NULL, NULL, NULL, NULL),
 ('submit_accomplishment_report', 2, 'Permission to Submit Accomplishment Report', NULL, NULL, NULL, NULL),
@@ -180,6 +181,7 @@ INSERT INTO `auth_item` (`name`, `type`, `description`, `rule_name`, `data`, `cr
 ('timesheet-remarks', 2, '', NULL, NULL, NULL, NULL),
 ('Trainee', 1, '', NULL, NULL, NULL, NULL),
 ('upload-others-esig', 2, '', NULL, NULL, NULL, NULL),
+('upload-profile-photo', 2, '', NULL, NULL, NULL, NULL),
 ('upload-signature', 2, 'permission to upload signature', NULL, NULL, NULL, NULL),
 ('user-management-create', 2, NULL, NULL, NULL, NULL, NULL),
 ('user-management-delete', 2, '', NULL, NULL, NULL, NULL),
@@ -201,9 +203,9 @@ INSERT INTO `auth_item` (`name`, `type`, `description`, `rule_name`, `data`, `cr
 --
 
 CREATE TABLE `auth_item_child` (
-  `parent` varchar(64) NOT NULL,
-  `child` varchar(64) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `parent` varchar(64) NOT NULL COMMENT 'unique name of role and permission',
+  `child` varchar(64) NOT NULL COMMENT 'unique name of role and permission (assigned permission to role)'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='In this table, the assigned permissions to each role are stored.';
 
 --
 -- Dumping data for table `auth_item_child`
@@ -239,11 +241,11 @@ INSERT INTO `auth_item_child` (`parent`, `child`) VALUES
 ('Administrator', 'settings-role-assignments'),
 ('Administrator', 'settings-roles'),
 ('Administrator', 'settings-roles-permission-container'),
+('Administrator', 'settings-system-other-feature'),
 ('Administrator', 'settings-task-container'),
 ('Administrator', 'settings-user-accounts-form-reference-container'),
 ('Administrator', 'upload-others-esig'),
 ('Administrator', 'USER-MANAGEMENT-MODULE'),
-('Administrator', 'user-management-register-face'),
 ('Administrator', 'view-column-course-program'),
 ('Administrator', 'view-other-timesheet'),
 ('CompanySupervisor', 'access-trainee-index'),
@@ -288,7 +290,6 @@ INSERT INTO `auth_item_child` (`parent`, `child`) VALUES
 ('OjtCoordinator', 'user-management-delete'),
 ('OjtCoordinator', 'user-management-delete-role-assigned'),
 ('OjtCoordinator', 'user-management-index'),
-('OjtCoordinator', 'user-management-register-face'),
 ('OjtCoordinator', 'user-management-update'),
 ('OjtCoordinator', 'user-management-upload-file'),
 ('OjtCoordinator', 'user-management-view'),
@@ -305,6 +306,7 @@ INSERT INTO `auth_item_child` (`parent`, `child`) VALUES
 ('Trainee', 'time-in-out'),
 ('Trainee', 'timesheet-remarks'),
 ('Trainee', 'upload-signature'),
+('Trainee', 'user-management-register-face'),
 ('USER-MANAGEMENT-MODULE', 'user-management-create'),
 ('USER-MANAGEMENT-MODULE', 'user-management-delete'),
 ('USER-MANAGEMENT-MODULE', 'user-management-delete-role-assigned'),
@@ -324,7 +326,7 @@ CREATE TABLE `auth_rule` (
   `data` blob DEFAULT NULL,
   `created_at` int(11) DEFAULT NULL,
   `updated_at` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Please disregard this table because we didn''t use it, but it was automatically migrated to the database once you installed the yii2 php framework, so it might be useful, so don''t delete it.';
 
 -- --------------------------------------------------------
 
@@ -333,11 +335,11 @@ CREATE TABLE `auth_rule` (
 --
 
 CREATE TABLE `coordinator_programs` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `ref_program_id` int(11) DEFAULT NULL,
-  `ref_program_major_id` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `id` int(11) NOT NULL COMMENT 'unique ID',
+  `user_id` int(11) DEFAULT NULL COMMENT 'foreign key from user table (coordinator id)',
+  `ref_program_id` int(11) DEFAULT NULL COMMENT 'foreign key from ref_program table (unique id of program/course)',
+  `ref_program_major_id` int(11) DEFAULT NULL COMMENT 'just ready in case the different majors need to be assigned to the coordinator'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='here you can see the coordinator''s assigned programs/courses';
 
 --
 -- Dumping data for table `coordinator_programs`
@@ -357,18 +359,18 @@ INSERT INTO `coordinator_programs` (`id`, `user_id`, `ref_program_id`, `ref_prog
 --
 
 CREATE TABLE `files` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `model_name` varchar(50) DEFAULT NULL,
-  `model_id` int(11) DEFAULT NULL,
-  `file_name` varchar(250) DEFAULT NULL,
-  `extension` varchar(10) DEFAULT NULL,
-  `file_hash` varchar(150) DEFAULT NULL,
-  `remarks` text DEFAULT NULL,
-  `created_at` int(11) DEFAULT NULL,
-  `user_timesheet_time` time DEFAULT NULL,
-  `user_timesheet_id` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+  `id` int(11) NOT NULL COMMENT 'unique id of file (auto generated)',
+  `user_id` int(11) DEFAULT NULL COMMENT 'foreign key from user table (uploader)',
+  `model_name` varchar(50) DEFAULT NULL COMMENT 'identifier (category of the file / table name)',
+  `model_id` int(11) DEFAULT NULL COMMENT 'table id',
+  `file_name` varchar(250) DEFAULT NULL COMMENT 'file name',
+  `extension` varchar(10) DEFAULT NULL COMMENT 'file type or extension name',
+  `file_hash` varchar(150) DEFAULT NULL COMMENT 'unique hash code of the file (auto generated by the system)',
+  `remarks` text DEFAULT NULL COMMENT 'in case the uploader want to add some remarks or message regarding the uploaded file',
+  `created_at` int(11) DEFAULT NULL COMMENT 'date time uploaded',
+  `user_timesheet_time` time DEFAULT NULL COMMENT 'serves as basis in DTR time in/out captured photo of user',
+  `user_timesheet_id` int(11) DEFAULT NULL COMMENT 'foreign key of user_timesheet table'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci COMMENT='in this table you can see all the files uploaded to the system';
 
 --
 -- Dumping data for table `files`
@@ -379,7 +381,6 @@ INSERT INTO `files` (`id`, `user_id`, `model_name`, `model_id`, `file_name`, `ex
 (125, 35, 'UserFacialRegister', 35, '6434e9778d9c7.png', 'png', '6434e9778d9c7.png', NULL, 1681189239, NULL, NULL),
 (126, 35, 'UserFacialRegister', 35, '6434e9956dbf2.png', 'png', '6434e9956dbf2.png', NULL, 1681189269, NULL, NULL),
 (127, 35, 'UserFacialRegister', 35, '6434e9bf67a0b.png', 'png', '6434e9bf67a0b.png', NULL, 1681189311, NULL, NULL),
-(128, 35, 'UserFacialRegister', 35, '6434e9d411d0c.png', 'png', '6434e9d411d0c.png', NULL, 1681189332, NULL, NULL),
 (129, 46, 'UserFacialRegister', 46, '6434ea0b655d8.png', 'png', '6434ea0b655d8.png', NULL, 1681189387, NULL, NULL),
 (130, 46, 'UserFacialRegister', 46, '6434ea0eec953.png', 'png', '6434ea0eec953.png', NULL, 1681189390, NULL, NULL),
 (131, 46, 'UserFacialRegister', 46, '6434ea127bb90.png', 'png', '6434ea127bb90.png', NULL, 1681189394, NULL, NULL),
@@ -402,7 +403,71 @@ INSERT INTO `files` (`id`, `user_id`, `model_name`, `model_id`, `file_name`, `ex
 (154, 35, 'UserTimesheet', 35, '643763c774d27.png', 'png', '643763c774d27.png', NULL, 1681351623, '10:07:03', 17),
 (155, 35, 'UserTimesheet', 35, '643764644223c.png', 'png', '643764644223c.png', NULL, 1681351780, '10:09:40', 17),
 (156, 35, 'UserTimesheet', 35, '6437647a144d5.png', 'png', '6437647a144d5.png', NULL, 1681351802, '10:10:02', 18),
-(157, 35, 'UserTimesheet', 35, '64376499b9d0e.png', 'png', '64376499b9d0e.png', NULL, 1681351833, '10:10:33', 18);
+(157, 35, 'UserTimesheet', 35, '64376499b9d0e.png', 'png', '64376499b9d0e.png', NULL, 1681351833, '10:10:33', 18),
+(158, 44, 'UserFacialRegister', 44, '643d008c463e4.png', 'png', '643d008c463e4.png', NULL, 1681719436, NULL, NULL),
+(159, 44, 'UserFacialRegister', 44, '643d00902a333.png', 'png', '643d00902a333.png', NULL, 1681719440, NULL, NULL),
+(160, 44, 'UserFacialRegister', 44, '643d0097cbb52.png', 'png', '643d0097cbb52.png', NULL, 1681719447, NULL, NULL),
+(161, 44, 'UserFacialRegister', 44, '643d009b2bdb2.png', 'png', '643d009b2bdb2.png', NULL, 1681719451, NULL, NULL),
+(162, 44, 'UserFacialRegister', 44, '643d009e521f9.png', 'png', '643d009e521f9.png', NULL, 1681719454, NULL, NULL),
+(163, 44, 'UserFacialRegister', 44, '643d00a13fa86.png', 'png', '643d00a13fa86.png', NULL, 1681719457, NULL, NULL),
+(164, 44, 'UserFacialRegister', 44, '643d00a42ea74.png', 'png', '643d00a42ea74.png', NULL, 1681719460, NULL, NULL),
+(165, 44, 'UserFacialRegister', 44, '643d00a6767ad.png', 'png', '643d00a6767ad.png', NULL, 1681719462, NULL, NULL),
+(166, 44, 'UserTimesheet', 44, '643d00c9b4127.png', 'png', '643d00c9b4127.png', NULL, 1681719497, '16:18:17', 19),
+(167, 35, 'UserFacialRegister', 35, '643d018281032.png', 'png', '643d018281032.png', NULL, 1681719682, NULL, NULL),
+(168, 35, 'UserFacialRegister', 35, '643d3cff04c8e.png', 'png', '643d3cff04c8e.png', NULL, 1681734911, NULL, NULL),
+(169, 35, 'UserFacialRegister', 35, '643d3cff33514.png', 'png', '643d3cff33514.png', NULL, 1681734911, NULL, NULL),
+(170, 35, 'UserFacialRegister', 35, '643d3d06aa853.png', 'png', '643d3d06aa853.png', NULL, 1681734918, NULL, NULL),
+(171, 35, 'UserFacialRegister', 35, '643d3d09e2ed7.png', 'png', '643d3d09e2ed7.png', NULL, 1681734921, NULL, NULL),
+(172, 35, 'UserFacialRegister', 35, '643d3d0e584d5.png', 'png', '643d3d0e584d5.png', NULL, 1681734926, NULL, NULL),
+(173, 35, 'UserFacialRegister', 35, '643d3d11f2ed7.png', 'png', '643d3d11f2ed7.png', NULL, 1681734930, NULL, NULL),
+(174, 35, 'UserTimesheet', 35, '6442954d1f439.png', 'png', '6442954d1f439.png', NULL, 1682085197, '21:53:17', 20),
+(175, 35, 'UserTimesheet', 35, '6442954d7c928.png', 'png', '6442954d7c928.png', NULL, 1682085197, '21:53:17', 20),
+(176, 35, 'UserTimesheet', 35, '6442959fab162.png', 'png', '6442959fab162.png', NULL, 1682085279, '21:54:39', 21),
+(177, 35, 'UserTimesheet', 35, '6442959fdb0d8.png', 'png', '6442959fdb0d8.png', NULL, 1682085279, '21:54:39', 21),
+(178, 35, 'UserTimesheet', 35, '644296d5d74f7.png', 'png', '644296d5d74f7.png', NULL, 1682085589, '21:59:49', 22),
+(179, 35, 'UserTimesheet', 35, '644297bc0647e.png', 'png', '644297bc0647e.png', NULL, 1682085820, '22:03:40', 22),
+(181, 35, 'UserTimesheet', 35, '644298196b826.png', 'png', '644298196b826.png', NULL, 1682085913, '22:05:13', 24),
+(182, 35, 'UserTimesheet', 35, '644298198279b.png', 'png', '644298198279b.png', NULL, 1682085913, '22:05:13', 24),
+(185, 35, 'UserTimesheet', 35, '64429a2313875.png', 'png', '64429a2313875.png', NULL, 1682086435, '22:13:55', 26),
+(186, 35, 'UserTimesheet', 35, '64429a239afe2.png', 'png', '64429a239afe2.png', NULL, 1682086435, '22:13:55', 26),
+(187, 35, 'UserTimesheet', 35, '64429d96cb019.png', 'png', '64429d96cb019.png', NULL, 1682087318, '22:28:38', 27),
+(188, 35, 'UserTimesheet', 35, '64429ddae85e3.png', 'png', '64429ddae85e3.png', NULL, 1682087387, '22:29:47', 27),
+(189, 35, 'UserTimesheet', 35, '64429ddb55188.png', 'png', '64429ddb55188.png', NULL, 1682087387, '22:29:47', 28),
+(190, 35, 'UserTimesheet', 35, '64429e09c2d1d.png', 'png', '64429e09c2d1d.png', NULL, 1682087433, '22:30:33', 28),
+(191, 35, 'UserTimesheet', 35, '64429e09f031a.png', 'png', '64429e09f031a.png', NULL, 1682087434, '22:30:34', 29),
+(192, 35, 'UserTimesheet', 35, '64429e2022060.png', 'png', '64429e2022060.png', NULL, 1682087456, '22:30:56', 29),
+(193, 35, 'UserTimesheet', 35, '64429e203c1b4.png', 'png', '64429e203c1b4.png', NULL, 1682087456, '22:30:56', 30),
+(194, 35, 'UserTimesheet', 35, '64429e6d8f623.png', 'png', '64429e6d8f623.png', NULL, 1682087533, '22:32:13', 30),
+(195, 35, 'UserTimesheet', 35, '64429e6dde65d.png', 'png', '64429e6dde65d.png', NULL, 1682087533, '22:32:13', 31),
+(196, 35, 'UserTimesheet', 35, '64429f6689f4f.png', 'png', '64429f6689f4f.png', NULL, 1682087782, '22:36:22', 31),
+(197, 35, 'UserTimesheet', 35, '64429f835de55.png', 'png', '64429f835de55.png', NULL, 1682087811, '22:36:51', 32),
+(198, 35, 'UserTimesheet', 35, '64429fa5f0733.png', 'png', '64429fa5f0733.png', NULL, 1682087846, '22:37:26', 32),
+(199, 35, 'UserTimesheet', 35, '64429fa62f0c1.png', 'png', '64429fa62f0c1.png', NULL, 1682087846, '22:37:26', 33),
+(200, 35, 'UserTimesheet', 35, '6442a0b7f064d.png', 'png', '6442a0b7f064d.png', NULL, 1682088120, '22:42:00', 33),
+(201, 35, 'UserTimesheet', 35, '6442a0c4f4054.png', 'png', '6442a0c4f4054.png', NULL, 1682088133, '22:42:13', 34),
+(202, 35, 'UserTimesheet', 35, '6442a0dccfbb4.png', 'png', '6442a0dccfbb4.png', NULL, 1682088156, '22:42:36', 34),
+(203, 35, 'UserTimesheet', 35, '6442a3ad46c77.png', 'png', '6442a3ad46c77.png', NULL, 1682088877, '22:54:37', 35),
+(205, 64, 'UserFacialRegister', 64, '6442a4e017b0f.png', 'png', '6442a4e017b0f.png', NULL, 1682089184, NULL, NULL),
+(206, 64, 'UserFacialRegister', 64, '6442a4f6541e5.png', 'png', '6442a4f6541e5.png', NULL, 1682089206, NULL, NULL),
+(207, 64, 'UserFacialRegister', 64, '6442a4f991a75.png', 'png', '6442a4f991a75.png', NULL, 1682089209, NULL, NULL),
+(208, 64, 'UserFacialRegister', 64, '6442a4fd3856e.png', 'png', '6442a4fd3856e.png', NULL, 1682089213, NULL, NULL),
+(209, 64, 'UserFacialRegister', 64, '6442a50250470.png', 'png', '6442a50250470.png', NULL, 1682089218, NULL, NULL),
+(210, 64, 'UserTimesheet', 64, '6442a519d4c29.png', 'png', '6442a519d4c29.png', NULL, 1682089241, '23:00:41', 36),
+(211, 35, 'UserTimesheet', 35, '6442a574366aa.png', 'png', '6442a574366aa.png', NULL, 1682089332, '23:02:12', 35),
+(212, 35, 'UserTimesheet', 35, '6442a656b9feb.png', 'png', '6442a656b9feb.png', NULL, 1682089558, '23:05:58', 37),
+(213, 64, 'UserTimesheet', 64, '6442a6705f1e0.png', 'png', '6442a6705f1e0.png', NULL, 1682089584, '23:06:24', 36),
+(214, 35, 'UserTimesheet', 35, '6442a6927c085.png', 'png', '6442a6927c085.png', NULL, 1682089618, '23:06:58', 37),
+(215, 35, 'SubmissionThread', 4, 'APRIL AR', 'pdf', '3acd92f4baddfe96444e7580476dcd33', NULL, 1682091164, NULL, NULL),
+(223, 35, 'UserData', 35, 'esig1', 'png', '4a9e7132ed30566b8b88d42b5b7fdfb9', NULL, 1682128265, NULL, NULL),
+(224, 35, 'ProfilePhoto', 35, 'WIN_20230125_14_44_59_Pro', 'jpg', '89f3269392b56d5205c04c011478fdfe', NULL, 1682128275, NULL, NULL),
+(225, 35, 'ProfilePhoto', 35, '12312323', 'png', '821a906faea6c9a487ecd275a6eb883f', NULL, 1682128368, NULL, NULL),
+(226, 35, 'ProfilePhoto', 35, 'WIN_20230125_14_44_59_Pro', 'jpg', '30184148c0561bc9d1da9302e647fd5c', NULL, 1682128382, NULL, NULL),
+(227, 35, 'UserData', 35, 'esig2', 'png', 'eb91b08bcc487ed8fb1861f5b7f7332d', NULL, 1682128390, NULL, NULL),
+(228, 35, 'UserTimesheet', 35, '64434ead41ef0.png', 'png', '64434ead41ef0.png', NULL, 1682132653, '11:04:13', 38),
+(229, 35, 'UserTimesheet', 35, '64434ec6a2768.png', 'png', '64434ec6a2768.png', NULL, 1682132678, '11:04:38', 38),
+(230, 35, 'UserTimesheet', 35, '64434ed5a7b8c.png', 'png', '64434ed5a7b8c.png', NULL, 1682132693, '11:04:53', 39),
+(232, 35, 'UserTimesheet', 35, '64434ffeb7f42.png', 'png', '64434ffeb7f42.png', NULL, 1682132990, '11:09:50', 39),
+(237, 35, 'UserTimesheet', 35, '6443bd02aec03.png', 'png', '6443bd02aec03.png', NULL, 1682160898, '18:54:58', 39);
 
 -- --------------------------------------------------------
 
@@ -411,9 +476,9 @@ INSERT INTO `files` (`id`, `user_id`, `model_name`, `model_id`, `file_name`, `ex
 --
 
 CREATE TABLE `migration` (
-  `version` varchar(180) NOT NULL,
-  `apply_time` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+  `version` varchar(180) NOT NULL COMMENT 'migration file name',
+  `apply_time` int(11) DEFAULT NULL COMMENT 'date time migrated'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci COMMENT='auto migrated table once you install the Yii2 PHP framework (serves as repository of migrated default tables of Yii2 Framework)';
 
 --
 -- Dumping data for table `migration`
@@ -438,13 +503,13 @@ INSERT INTO `migration` (`version`, `apply_time`) VALUES
 --
 
 CREATE TABLE `ref_company` (
-  `id` int(11) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `address` varchar(255) DEFAULT NULL,
-  `latitude` decimal(10,7) DEFAULT NULL,
-  `longitude` decimal(10,7) DEFAULT NULL,
-  `contact_info` varchar(150) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `id` int(11) NOT NULL COMMENT 'unique id (auto generated)',
+  `name` varchar(255) DEFAULT NULL COMMENT 'company name',
+  `address` varchar(255) DEFAULT NULL COMMENT 'company address',
+  `latitude` decimal(10,7) DEFAULT NULL COMMENT 'company location (latitude)',
+  `longitude` decimal(10,7) DEFAULT NULL COMMENT 'company location (longitude)',
+  `contact_info` varchar(150) DEFAULT NULL COMMENT 'contact details of the company'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='reference table: you can see the encoded company details';
 
 --
 -- Dumping data for table `ref_company`
@@ -462,10 +527,10 @@ INSERT INTO `ref_company` (`id`, `name`, `address`, `latitude`, `longitude`, `co
 --
 
 CREATE TABLE `ref_department` (
-  `id` int(11) NOT NULL,
-  `title` varchar(250) DEFAULT NULL,
-  `abbreviation` varchar(20) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `id` int(11) NOT NULL COMMENT 'unique ID (auto generated)',
+  `title` varchar(250) DEFAULT NULL COMMENT 'department name',
+  `abbreviation` varchar(20) DEFAULT NULL COMMENT 'department abbreviation'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='reference table: the company''s departments are stored here';
 
 --
 -- Dumping data for table `ref_department`
@@ -483,12 +548,12 @@ INSERT INTO `ref_department` (`id`, `title`, `abbreviation`) VALUES
 --
 
 CREATE TABLE `ref_document_assignment` (
-  `id` int(11) NOT NULL,
-  `ref_document_type_id` int(11) DEFAULT NULL,
-  `auth_item` varchar(50) DEFAULT NULL,
-  `type` varchar(20) DEFAULT NULL,
-  `filter_type` varchar(150) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `id` int(11) NOT NULL COMMENT 'unique id (auto generated)',
+  `ref_document_type_id` int(11) DEFAULT NULL COMMENT 'foreign key of ref_document_type table',
+  `auth_item` varchar(50) DEFAULT NULL COMMENT 'role/permission name (auth_item table)',
+  `type` varchar(20) DEFAULT NULL COMMENT 'task identifier (SENDER or RECEIVER)',
+  `filter_type` varchar(150) DEFAULT NULL COMMENT 'Backend filter identifier (this serves as basis to filter the task)'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='reference table: serves as the system''s basis for who is the receiver or sender of the Accomplishment Report, Evaluation Form, & Activity Reminder';
 
 --
 -- Dumping data for table `ref_document_assignment`
@@ -509,13 +574,13 @@ INSERT INTO `ref_document_assignment` (`id`, `ref_document_type_id`, `auth_item`
 --
 
 CREATE TABLE `ref_document_type` (
-  `id` int(11) NOT NULL,
-  `title` varchar(150) DEFAULT NULL,
-  `action_title` varchar(150) DEFAULT NULL,
-  `required_uploading` int(11) NOT NULL,
-  `enable_tagging` int(11) NOT NULL,
-  `enable_commenting` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `id` int(11) NOT NULL COMMENT 'unique ID (auto generated)',
+  `title` varchar(150) DEFAULT NULL COMMENT 'title of task once RECEIVED',
+  `action_title` varchar(150) DEFAULT NULL COMMENT 'title of task to be performed',
+  `required_uploading` int(11) NOT NULL COMMENT '1 - required uploading of file / 0 - optional',
+  `enable_tagging` int(11) NOT NULL COMMENT '1 - enable tagging of user / 0 - disabl tagging of user',
+  `enable_commenting` int(11) NOT NULL COMMENT '1 - enable creating comment / 0 - disable creating of comment'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Reference table: types of task';
 
 --
 -- Dumping data for table `ref_document_type`
@@ -533,9 +598,9 @@ INSERT INTO `ref_document_type` (`id`, `title`, `action_title`, `required_upload
 --
 
 CREATE TABLE `ref_position` (
-  `id` int(11) NOT NULL,
-  `position` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `id` int(11) NOT NULL COMMENT 'unique id of position (auto generated)',
+  `position` varchar(100) DEFAULT NULL COMMENT 'position title'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Reference table: list of company positions';
 
 --
 -- Dumping data for table `ref_position`
@@ -555,11 +620,11 @@ INSERT INTO `ref_position` (`id`, `position`) VALUES
 --
 
 CREATE TABLE `ref_program` (
-  `id` int(11) NOT NULL,
-  `title` varchar(250) DEFAULT NULL,
-  `abbreviation` varchar(20) DEFAULT NULL,
-  `required_hours` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `id` int(11) NOT NULL COMMENT 'unique id of program/course (auto generated)',
+  `title` varchar(250) DEFAULT NULL COMMENT 'title of program/course',
+  `abbreviation` varchar(20) DEFAULT NULL COMMENT 'abbreviation of program/course',
+  `required_hours` int(11) NOT NULL COMMENT 'required hours to be rendered in OJT'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Reference table: list of programs/courses';
 
 --
 -- Dumping data for table `ref_program`
@@ -579,11 +644,11 @@ INSERT INTO `ref_program` (`id`, `title`, `abbreviation`, `required_hours`) VALU
 --
 
 CREATE TABLE `ref_program_major` (
-  `id` int(11) NOT NULL,
-  `ref_program_id` int(11) DEFAULT NULL,
-  `title` varchar(250) DEFAULT NULL,
-  `abbreviation` varchar(10) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `id` int(11) NOT NULL COMMENT 'unique if of major (auto generated)',
+  `ref_program_id` int(11) DEFAULT NULL COMMENT 'foreign key of ref_program table',
+  `title` varchar(250) DEFAULT NULL COMMENT 'title of Major',
+  `abbreviation` varchar(10) DEFAULT NULL COMMENT 'abbreviation of Major'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Refererence table: list of program''s majors';
 
 --
 -- Dumping data for table `ref_program_major`
@@ -600,7 +665,7 @@ INSERT INTO `ref_program_major` (`id`, `ref_program_id`, `title`, `abbreviation`
 
 CREATE TABLE `student_section` (
   `section` varchar(5) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Reference table: list of sections';
 
 --
 -- Dumping data for table `student_section`
@@ -622,7 +687,7 @@ INSERT INTO `student_section` (`section`) VALUES
 CREATE TABLE `student_year` (
   `year` int(1) NOT NULL,
   `title` varchar(20) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Reference table: list of years';
 
 --
 -- Dumping data for table `student_year`
@@ -640,12 +705,12 @@ INSERT INTO `student_year` (`year`, `title`) VALUES
 --
 
 CREATE TABLE `submission_reply` (
-  `id` int(11) NOT NULL,
-  `submission_thread_id` int(11) DEFAULT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `message` text DEFAULT NULL,
-  `date_time` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `id` int(11) NOT NULL COMMENT 'unique id of messages (auto generated)',
+  `submission_thread_id` int(11) DEFAULT NULL COMMENT 'foreign key id of submission_thread table (under of what task is this thread)',
+  `user_id` int(11) DEFAULT NULL COMMENT 'foreign key id of user table (creator of message)',
+  `message` text DEFAULT NULL COMMENT 'message content',
+  `date_time` datetime DEFAULT NULL COMMENT 'date time created'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='transaction table: this table allows user to store messages/comment regarding the submitted document (AR) or performed tasks (creating activity reminder) (messenger)';
 
 -- --------------------------------------------------------
 
@@ -654,15 +719,15 @@ CREATE TABLE `submission_reply` (
 --
 
 CREATE TABLE `submission_thread` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `tagged_user_id` int(11) DEFAULT NULL,
-  `subject` varchar(250) DEFAULT NULL,
-  `remarks` text DEFAULT NULL,
-  `ref_document_type_id` int(11) DEFAULT NULL,
-  `created_at` int(11) DEFAULT NULL,
-  `date_time` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `id` int(11) NOT NULL COMMENT 'unique ID (auto generated)',
+  `user_id` int(11) DEFAULT NULL COMMENT 'foreign key id of user table (submitted by / created by)',
+  `tagged_user_id` int(11) DEFAULT NULL COMMENT 'foreign key id (The company supervisor will tag whose evaluation form to submit)',
+  `subject` varchar(250) DEFAULT NULL COMMENT 'disregard this column',
+  `remarks` text DEFAULT NULL COMMENT 'remarks or message details regarding the submitted document or created activity reminder',
+  `ref_document_type_id` int(11) DEFAULT NULL COMMENT 'foreign key id of ref_document_type table (identifier if AR, Evaluation Form, or Activity Reminder)',
+  `created_at` int(11) DEFAULT NULL COMMENT 'disregard this column',
+  `date_time` datetime DEFAULT NULL COMMENT 'date time created/submitted'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='transactional table: here you can store all transaction regarding the tasks or submission of Accomplishment Report, Evaluation Form, and Activity Reminder.';
 
 --
 -- Dumping data for table `submission_thread`
@@ -671,7 +736,8 @@ CREATE TABLE `submission_thread` (
 INSERT INTO `submission_thread` (`id`, `user_id`, `tagged_user_id`, `subject`, `remarks`, `ref_document_type_id`, `created_at`, `date_time`) VALUES
 (1, 35, NULL, NULL, 'AR for April', 3, 1681051540, '2023-04-09 22:45:40'),
 (2, 44, NULL, NULL, 'Hello', 3, 1681053264, '2023-04-09 23:14:24'),
-(3, 38, 44, NULL, 'Please see the attached file', 1, 1681053320, '2023-04-09 23:15:20');
+(3, 38, 44, NULL, 'Please see the attached file', 1, 1681053320, '2023-04-09 23:15:20'),
+(4, 35, NULL, NULL, 'This is my AR for the month of APRIL', 3, 1682091164, '2023-04-21 23:32:44');
 
 -- --------------------------------------------------------
 
@@ -680,11 +746,11 @@ INSERT INTO `submission_thread` (`id`, `user_id`, `tagged_user_id`, `subject`, `
 --
 
 CREATE TABLE `submission_thread_seen` (
-  `id` int(11) NOT NULL,
-  `submission_thread_id` int(11) DEFAULT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `date_time` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `id` int(11) NOT NULL COMMENT 'unique id (auto generated)',
+  `submission_thread_id` int(11) DEFAULT NULL COMMENT 'foreign key id of submission_thread table',
+  `user_id` int(11) DEFAULT NULL COMMENT 'forein key id of user table (who viewed the created tasks or submitted document)',
+  `date_time` datetime DEFAULT NULL COMMENT 'date time seen'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Transactional table: serves as basis if the user seen the submitted document or viewed the created activity reminder';
 
 --
 -- Dumping data for table `submission_thread_seen`
@@ -702,7 +768,7 @@ INSERT INTO `submission_thread_seen` (`id`, `submission_thread_id`, `user_id`, `
 CREATE TABLE `suffix` (
   `title` varchar(10) NOT NULL,
   `meaning` varchar(150) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Reference table: list of suffixes';
 
 --
 -- Dumping data for table `suffix`
@@ -719,44 +785,63 @@ INSERT INTO `suffix` (`title`, `meaning`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `system_other_feature`
+--
+
+CREATE TABLE `system_other_feature` (
+  `id` int(11) NOT NULL,
+  `feature` varchar(250) DEFAULT NULL,
+  `enabled` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data for table `system_other_feature`
+--
+
+INSERT INTO `system_other_feature` (`id`, `feature`, `enabled`) VALUES
+(1, 'confirmation_after_face_recognized', 0);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `user`
 --
 
 CREATE TABLE `user` (
-  `id` int(11) NOT NULL,
-  `student_idno` varchar(50) DEFAULT NULL,
-  `student_year` int(1) DEFAULT NULL,
-  `student_section` varchar(1) DEFAULT NULL,
-  `ref_program_id` int(11) DEFAULT NULL,
-  `ref_program_major_id` int(11) DEFAULT NULL,
-  `ref_department_id` int(11) DEFAULT NULL,
-  `ref_position_id` int(11) DEFAULT NULL,
-  `fname` varchar(250) DEFAULT NULL,
-  `mname` varchar(150) DEFAULT NULL,
-  `sname` varchar(50) DEFAULT NULL,
-  `suffix` varchar(10) DEFAULT NULL,
-  `bday` date DEFAULT NULL,
-  `sex` varchar(1) DEFAULT NULL,
-  `username` varchar(255) NOT NULL,
-  `auth_key` varchar(32) NOT NULL,
-  `password_hash` varchar(255) NOT NULL,
-  `password_reset_token` varchar(255) DEFAULT NULL,
-  `email` varchar(255) NOT NULL,
-  `mobile_no` int(10) DEFAULT NULL,
-  `tel_no` varchar(150) NOT NULL,
-  `address` text DEFAULT NULL,
-  `status` smallint(6) NOT NULL DEFAULT 10,
-  `created_at` int(11) NOT NULL,
-  `updated_at` int(11) NOT NULL,
-  `verification_token` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `id` int(11) NOT NULL COMMENT 'unique id of user',
+  `student_idno` varchar(50) DEFAULT NULL COMMENT 'student id no',
+  `student_year` int(1) DEFAULT NULL COMMENT 'student''s year',
+  `student_section` varchar(1) DEFAULT NULL COMMENT 'student''s section',
+  `ref_program_id` int(11) DEFAULT NULL COMMENT 'student''s program/course',
+  `ref_program_major_id` int(11) DEFAULT NULL COMMENT 'student''s major',
+  `ref_department_id` int(11) DEFAULT NULL COMMENT 'student/supervisor''s deparment',
+  `ref_position_id` int(11) DEFAULT NULL COMMENT 'supervisor''s company position',
+  `fname` varchar(250) DEFAULT NULL COMMENT 'first name',
+  `mname` varchar(150) DEFAULT NULL COMMENT 'middle name',
+  `sname` varchar(50) DEFAULT NULL COMMENT 'surname',
+  `suffix` varchar(10) DEFAULT NULL COMMENT 'suffix',
+  `bday` date DEFAULT NULL COMMENT 'birthdate',
+  `sex` varchar(1) DEFAULT NULL COMMENT 'Male or Female (M,F)',
+  `username` varchar(255) NOT NULL COMMENT 'account''s username',
+  `auth_key` varchar(32) NOT NULL COMMENT 'accounts authentication key (unique code if the user successfully login)',
+  `password_hash` varchar(255) NOT NULL COMMENT 'accounts password (stored in hash code)',
+  `password_reset_token` varchar(255) DEFAULT NULL COMMENT 'disregard this column',
+  `email` varchar(255) NOT NULL COMMENT 'user''s email',
+  `mobile_no` int(10) DEFAULT NULL COMMENT 'user''s mobile no.',
+  `tel_no` varchar(150) NOT NULL COMMENT 'user''s telephone no.',
+  `address` text DEFAULT NULL COMMENT 'user''s address details',
+  `status` smallint(6) NOT NULL DEFAULT 10 COMMENT 'account''s status (ACTIVE or INACTIVE)',
+  `created_at` int(11) NOT NULL COMMENT 'date time created',
+  `updated_at` int(11) NOT NULL COMMENT 'date time updated',
+  `verification_token` varchar(255) DEFAULT NULL COMMENT 'auto generated key to allow user access the system'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='List of users of the system';
 
 --
 -- Dumping data for table `user`
 --
 
 INSERT INTO `user` (`id`, `student_idno`, `student_year`, `student_section`, `ref_program_id`, `ref_program_major_id`, `ref_department_id`, `ref_position_id`, `fname`, `mname`, `sname`, `suffix`, `bday`, `sex`, `username`, `auth_key`, `password_hash`, `password_reset_token`, `email`, `mobile_no`, `tel_no`, `address`, `status`, `created_at`, `updated_at`, `verification_token`) VALUES
-(2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Juan', 'Reyes', 'Dela Cruz', NULL, '1995-10-12', 'M', 'admin', 'mLv-KdIB84pIgOrOKnopaaXc51uQml-_', '$2y$13$Mg3jk2B0jWku6FC8vR66i.I1HFd.DrEFuPNv9s1z9QTZDF.73ZUv6', NULL, 'admin@gm.com', NULL, '', NULL, 10, 1678168986, 1678168986, 'alqvh-uTo-NSx86JuSUvY_5iG3xkpOQG_1678168986'),
+(2, NULL, NULL, NULL, NULL, 0, NULL, NULL, 'Juan', 'Reyes', 'Dela Cruz', '', '1995-10-12', 'M', 'admin123', 'mLv-KdIB84pIgOrOKnopaaXc51uQml-_', '$2y$13$e4Dcc2wVy3ur10rqQ8mkae0JLsO58dHURdZnvqhZTTDxYu5XI64gO', NULL, 'admin@gm.com', NULL, '', '', 10, 1678168986, 1678168986, 'alqvh-uTo-NSx86JuSUvY_5iG3xkpOQG_1678168986'),
 (35, '120994', 4, 'A', 1, 3, 1, NULL, 'John', '', 'Wick', '', '2005-04-01', 'M', 'johnwick', 'AI1i1WwV90rEZNAmjGxS-rTYYrmtxZSy', '$2y$13$i1T8ERONFUSt2BjuuC4lhu8voClgiPJz.tdJpLuzhUcT5/LiXfdSe', NULL, 'trainee@gm.com', 1234567890, '2343434', '031 Paris St, Brgy. Pinagbarilan, Bataan City', 10, 0, 0, 'wYE4Gfo3VfeF1blsL_VtQyiZUTrDY96o_1680313003'),
 (37, '', NULL, '', NULL, NULL, NULL, NULL, 'Helen', '', 'Wick', '', '2005-03-28', 'F', 'coor', 'kQcZ4MQ_0mncIcJdLY_G3yzqNegC3Udn', '$2y$13$EGGucJYrGZofQvza3X3tmOjxJyCv/hqJRlzso5Knxekwbbi26oddO', NULL, 'coor@gmi.com', 912323232, '23232323', '0934 something st.', 10, 0, 0, '0nXO9Xo1e9juosRRgY7T-h4Leaiq5xB2_1680313634'),
 (38, NULL, NULL, NULL, NULL, NULL, 1, 1, 'Lionelsy', '', 'Wick', '', '2005-03-30', 'M', 'super', 'XM5rIqW7oN9pajeCuNVNPv-OB-hUpEsW', '$2y$13$DCmmrQYvvuf2LjVqVLKp1e/ujon/S0V2ADz8GpdDej9Mvj8oRzvD2', NULL, 'super@gm.com', 912323232, '23232323', '2343 SOmething St.', 10, 0, 0, 'd1UVUsGwsvcpJoAFkw8KUNJaOipQLD3E_1680313693'),
@@ -777,14 +862,27 @@ INSERT INTO `user` (`id`, `student_idno`, `student_year`, `student_section`, `re
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `user_archive`
+--
+
+CREATE TABLE `user_archive` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `user_status` int(11) DEFAULT NULL,
+  `date_time` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `user_company`
 --
 
 CREATE TABLE `user_company` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `ref_company_id` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `id` int(11) NOT NULL COMMENT 'unique id',
+  `user_id` int(11) DEFAULT NULL COMMENT 'foreign key id of user table (trainee or supervisor)',
+  `ref_company_id` int(11) DEFAULT NULL COMMENT 'foreign key id of ref_company table (assigned company)'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='List of users (trainee and supervisor) assigned company';
 
 --
 -- Dumping data for table `user_company`
@@ -804,7 +902,8 @@ INSERT INTO `user_company` (`id`, `user_id`, `ref_company_id`) VALUES
 (11, 44, 1),
 (12, 45, NULL),
 (13, 46, 3),
-(14, 47, 3);
+(14, 47, 3),
+(15, 2, NULL);
 
 -- --------------------------------------------------------
 
@@ -813,16 +912,16 @@ INSERT INTO `user_company` (`id`, `user_id`, `ref_company_id`) VALUES
 --
 
 CREATE TABLE `user_timesheet` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `time_in_am` time DEFAULT NULL,
-  `time_out_am` time DEFAULT NULL,
-  `time_in_pm` time DEFAULT NULL,
-  `time_out_pm` time DEFAULT NULL,
-  `date` date DEFAULT NULL,
-  `remarks` varchar(50) DEFAULT NULL,
-  `status` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `id` int(11) NOT NULL COMMENT 'unique id',
+  `user_id` int(11) DEFAULT NULL COMMENT 'foreign key id of user table (trainee)',
+  `time_in_am` time DEFAULT NULL COMMENT 'time in (AM)',
+  `time_out_am` time DEFAULT NULL COMMENT 'time out (AM)',
+  `time_in_pm` time DEFAULT NULL COMMENT 'time in (PM)',
+  `time_out_pm` time DEFAULT NULL COMMENT 'time out (PM)',
+  `date` date DEFAULT NULL COMMENT 'date recorded',
+  `remarks` varchar(50) DEFAULT NULL COMMENT 'remarks details per row',
+  `status` int(11) NOT NULL COMMENT 'PENDING or VALIDATED'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='This table serves as storage of time in/out that displays in the DTR of trainee';
 
 --
 -- Dumping data for table `user_timesheet`
@@ -841,7 +940,26 @@ INSERT INTO `user_timesheet` (`id`, `user_id`, `time_in_am`, `time_out_am`, `tim
 (15, 35, NULL, NULL, '13:14:14', '13:23:07', '2023-04-11', NULL, 0),
 (16, 35, NULL, NULL, '13:23:31', '14:39:14', '2023-04-11', NULL, 0),
 (17, 35, '10:07:03', '10:09:40', NULL, NULL, '2023-04-13', NULL, 0),
-(18, 35, '10:10:02', '10:10:33', NULL, NULL, '2023-04-13', NULL, 0);
+(18, 35, '10:10:02', '10:10:33', NULL, NULL, '2023-04-13', NULL, 0),
+(19, 44, NULL, NULL, '16:18:17', NULL, '2023-04-17', NULL, 0),
+(20, 35, NULL, NULL, '21:53:17', '21:53:17', '2023-04-21', NULL, 0),
+(21, 35, NULL, NULL, '21:54:39', '21:54:39', '2023-04-21', NULL, 0),
+(22, 35, NULL, NULL, '21:59:49', '22:03:40', '2023-04-21', NULL, 0),
+(24, 35, NULL, NULL, '22:05:13', '22:05:13', '2023-04-21', NULL, 0),
+(26, 35, NULL, NULL, '22:13:55', '22:13:55', '2023-04-21', NULL, 0),
+(27, 35, NULL, NULL, '22:28:38', '22:29:47', '2023-04-21', NULL, 0),
+(28, 35, NULL, NULL, '22:29:47', '22:30:33', '2023-04-21', NULL, 0),
+(29, 35, NULL, NULL, '22:30:34', '22:30:56', '2023-04-21', NULL, 0),
+(30, 35, NULL, NULL, '22:30:56', '22:32:13', '2023-04-21', NULL, 0),
+(31, 35, NULL, NULL, '22:32:13', '22:36:22', '2023-04-21', NULL, 0),
+(32, 35, NULL, NULL, '22:36:51', '22:37:26', '2023-04-21', NULL, 0),
+(33, 35, NULL, NULL, '22:37:26', '22:42:00', '2023-04-21', NULL, 0),
+(34, 35, NULL, NULL, '22:42:13', '22:42:36', '2023-04-21', NULL, 0),
+(35, 35, NULL, NULL, '22:54:37', '23:02:12', '2023-04-21', NULL, 0),
+(36, 64, NULL, NULL, '23:00:41', '23:06:24', '2023-04-21', NULL, 0),
+(37, 35, NULL, NULL, '23:05:58', '23:06:58', '2023-04-21', NULL, 0),
+(38, 35, '11:04:13', '11:04:38', NULL, NULL, '2023-04-22', NULL, 0),
+(39, 35, '11:04:53', '11:09:50', '18:54:58', NULL, '2023-04-22', NULL, 0);
 
 --
 -- Indexes for dumped tables
@@ -1028,6 +1146,12 @@ ALTER TABLE `suffix`
   ADD KEY `title` (`title`);
 
 --
+-- Indexes for table `system_other_feature`
+--
+ALTER TABLE `system_other_feature`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `user`
 --
 ALTER TABLE `user`
@@ -1043,6 +1167,12 @@ ALTER TABLE `user`
   ADD KEY `ref_program_major_id` (`ref_program_major_id`),
   ADD KEY `ref_department_id` (`ref_department_id`),
   ADD KEY `ref_position_id` (`ref_position_id`);
+
+--
+-- Indexes for table `user_archive`
+--
+ALTER TABLE `user_archive`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `user_company`
@@ -1075,103 +1205,115 @@ ALTER TABLE `user_timesheet`
 -- AUTO_INCREMENT for table `announcement`
 --
 ALTER TABLE `announcement`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique id of announcement (auto generated)', AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `announcement_program_tags`
 --
 ALTER TABLE `announcement_program_tags`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Unique ID (auto generated)', AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `coordinator_programs`
 --
 ALTER TABLE `coordinator_programs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique ID', AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `files`
 --
 ALTER TABLE `files`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=158;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique id of file (auto generated)', AUTO_INCREMENT=239;
 
 --
 -- AUTO_INCREMENT for table `ref_company`
 --
 ALTER TABLE `ref_company`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique id (auto generated)', AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `ref_department`
 --
 ALTER TABLE `ref_department`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique ID (auto generated)', AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `ref_document_assignment`
 --
 ALTER TABLE `ref_document_assignment`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique id (auto generated)', AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `ref_document_type`
 --
 ALTER TABLE `ref_document_type`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique ID (auto generated)', AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `ref_position`
 --
 ALTER TABLE `ref_position`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique id of position (auto generated)', AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `ref_program`
 --
 ALTER TABLE `ref_program`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique id of program/course (auto generated)', AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `ref_program_major`
 --
 ALTER TABLE `ref_program_major`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique if of major (auto generated)', AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `submission_reply`
 --
 ALTER TABLE `submission_reply`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique id of messages (auto generated)';
 
 --
 -- AUTO_INCREMENT for table `submission_thread`
 --
 ALTER TABLE `submission_thread`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique ID (auto generated)', AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `submission_thread_seen`
 --
 ALTER TABLE `submission_thread_seen`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique id (auto generated)', AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `system_other_feature`
+--
+ALTER TABLE `system_other_feature`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique id of user', AUTO_INCREMENT=72;
+
+--
+-- AUTO_INCREMENT for table `user_archive`
+--
+ALTER TABLE `user_archive`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `user_company`
 --
 ALTER TABLE `user_company`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique id', AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `user_timesheet`
 --
 ALTER TABLE `user_timesheet`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique id', AUTO_INCREMENT=43;
 
 --
 -- Constraints for dumped tables

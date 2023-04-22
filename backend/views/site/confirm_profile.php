@@ -40,14 +40,34 @@ table.student-details tbody tr td
         <div class="row">
             <div class="col-sm-12" style="text-align: left;">
                     <?php 
-                        echo Html::a('<strong><i class="fas fa-arrow-left"></i> BACK</strong>',['/capture-login-with-facial-recog','timesheet_id' => $timesheet_id],['class' => 'btn btn-outline-danger btn-lg', 'style' => 'border-radius:25px;']);
+                        echo Html::a('<strong><i class="fas fa-arrow-left"></i> TRY AGAIN</strong>',['/facial-recognition','timesheet_id' => $timesheet_id],['class' => 'btn btn-outline-danger btn-lg', 'style' => 'border-radius:25px;']);
                     ?>
             </div>
         </div>
     </div>
 
-    <div style="text-align: center; margin-top:50px;">
-        <h1 class="display-4" style="font-weight:bold;">IS THIS YOU?</h1>
+    <div style="text-align: center;">
+        <h1 class="display-4" style="font-weight:bold; font-size:30px;">IS THIS YOU?</h1>
+        <center>
+            <div style="height:150px; width:200px; text-align:center;">
+                <?php
+                    $uploadedFile = Yii::$app->getModule('admin')->GetFacialRegister('UserFacialRegister',$user_id);
+
+                    $filePath = Yii::$app->request->baseUrl.'/uploads/' . $uploadedFile;
+
+                    // print_r($filePath); exit;
+
+                    if($filePath) 
+                    {
+                        echo Html::img($filePath, ['alt'=>'My Image', 'style' => 'width:100%; height:100%;', 'class' => 'img-responsive']);
+                    }
+                    else
+                    {
+                        // echo "--NO PROFILE PHOTO--";
+                    }
+                ?>
+            </div>
+        </center>
         <p class="lead">Please click the buttons below to confirm.</p>
     </div>
 

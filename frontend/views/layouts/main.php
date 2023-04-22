@@ -267,10 +267,14 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
 
 <header>
     <?php
-    
+    $logoUniversity = Html::img(Yii::$app->request->baseUrl.'/ref/images/logo_university.png', ['alt'=>'BPSU', 'style'=>" display: inline-block; vertical-align: middle; padding:0; margin:0; margin-top:-16px; margin-right:100%; ", 'width' => '40', 'height' => '40']);
+
     NavBar::begin([
-        'brandLabel' => false,
+        // 'brandLabel' => $logoUniversity." <span style='color:white; font-size:12px; font-weight:bold;'>OJT TMS for CICT Trainees</span>",
+        'brandLabel' => $logoUniversity,
         'brandUrl' => Yii::$app->homeUrl,
+        // 'encodeLabels' => false,
+        'brandOptions' => ['class' => 'navbar-brand'],
         'options' => [
             'class' => 'navbar navbar-expand-md fixed-top navbar-inverse',
             'style' => Yii::$app->user->isGuest ? 'display:none;' : 'background:#ae0505;',
@@ -325,6 +329,8 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
             $roleName = "<span id='role-name-container'>Trainee ".$firstName." </span> ";
         }
 
+        
+
         // echo Html::beginForm(['/site/logout'], 'post', ['class' => 'd-flex'])
         //     . Html::submitButton(
         //         'Logout ('.$roleName.')',
@@ -370,6 +376,7 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
                 'document-type',
                 'document-assignment',
                 'coordinator-programs',
+                'system-other-feature',
                 ]) ? true : false,
                 'visible' => Yii::$app->user->can('menu-settings'),
             ],
@@ -380,6 +387,14 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
                 'label' => $roleName,
                 'items' => [
                     ['label' => 'My Account', 'url' => ['user-management/update-my-account','id' => Yii::$app->user->identity->id]],
+                    ['label' => 'Register Face', 'url' => [
+                        'user-management/register-face','user_id' => Yii::$app->user->identity->id],
+                        'visible' => Yii::$app->user->can('user-management-register-face'),
+                    ],
+                    [
+                        'label' => 'Profile Picture', 'url' => ['user-management/upload-profile-photo','id' => Yii::$app->user->identity->id],
+                        'visible' => Yii::$app->user->can('upload-profile-photo'),
+                    ],
                     [
                         'label' => 'My e-Signature', 'url' => ['user-management/upload-my-signature','id' => Yii::$app->user->identity->id],
                         'visible' => Yii::$app->user->can('upload-signature'),

@@ -28,7 +28,7 @@ class SiteController extends Controller
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['error','capture','login-with-image','backtoportal','get-images','register-image','capture-login-no-facial-recog','capture-login-with-facial-recog','capture-register','index','confirm-sending-image','confirm-profile','confirm-profile-success'],
+                        'actions' => ['error','capture','login-with-image','backtoportal','get-images','register-image','capture-login-no-facial-recog','capture-login-with-facial-recog','capture-register','index','confirm-sending-image','confirm-profile','confirm-profile-success','facial-recognition'],
                         'allow' => true,
                     ],
                     [
@@ -513,6 +513,67 @@ class SiteController extends Controller
         $imagePath = Yii::getAlias('@backend/web/uploads/') . $imageName;
         file_put_contents($imagePath, $data);
         return $imagePath;
+    }
+
+    public function actionFacialRecognition($timesheet_id=null)
+    {
+        if($timesheet_id)
+        {
+            $file = Files::find()->where([
+                'model_name' => ['UserFacialRegister','UserTimesheet'],
+                'user_timesheet_id' => $timesheet_id,
+                ])->orderBy(['id' => SORT_DESC])->one();
+            
+            // $file->delete();
+    
+            if($file->delete())
+            {
+                if(file_exists(Yii::getAlias('@backend/web/uploads/').$file->file_name))
+                {
+                    unlink(Yii::getAlias('@backend/web/uploads/').$file->file_name);
+                }
+    
+                $timeSheet = UserTimesheet::find()->where(['id' => $timesheet_id])->one();
+    
+                if($timeSheet->time_in_am === $file->user_timesheet_time)
+                {
+                    $timeSheet->time_in_am = null;
+                }
+                else if($timeSheet->time_out_am === $file->user_timesheet_time)
+                {
+                    $timeSheet->time_out_am = null;
+                }
+                else if($timeSheet->time_in_pm === $file->user_timesheet_time)
+                {
+                    $timeSheet->time_in_pm = null;
+                }
+                else if($timeSheet->time_out_pm === $file->user_timesheet_time)
+                {
+                    $timeSheet->time_out_pm = null;
+                }
+                $timeSheet->update();
+    
+                $timeSheetAfterUpdate = UserTimesheet::find()->where(['id' => $timesheet_id])->one();
+    
+                if(empty($timeSheetAfterUpdate->time_in_am) && empty($timeSheetAfterUpdate->time_out_am) && empty($timeSheetAfterUpdate->time_in_pm) && empty($timeSheetAfterUpdate->time_out_pm))
+                {
+                    $timeSheetAfterUpdate->delete();
+                }
+            }
+        }
+
+        $model = new LoginForm();
+
+        $js = <<<JS
+            function updateTime() {
+                var now = new Date();
+                var clock = document.getElementById('clock');
+                clock.innerHTML = now.toLocaleTimeString();
+            }
+            setInterval(updateTime, 1000);
+        JS;
+        $this->getView()->registerJs($js, View::POS_READY);
+        return $this->render('facial_recognition',['model' => $model]);
     }
 
     public function actionCaptureLoginNoFacialRecog($timesheet_id=null)
