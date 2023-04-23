@@ -15,6 +15,22 @@ $this->title = 'User Management';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
+<style>
+ul.archive-details
+{
+    padding-left:0;
+}
+
+ul.archive-details li
+{
+    /* padding-left:10px;
+    padding-right: 10px; */
+    width: 150px;
+    font-style: italic;
+    padding-top:10px;
+}
+</style>
+
 <div class="user-data-index">
 
     <!-- <h1><?php // Html::encode($this->title) ?></h1> -->
@@ -95,41 +111,42 @@ $this->params['breadcrumbs'][] = $this->title;
                 'layout' => '{items}',
                 'columns' => [
                     ['class' => 'yii\grid\SerialColumn'],
+                    [
+                        'attribute'=> 'status',
+                        'format' => 'raw',
+                        'value' => function($model)
+                        {
+                            if(Yii::$app->user->can('user-management-update-status'))
+                            {
+                                $disp = "<ul class='archive-details'>";
+                                $dataUserArchive = $model->userArchive;
+                                if($dataUserArchive)
+                                {
+                                    foreach ($dataUserArchive as $arc) {
+                                        $disp .= $arc->user_status == 10 ? "<li>DATE/TIME RESTORED: <br/>".(date('F j,Y h:i a',strtotime($arc->date_time)))."</li>": "<li>DATE/TIME ARCHIVED: <br/>".(date('F j,Y h:i a',strtotime($arc->date_time)))."</li>";
+                                    }
+                                }
 
-                    // [
-                    //     'attribute' => 'item_name',
-                    //     'label' => 'ROLE',
-                    //     'format' => 'raw',
-                    //     'visible' => Yii::$app->user->can('user-management-delete-role-assigned'),
-                    //     'value' => function($model)
-                    //     {
+                                $disp .= "</ul>";
 
-                    //         if(!empty($model->authAssignment->itemName->name))
-                    //         {
-                    //             if($model->authAssignment->itemName->name == "Administrator")
-                    //             {
-                    //                 return Html::a(($model->authAssignment->itemName->name),['delete-role-assigned','user_id' => $model->id],[
-                    //                     'class' => 'btn btn-sm btn-outline-primary',
-                    //                     'data' => ['confirm' => 'Are you sure you want to remove the assigned role? Click OK to perform action.'],
-                    //                 ]);
-                    //             }
-                    //             else
-                    //             {
-                    //                 return Html::a(($model->authAssignment->itemName->name),['delete-role-assigned','user_id' => $model->id],[
-                    //                     'class' => 'btn btn-sm btn-outline-success',
-                    //                     'data' => ['confirm' => 'Are you sure you want to remove the assigned role? Click OK to perform action.'],
-                    //                 ]);
-                    //             }
-                                
-                    //         }
-                    //         else
-                    //         {
-                    //             return '<span style="color:red;">NO ASSIGNED ROLE</span>';
-                    //         }
-
-                    //     },
-                    //     'filter' => \yii\helpers\ArrayHelper::map(\common\models\AuthItem::find()->where(['type' => 1])->asArray()->all(), 'name', 'name'),
-                    // ],
+                                return $model->status == 10 ? Html::a('ACTIVE',['update-status','id' => $model->id],[
+                                    'class' => 'btn btn-success btn-sm',
+                                    'data' => ['confirm' => 'Are you sure you want to DEACTIVATE this account?'],
+                                    ]) : Html::a('INACTIVE',['update-status',
+                                    'id' => $model->id,
+                                ],[
+                                    'class' => 'btn btn-secondary btn-sm',
+                                    'data' => ['confirm' => 'Are you sure you want to ACTIVATE this account?'],
+                                ]).$disp;
+                            }
+                            else
+                            {
+                                return $model->status == 10 ? "ACTIVE" : "INACTIVE";
+                            }
+                            
+                        },
+                        'filter' => [10 => 'ACTIVE', 9 => 'INACTIVE'],
+                    ],
                     [
                         'label' => $searchModel->item_name == 'OjtCoordinator' ? 'Assigned Program/Course' : 'Program/Course',
                         'format' => 'raw',
@@ -398,14 +415,17 @@ $this->params['breadcrumbs'][] = $this->title;
                                 ]) : false;
                             },
                             'delete' => function ($url, $model) {
-                                return Yii::$app->user->can('user-management-delete') ?  Html::a('Del', $url, [
-                                    'title' => Yii::t('yii', 'Delete'),
-                                    'class' => 'btn btn-sm btn-outline-danger', // set the button class to outline-danger
-                                    'data' => [
-                                        'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                                        'method' => 'post',
-                                    ],
-                                ]) : false;
+                                if($model->status != 10)
+                                {
+                                    return Yii::$app->user->can('user-management-delete') ?  Html::a('Del', $url, [
+                                        'title' => Yii::t('yii', 'Delete'),
+                                        'class' => 'btn btn-sm btn-outline-danger', // set the button class to outline-danger
+                                        'data' => [
+                                            'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                            'method' => 'post',
+                                        ],
+                                    ]) : false;
+                                }
                             },
                         ],
                         'urlCreator' => function ($action, $model, $key, $index) {
