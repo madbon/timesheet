@@ -778,6 +778,7 @@ class UserManagementController extends Controller
             'UserDataSearch[item_name]' => $model->item_name,
             'UserDataSearch[fname]' => $model->fname,
             'UserDataSearch[sname]' => $model->sname,
+            'UserDataSearch[status]' => $model->status,
         ]);
         }
 
