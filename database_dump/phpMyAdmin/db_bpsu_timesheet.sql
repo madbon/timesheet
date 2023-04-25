@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 22, 2023 at 01:46 PM
+-- Generation Time: Apr 25, 2023 at 08:50 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -109,6 +109,7 @@ INSERT INTO `auth_item` (`name`, `type`, `description`, `rule_name`, `data`, `cr
 ('create-button-trainee', 2, '', NULL, NULL, NULL, NULL),
 ('create-transaction', 2, '', NULL, NULL, NULL, NULL),
 ('edit-time', 2, '', NULL, NULL, NULL, NULL),
+('import-button-trainees', 2, '', NULL, NULL, NULL, NULL),
 ('menu-map-markers', 2, '', NULL, NULL, NULL, NULL),
 ('menu-settings', 2, '', NULL, NULL, NULL, NULL),
 ('menu-tasks', 2, '', NULL, NULL, NULL, NULL),
@@ -156,6 +157,7 @@ INSERT INTO `auth_item` (`name`, `type`, `description`, `rule_name`, `data`, `cr
 ('USER-MANAGEMENT-MODULE', 2, 'access to all permissions of user management', NULL, NULL, NULL, NULL),
 ('user-management-register-face', 2, '', NULL, NULL, NULL, NULL),
 ('user-management-update', 2, '', NULL, NULL, NULL, NULL),
+('user-management-update-status', 2, '', NULL, NULL, NULL, NULL),
 ('user-management-upload-file', 2, '', NULL, NULL, NULL, NULL),
 ('user-management-view', 2, '', NULL, NULL, NULL, NULL),
 ('validate-timesheet', 2, '', NULL, NULL, NULL, NULL),
@@ -187,6 +189,7 @@ INSERT INTO `auth_item_child` (`parent`, `child`) VALUES
 ('Administrator', 'create-button-company-supervisor'),
 ('Administrator', 'create-button-ojt-coordinator'),
 ('Administrator', 'create-button-trainee'),
+('Administrator', 'import-button-trainees'),
 ('Administrator', 'menu-settings'),
 ('Administrator', 'menu-user-management'),
 ('Administrator', 'SETTINGS'),
@@ -207,13 +210,11 @@ INSERT INTO `auth_item_child` (`parent`, `child`) VALUES
 ('Administrator', 'settings-role-assignments'),
 ('Administrator', 'settings-roles'),
 ('Administrator', 'settings-roles-permission-container'),
-('Administrator', 'settings-system-other-feature'),
 ('Administrator', 'settings-task-container'),
 ('Administrator', 'settings-user-accounts-form-reference-container'),
-('Administrator', 'upload-others-esig'),
 ('Administrator', 'USER-MANAGEMENT-MODULE'),
+('Administrator', 'user-management-update-status'),
 ('Administrator', 'view-column-course-program'),
-('Administrator', 'view-other-timesheet'),
 ('CompanySupervisor', 'access-trainee-index'),
 ('CompanySupervisor', 'create-activity-reminder'),
 ('CompanySupervisor', 'create-transaction'),
@@ -564,6 +565,20 @@ CREATE TABLE `submission_reply` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `submission_reply_seen`
+--
+
+CREATE TABLE `submission_reply_seen` (
+  `id` int(11) NOT NULL COMMENT 'unique id (auto generated)',
+  `submission_thread_id` int(11) DEFAULT NULL,
+  `submission_reply_id` int(11) DEFAULT NULL COMMENT 'foreign key of submission_reply table',
+  `user_id` int(11) DEFAULT NULL COMMENT 'foreign key of user table (who seen the reply)',
+  `date_time` datetime DEFAULT NULL COMMENT 'date/time seen'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci COMMENT='here you can see if the user has seen the reply or message regarding the AR submission';
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `submission_thread`
 --
 
@@ -662,7 +677,7 @@ CREATE TABLE `user` (
   `mobile_no` int(10) DEFAULT NULL COMMENT 'user''s mobile no.',
   `tel_no` varchar(150) NOT NULL COMMENT 'user''s telephone no.',
   `address` text DEFAULT NULL COMMENT 'user''s address details',
-  `status` smallint(6) NOT NULL DEFAULT 10 COMMENT 'account''s status (ACTIVE or INACTIVE)',
+  `status` smallint(6) NOT NULL DEFAULT 10 COMMENT 'account''s status (10 - active, 9 - inactive)',
   `created_at` int(11) NOT NULL COMMENT 'date time created',
   `updated_at` int(11) NOT NULL COMMENT 'date time updated',
   `verification_token` varchar(255) DEFAULT NULL COMMENT 'auto generated key to allow user access the system'
@@ -877,6 +892,15 @@ ALTER TABLE `submission_reply`
   ADD KEY `date_time` (`date_time`);
 
 --
+-- Indexes for table `submission_reply_seen`
+--
+ALTER TABLE `submission_reply_seen`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `submission_reply_id` (`submission_reply_id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `submission_thread_id` (`submission_thread_id`);
+
+--
 -- Indexes for table `submission_thread`
 --
 ALTER TABLE `submission_thread`
@@ -1031,6 +1055,12 @@ ALTER TABLE `submission_reply`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique id of messages (auto generated)';
 
 --
+-- AUTO_INCREMENT for table `submission_reply_seen`
+--
+ALTER TABLE `submission_reply_seen`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique id (auto generated)';
+
+--
 -- AUTO_INCREMENT for table `submission_thread`
 --
 ALTER TABLE `submission_thread`
@@ -1052,7 +1082,7 @@ ALTER TABLE `system_other_feature`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique id of user', AUTO_INCREMENT=72;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique id of user', AUTO_INCREMENT=76;
 
 --
 -- AUTO_INCREMENT for table `user_archive`
@@ -1106,6 +1136,19 @@ ALTER TABLE `auth_item_child`
 --
 ALTER TABLE `files`
   ADD CONSTRAINT `files_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
+
+--
+-- Constraints for table `submission_reply`
+--
+ALTER TABLE `submission_reply`
+  ADD CONSTRAINT `submission_reply_ibfk_1` FOREIGN KEY (`submission_thread_id`) REFERENCES `submission_thread` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
+
+--
+-- Constraints for table `submission_reply_seen`
+--
+ALTER TABLE `submission_reply_seen`
+  ADD CONSTRAINT `submission_reply_seen_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  ADD CONSTRAINT `submission_reply_seen_ibfk_2` FOREIGN KEY (`submission_thread_id`) REFERENCES `submission_thread` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `submission_thread`
