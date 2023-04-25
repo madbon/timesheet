@@ -59,4 +59,25 @@ class SubmissionReply extends \yii\db\ActiveRecord
     {
         return $this->hasOne(UserData::class, ['id' => 'user_id']);
     }
+
+    /**
+     * Gets query for [[SubmissionReplySeen]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSubmissionReplySeen()
+    {
+        return $this->hasMany(SubmissionReplySeen::class, ['submission_reply_id' => 'id']);
+    }
+
+     /**
+     * Gets query for [[SubmissionThread]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSubmissionThread()
+    {
+        return $this->hasOne(SubmissionThread::class, ['id' => 'submission_thread_id']);
+    }
+
 }

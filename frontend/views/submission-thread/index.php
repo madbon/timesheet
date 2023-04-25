@@ -80,15 +80,23 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php } ?>
     </p>
 
-    <?php  $countTask = Yii::$app->getModule('admin')->submissionThreadSeen(); ?>
+    <?php  
+    $countTask = Yii::$app->getModule('admin')->submissionThreadSeen(); 
+    $countReply = Yii::$app->getModule('admin')->submissionReplySeen(); 
+    ?>
 
     <p style="text-align: center;">
     <?php foreach ($documentAss as $key => $row) { ?>
         
        <?php 
+        $submitIcon = $countTask[$row['ref_document_type_id']] ? ' <i class="fas fa-paper-plane" style="color:#ffcd39;"></i> ' : '';
+        $chatIcon = $countReply[($row['ref_document_type_id'] * 2)] ? ' <i class="fas fa-comments" style="color:#ffcd39;"></i> ' : '';
+
         if($searchModel->ref_document_type_id == $row['ref_document_type_id'])
         {
-            echo Html::a($row['title'].($countTask[$row['ref_document_type_id']] ? ' ('.$countTask[$row['ref_document_type_id']].')' : ''),['index',
+            
+
+            echo Html::a($row['title'].($submitIcon.' '.$chatIcon),['index',
             'SubmissionThreadSearch[ref_document_type_id]' => $row['ref_document_type_id'],
             ],
             [
@@ -99,7 +107,7 @@ $this->params['breadcrumbs'][] = $this->title;
         }
         else
         {
-            echo Html::a($row['title'].($countTask[$row['ref_document_type_id']] ? ' ('.$countTask[$row['ref_document_type_id']].')' : ''),['index',
+            echo Html::a($row['title'].$submitIcon.' '.$chatIcon,['index',
             'SubmissionThreadSearch[ref_document_type_id]' => $row['ref_document_type_id'],
             ],
             [
@@ -332,6 +340,37 @@ $this->params['breadcrumbs'][] = $this->title;
                     }
                     return $remarks.$fileContent;
                 }
+            ],
+            [
+                'label' => 'INBOX MESSAGES',
+                'format' => 'raw',
+                'value' => function($model){
+                    $value = '';
+                    $storeUserIds = [];
+
+                    if($model->submissionReply)
+                    {
+                        foreach ($model->submissionReply as $reply) {
+                            $storeUserIds = [];
+                            foreach ($reply->submissionReplySeen as $seen) {
+                                
+                                if($seen->submission_reply_id == $reply->id)
+                                {
+                                    $storeUserIds[] = $seen->user_id;
+                                }
+                                
+                            }
+                        }
+    
+                        return in_array(Yii::$app->user->identity->id,$storeUserIds) ? '<i class="fas fa-comments" style="color:gray;"></i>' : '<i class="fas fa-comments" style="color:#ffcd39;"></i> New Message';
+
+                        // return implode(',',$storeUserIds);
+                    }
+                    else
+                    {
+                        return '';
+                    }
+                },
             ],
             [
                 'attribute' => 'date_time',

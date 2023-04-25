@@ -12,6 +12,9 @@ use common\models\SubmissionThreadSeen;
 use common\models\CoordinatorPrograms;
 use common\models\ProgramMajor;
 use common\models\RefProgram;
+use common\models\SubmissionReply;
+use common\models\SubmissionReplySeen;
+use common\models\SubmissionThreadSearch;
 use Yii;
 
 /**
@@ -60,6 +63,102 @@ class Module extends \yii\base\Module
        }
     }
 
+    public static function submissionReplySeen()
+    {
+        $searchModel = new SubmissionThreadSearch();
+        $searchModel->ref_document_type_id = 3;
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+       
+        $documentType = [];
+        if($dataProvider->query->all())
+        {
+            foreach ($dataProvider->query->all() as $model) {  
+                $value = '';
+                $storeUserIds = [];
+                $documentType = [];
+    
+                if($model->submissionReply)
+                {
+                    foreach ($model->submissionReply as $reply) {
+                        $storeUserIds = [];
+                        // $documentType = [];
+                        foreach ($reply->submissionReplySeen as $seen) {
+                            
+                            if($seen->submission_reply_id == $reply->id)
+                            {
+                                $storeUserIds[] = $seen->user_id;
+                                $documentType[] = $seen->submissionThread->ref_document_type_id;
+                                
+                            }
+                            else
+                            { 
+                                $documentType[] = $seen->submissionThread->ref_document_type_id;
+                                
+                            }
+                            
+                        }
+                    }
+    
+                   if(in_array(Yii::$app->user->identity->id,$storeUserIds))
+                   {
+                        return [
+                            'countTaskReplySeen' => 0,
+                            'countArReplySeen' => 0,
+                            'countEvalReplySeen' => 0,
+                            'countActReminderReplySeen' =>0,
+                            2 => 0,
+                            6 => 0,
+                            10 => 0,
+                        ];
+                   }
+                   else
+                   {
+                        return [
+                            'countTaskReplySeen' => 1,
+                            'countArReplySeen' => in_array(3,$documentType) ? 1 : 0,
+                            'countEvalReplySeen' => in_array(1,$documentType) ? 1 : 0,
+                            'countActReminderReplySeen' => in_array(5,$documentType) ? 1 : 0,
+                            2 => in_array(1,$documentType) ? 1 : 0,
+                            6 => in_array(3,$documentType) ? 1 : 0,
+                            10 => in_array(5,$documentType) ? 1 : 0,
+                        ];
+                   }
+    
+                    // return implode(',',$storeUserIds);
+                }
+                else
+                {
+                    return [
+                        'countTaskReplySeen' => 0,
+                        'countArReplySeen' => 0,
+                        'countEvalReplySeen' => 0,
+                        'countActReminderReplySeen' =>0,
+                        2 => 0,
+                        6 => 0,
+                        10 => 0,
+                    ];
+                }
+            }
+
+           
+        }
+        else
+        {
+            return [
+                'countTaskReplySeen' => 0,
+                'countArReplySeen' => 0,
+                'countEvalReplySeen' => 0,
+                'countActReminderReplySeen' => 0,
+                2 => 0,
+                6 => 0,
+                10 => 0,
+            ];
+        }
+
+       
+        
+    }
+
     public static function submissionThreadSeen()
     {
 
@@ -73,12 +172,20 @@ class Module extends \yii\base\Module
         $countAr = 0;
         $countEval = 0;
         $countActReminder = 0;
+
+        $countTaskReplySeen = 0;
+        $countArReplySeen = 0;
+        $countEvalReplySeen = 0;
+        $countActReminderReplySeen = 0;
+        $arrSample = [];
+        $storeUserIds = [];
+
         foreach ($documentAssignment as $row) {
             $qrySubThread = SubmissionThread::find()
             ->select(['submission_thread.id','submission_thread.ref_document_type_id'])
             ->joinWith(Yii::$app->getModule('admin')->documentTypeAttrib($row->ref_document_type_id,'enable_tagging') ? 'taggedUser' : 'user')
             ->joinWith('userCompany')
-            ->joinWith(['documentAssignment'])
+            ->joinWith('documentAssignment')
             ->where(['ref_document_assignment.auth_item' => Yii::$app->getModule('admin')->getLoggedInUserRoles()])
             ->andWhere(['ref_document_assignment.ref_document_type_id' => $row->ref_document_type_id])
             ->andWhere(['ref_document_assignment.type' => 'RECEIVER']);
@@ -129,18 +236,29 @@ class Module extends \yii\base\Module
                         $countActReminder += 1;
                     }
                 }
+
             }
+
+            
             
         }
+
 
         return [
             'countTask' => $countTask,
             'countAr' => $countAr,
             'countEval' => $countEval,
             'countActReminder' => $countActReminder,
+            'countTaskReplySeen' => $countTaskReplySeen,
+            'countArReplySeen' => $countArReplySeen,
+            'countEvalReplySeen' => $countEvalReplySeen,
+            'countActReminderReplySeen' => $countActReminderReplySeen,
             1 => $countEval,
             3 => $countAr,
             5 => $countActReminder,
+            2 => $countEvalReplySeen,
+            6 => $countArReplySeen,
+            10 => $countActReminderReplySeen,
         ];
     }
 

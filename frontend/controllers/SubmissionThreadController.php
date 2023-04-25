@@ -6,6 +6,7 @@ use common\models\SubmissionThread;
 use common\models\SubmissionThreadSearch;
 use common\models\SubmissionReply;
 use common\models\SubmissionThreadSeen;
+use common\models\SubmissionReplySeen;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -171,6 +172,26 @@ class SubmissionThreadController extends Controller
 
          // UPLOAD FILE
          $modelUpload = new UploadMultipleForm();
+
+        if(SubmissionReply::find()->where(['submission_thread_id' => $id])->exists())
+        {
+            $getLatestReply = SubmissionReply::find()->where(['submission_thread_id' => $id])->all();
+
+            foreach ($getLatestReply as $rep) {
+                if(!SubmissionReplySeen::find()->where(['user_id' => Yii::$app->user->identity->id, 'submission_reply_id' => $rep->id])->exists())
+                {
+                    $modelReplySeen = new SubmissionReplySeen();
+                    $modelReplySeen->submission_thread_id = $id;
+                    $modelReplySeen->submission_reply_id = $rep->id;
+                    $modelReplySeen->user_id = Yii::$app->user->identity->id;
+                    $modelReplySeen->date_time = date('Y-m-d H:i:s');
+                    $modelReplySeen->save();
+                }
+            }
+            
+        }
+        
+
         if ($this->request->isPost) {
 
             date_default_timezone_set('Asia/Manila');
@@ -178,19 +199,27 @@ class SubmissionThreadController extends Controller
 
             if ($replyModel->load($this->request->post()) && $modelUpload->load($this->request->post()) && $replyModel->save()) {
 
+                $replyId = $replyModel->id;
                 $modelUpload->model_name = "SubmissionReply";
-                $modelUpload->model_id = $replyModel->id;
+                $modelUpload->model_id = $replyId;
+                $modelUpload->imageFiles = UploadedFile::getInstances($modelUpload, 'imageFiles');
 
-                 $modelUpload->imageFiles = UploadedFile::getInstances($modelUpload, 'imageFiles');
-                 if ($modelUpload->uploadMultiple()) {
-                     // file is uploaded successfully
-                    //  \Yii::$app->getSession()->setFlash('success', 'Created successfully');
-                    //  return $this->redirect(['upload-file', 'id' => $model_id]);
-                 }
-                 else
-                 {
-                    print_r($modelUpload->errors); exit;
-                 }
+                $modelReplySeen = new SubmissionReplySeen();
+                $modelReplySeen->submission_reply_id = $replyId;
+                $modelReplySeen->user_id = Yii::$app->user->identity->id;
+                $modelReplySeen->date_time = date('Y-m-d H:i:s');
+                $modelReplySeen->submission_thread_id = $id;
+                $modelReplySeen->save();
+
+                if ($modelUpload->uploadMultiple()) {
+                    // file is uploaded successfully
+                //  \Yii::$app->getSession()->setFlash('success', 'Created successfully');
+                //  return $this->redirect(['upload-file', 'id' => $model_id]);
+                }
+                else
+                {
+                // print_r($modelUpload->errors); exit;
+                }
 
                 Yii::$app->session->setFlash('success', 'Comment/Remarks has been added.');
                 return $this->redirect(Yii::$app->request->referrer);
