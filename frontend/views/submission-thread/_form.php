@@ -24,6 +24,7 @@ use yii\widgets\ActiveForm;
             ->joinWith('authAssignment')
             ->joinWith('userCompany')
             ->where(['auth_assignment.item_name' => 'Trainee'])
+            ->andWhere(['user.status' => 10])
             ->andWhere(['user.ref_department_id' => Yii::$app->getModule('admin')->GetAssignedDepartment()])
             ->andWhere(['user_company.ref_company_id' => Yii::$app->getModule('admin')->GetAssignedCompany()])
             ->all(),'id','fname'), ['prompt' => 'Select Trainee..', 'class' => 'form-control'])->label("Trainee") ?>

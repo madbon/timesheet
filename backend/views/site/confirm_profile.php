@@ -46,6 +46,7 @@ table.student-details tbody tr td
         </div>
     </div>
 
+    
     <div style="text-align: center;">
         <h1 class="display-4" style="font-weight:bold; font-size:30px;">IS THIS YOU?</h1>
         <center>
@@ -68,9 +69,14 @@ table.student-details tbody tr td
                 ?>
             </div>
         </center>
-        <p class="lead">Please click the buttons below to confirm.</p>
+        <p class="lead">
+        <?php if($user_status == 10){ ?>
+        Please click the buttons below to confirm.
+        <?php }else{ echo "Your account has been DEACTIVATED. Please contact the System Administrator. Thank you."; } ?>
+        </p>
     </div>
 
+    <?php if($user_status == 10){ ?>
     <div class="body-content">
 
         <div class="row">
@@ -136,6 +142,7 @@ table.student-details tbody tr td
         </div>
 
     </div>
+    <?php } ?>
 </div>
 
 

@@ -36,6 +36,7 @@ use yii\web\View;
 use yii\helpers\Url;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use common\models\UserImport;
+use common\models\UserArchive;
 use Yii;
 
 /**
@@ -99,6 +100,11 @@ class UserManagementController extends Controller
                         'roles' => ['user-management-register-face'],
                     ],
                     [
+                        'actions' => ['update-status'],
+                        'allow' => true,
+                        'roles' => ['user-management-update-status'],
+                    ],
+                    [
                         'actions' => ['company-json','update-my-account','upload-my-signature','register-image','preview-captured-photo','delete-face-photo','import-trainees','save-imported-trainees','download-template','upload-profile-photo'],
                         'allow' => true,
                         'roles' => ['@'],
@@ -112,6 +118,36 @@ class UserManagementController extends Controller
                 ],
             ],
         ];
+    }
+
+    public function actionUpdateStatus($id)
+    {
+        $model = $this->findModel($id);
+
+        $userArchive = new UserArchive();
+        date_default_timezone_set('Asia/Manila');
+
+        if($model->status == 10)
+        {
+            Yii::$app->session->setFlash('success','Account has been DEACTIVATED.');
+            $model->status = 9; // INACTIVE
+
+            $userArchive->user_status = 9;
+        }
+        else if($model->status == 9)
+        {
+            Yii::$app->session->setFlash('success','Account has been ACTIVATED.');
+            $model->status = 10; // ACTIVE
+
+            $userArchive->user_status = 10;
+        }
+
+        $userArchive->user_id = $id;
+        $userArchive->date_time = date('Y-m-d H:i:s');
+        $userArchive->save();
+
+        $model->save(false);
+        return $this->redirect(Yii::$app->request->referrer);
     }
 
     public function actionDownloadTemplate()
@@ -742,6 +778,7 @@ class UserManagementController extends Controller
             'UserDataSearch[item_name]' => $model->item_name,
             'UserDataSearch[fname]' => $model->fname,
             'UserDataSearch[sname]' => $model->sname,
+            'UserDataSearch[status]' => $model->status,
         ]);
         }
 

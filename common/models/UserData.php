@@ -258,4 +258,14 @@ class UserData extends \yii\db\ActiveRecord
         return $this->hasOne(UserTimesheet::class, ['user_id' => 'id']);
     }
 
+    /**
+     * Gets query for [[UserArchive]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUserArchive()
+    {
+        return $this->hasMany(UserArchive::class, ['user_id' => 'id']);
+    }
+
 }

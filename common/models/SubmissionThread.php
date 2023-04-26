@@ -22,6 +22,7 @@ class SubmissionThread extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
+    public $submission_reply_id;
     public static function tableName()
     {
         return 'submission_thread';
@@ -59,6 +60,26 @@ class SubmissionThread extends \yii\db\ActiveRecord
             'created_at' => 'Created At',
             'tagged_user_id' => 'Trainee',
         ];
+    }
+
+     /**
+     * Gets query for [[SubmissionReplySeen]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSubmissionReplySeen()
+    {
+        return $this->hasMany(SubmissionReplySeen::class, ['submission_thread_id' => 'id']);
+    }
+    
+     /**
+     * Gets query for [[SubmissionReply]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSubmissionReply()
+    {
+        return $this->hasMany(SubmissionReply::class, ['submission_thread_id' => 'id']);
     }
 
     /**

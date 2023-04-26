@@ -68,6 +68,8 @@ class UserDataSearch extends UserData
             return $dataProvider;
         }
 
+        $this->status = !empty($this->status) ? $this->status : 10;
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,

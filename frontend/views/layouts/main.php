@@ -339,6 +339,7 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
         //     . Html::endForm();
         
         $countTask = Yii::$app->getModule('admin')->submissionThreadSeen();
+        $countReply = Yii::$app->getModule('admin')->submissionReplySeen();
 
         $menuItemsLeft = [
             [
@@ -358,7 +359,7 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
                 'visible' => Yii::$app->user->can('announcement-menu'),
             ],
             [
-                'label' => '<i class="fas fa-tasks"></i> Tasks ('.$countTask['countTask'].')', 'url' => ['/submission-thread/index'], 'active' => Yii::$app->controller->id == "submission-thread" ? true : false,
+                'label' => '<i class="fas fa-tasks"></i> Tasks '.($countTask['countTask'] ? '<i class="fas fa-paper-plane" style="color:#ffcd39;"></i>' : '').' '.($countReply['countTaskReplySeen'] ? '<i class="fas fa-comments" style="color:#ffcd39;"></i>' : '').'', 'url' => ['/submission-thread/index'], 'active' => Yii::$app->controller->id == "submission-thread" ? true : false,
                 'visible' => Yii::$app->user->can('menu-tasks'),
             ],
             ['label' => '<i class="fas fa-cogs"></i> Settings', 'url' => ['/settings'], 'active' => in_array(Yii::$app->controller->id,[
