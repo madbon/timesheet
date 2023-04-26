@@ -15,6 +15,7 @@ use common\models\RefProgram;
 use common\models\SubmissionReply;
 use common\models\SubmissionReplySeen;
 use common\models\SubmissionThreadSearch;
+use common\models\SystemOtherFeature;
 use Yii;
 
 /**
@@ -35,6 +36,12 @@ class Module extends \yii\base\Module
         parent::init();
 
         // custom initialization code goes here
+    }
+
+    public static function systemOtherFeature($feature){
+        $query = SystemOtherFeature::find()->where(['feature' => $feature])->one();
+
+        return !empty($query->enabled) ? $query->enabled : 0;
     }
 
     public static function getProgram($program_id)

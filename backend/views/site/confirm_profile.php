@@ -71,7 +71,7 @@ table.student-details tbody tr td
         </center>
         <p class="lead">
         <?php if($user_status == 10){ ?>
-        Please click the buttons below to confirm.
+        Please click the button below to confirm.
         <?php }else{ echo "Your account has been DEACTIVATED. Please contact the System Administrator. Thank you."; } ?>
         </p>
     </div>
@@ -130,7 +130,9 @@ table.student-details tbody tr td
             <div class="row">
                 <div class="col-sm-6" style="text-align: left;">
                         <?php 
-                            echo Html::a('<strong style="font-size:25px;"><i class="fas fa-user-times"></i> NO, THIS IS NOT ME.</strong> <br/>I would prefer to time in/out with my Login Credentials.',['/capture-login-no-facial-recog','timesheet_id' => $timesheet_id],['class' => 'btn btn-warning btn-lg', 'style' => 'border-radius:25px;']);
+                            if(Yii::$app->getModule('admin')->systemOtherFeature('time_inout_using_login_credential')){ 
+                                    echo Html::a('<strong style="font-size:25px;"><i class="fas fa-user-times"></i> NO, THIS IS NOT ME.</strong> <br/>I would prefer to time in/out with my Login Credentials.',['/capture-login-no-facial-recog','timesheet_id' => $timesheet_id],['class' => 'btn btn-warning btn-lg', 'style' => 'border-radius:25px;']);
+                            }
                         ?>
                 </div>
                 <div class="col-sm-6" style="text-align: right;">

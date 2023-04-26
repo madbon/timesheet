@@ -52,7 +52,9 @@ table.table tbody tr td
                     </tr>
                     <tr>
                         <td colspan="2">    
-                            <span id="faceMessage" style="text-align: center; font-size:25px; color:red;">Waiting for face detection...</span>
+                            <div style="width: 500px;">
+                                <span id="faceMessage" style="text-align: center; font-size:18px; color:red;">Waiting for face detection...</span>
+                            </div>
                         </td>
                     </tr>
                     <tr style="display: none;">
@@ -60,6 +62,8 @@ table.table tbody tr td
                             <button id="snap" class="btn btn-outline-secondary btn-lg" style="width:50%;"><i class="fas fa-camera"></i> CAPTURE PHOTO</button>
                         </td>
                     </tr>
+
+                    <?php if(Yii::$app->getModule('admin')->systemOtherFeature('time_inout_using_login_credential')){ ?>
                     <tr style="display:none;" id="different-timein">
                         <td colspan="2" style="text-align: center;">
                             <p style="padding-top:50px;">
@@ -67,6 +71,12 @@ table.table tbody tr td
                             </p>
                         </td>
                     </tr>
+                    <?php }else{ ?>
+                        <tr style="display:none;" id="different-timein">
+                            <td colspan="2" style="text-align: center;">
+                            </td>
+                        </tr>
+                     <?php } ?>
                     <tr>
                         <td colspan="2">
                             <div class="form-login" style="display:none;">
@@ -173,7 +183,7 @@ $this->registerJs(<<<JS
 
             if (currentDescriptor) {
                 console.log('face detected');
-                faceMessage.textContent = "Face Recognizing. Please wait..";
+                faceMessage.textContent = "The system has captured an image of your face. Please wait for a few seconds while the system searches its database to see if there is a match.";
                 
                 contentDifferentTimeIn.style.display = "";
                 const response = await fetch('site/get-images');
