@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 26, 2023 at 05:31 AM
+-- Generation Time: Apr 26, 2023 at 08:05 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -211,6 +211,7 @@ INSERT INTO `auth_item_child` (`parent`, `child`) VALUES
 ('Administrator', 'settings-role-assignments'),
 ('Administrator', 'settings-roles'),
 ('Administrator', 'settings-roles-permission-container'),
+('Administrator', 'settings-system-other-feature'),
 ('Administrator', 'settings-task-container'),
 ('Administrator', 'settings-user-accounts-form-reference-container'),
 ('Administrator', 'USER-MANAGEMENT-MODULE'),
@@ -649,7 +650,7 @@ CREATE TABLE `system_other_feature` (
 --
 
 INSERT INTO `system_other_feature` (`id`, `feature`, `enabled`) VALUES
-(1, 'confirmation_after_face_recognized', 0);
+(2, 'time_inout_using_login_credential', 1);
 
 -- --------------------------------------------------------
 
@@ -1079,7 +1080,7 @@ ALTER TABLE `submission_thread_seen`
 -- AUTO_INCREMENT for table `system_other_feature`
 --
 ALTER TABLE `system_other_feature`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `user`
