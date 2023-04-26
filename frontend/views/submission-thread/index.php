@@ -89,8 +89,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php foreach ($documentAss as $key => $row) { ?>
         
        <?php 
-        $submitIcon = $countTask[$row['ref_document_type_id']] ? ' <i class="fas fa-paper-plane" style="color:#ffcd39;"></i> ' : '';
-        $chatIcon = $countReply[($row['ref_document_type_id'] * 2)] ? ' <i class="fas fa-comments" style="color:#ffcd39;"></i> ' : '';
+        $submitIcon = $countTask[$row['ref_document_type_id']] ? ' <i class="fas fa-eye-slash" style="color:#ffcd39;" title="Unread Task/s"></i> ' : '';
+        $chatIcon = $countReply[($row['ref_document_type_id'] * 2)] ? ' <i class="fas fa-comments" title="New Message/s" style="color:#ffcd39;"></i> ' : '';
 
         if($searchModel->ref_document_type_id == $row['ref_document_type_id'])
         {
