@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 26, 2023 at 04:15 AM
+-- Generation Time: Apr 26, 2023 at 05:31 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -109,7 +109,8 @@ INSERT INTO `auth_item` (`name`, `type`, `description`, `rule_name`, `data`, `cr
 ('create-button-trainee', 2, '', NULL, NULL, NULL, NULL),
 ('create-transaction', 2, '', NULL, NULL, NULL, NULL),
 ('edit-time', 2, '', NULL, NULL, NULL, NULL),
-('import-button-trainees', 2, '', NULL, NULL, NULL, NULL),
+('import-based-on-assigned-program', 2, '', NULL, NULL, NULL, NULL),
+('import-button-trainees', 2, 'permission to import trainees using excel template', NULL, NULL, NULL, NULL),
 ('menu-map-markers', 2, '', NULL, NULL, NULL, NULL),
 ('menu-settings', 2, '', NULL, NULL, NULL, NULL),
 ('menu-tasks', 2, '', NULL, NULL, NULL, NULL),
@@ -157,7 +158,7 @@ INSERT INTO `auth_item` (`name`, `type`, `description`, `rule_name`, `data`, `cr
 ('USER-MANAGEMENT-MODULE', 2, 'access to all permissions of user management', NULL, NULL, NULL, NULL),
 ('user-management-register-face', 2, '', NULL, NULL, NULL, NULL),
 ('user-management-update', 2, '', NULL, NULL, NULL, NULL),
-('user-management-update-status', 2, '', NULL, NULL, NULL, NULL),
+('user-management-update-status', 2, 'permission to deactivate account', NULL, NULL, NULL, NULL),
 ('user-management-upload-file', 2, '', NULL, NULL, NULL, NULL),
 ('user-management-view', 2, '', NULL, NULL, NULL, NULL),
 ('validate-timesheet', 2, '', NULL, NULL, NULL, NULL),
@@ -240,6 +241,7 @@ INSERT INTO `auth_item_child` (`parent`, `child`) VALUES
 ('OjtCoordinator', 'announcement-viewer-type-select-programs'),
 ('OjtCoordinator', 'create-button-company-supervisor'),
 ('OjtCoordinator', 'create-button-trainee'),
+('OjtCoordinator', 'import-based-on-assigned-program'),
 ('OjtCoordinator', 'import-button-trainees'),
 ('OjtCoordinator', 'menu-map-markers'),
 ('OjtCoordinator', 'menu-settings'),
@@ -1083,7 +1085,7 @@ ALTER TABLE `system_other_feature`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique id of user', AUTO_INCREMENT=76;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique id of user', AUTO_INCREMENT=80;
 
 --
 -- AUTO_INCREMENT for table `user_archive`
