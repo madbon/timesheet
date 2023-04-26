@@ -7,7 +7,10 @@ use yii\data\ArrayDataProvider;
 /* @var $this yii\web\View */
 /* @var $rows array */
 
-$this->title = 'Excel File Data of Trainees';
+$this->title = 'Preview Excel Data of Trainees';
+$this->params['breadcrumbs'][] = ['label' => 'User Management', 'url' => ['index','UserDataSearch[item_name]' => 'Trainee']];
+$this->params['breadcrumbs'][] = ['label' => 'Import Trainees', 'url' => ['import-trainees','program_id' => $program_id]];
+$this->params['breadcrumbs'][] = $this->title;
 
 
 $dataProvider = new ArrayDataProvider([
@@ -147,4 +150,4 @@ $dataProvider = new ArrayDataProvider([
     ],
 ]); ?>
 <br/>
-<?= Html::a('<i class="fas fa-file-import"></i> Import Data',['save-imported-trainees','program_id' => $program_id],['class' => 'btn btn-warning']) ?>
+<?= Html::a('<i class="fas fa-file-import"></i> Import/Save Data',['save-imported-trainees','program_id' => $program_id],['class' => 'btn btn-warning']) ?>

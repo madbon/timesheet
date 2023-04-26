@@ -188,7 +188,9 @@ ul.archive-details li
 
                             return $prom_val.$updateProgram;
                         },
-                        'filter' => \yii\helpers\ArrayHelper::map(\common\models\RefProgram::find()->asArray()->all(), 'id', 'title'),
+                        'filter' => \yii\helpers\ArrayHelper::map(\common\models\RefProgram::find()
+                        ->andFilterWhere(['id' => Yii::$app->getModule('admin')->GetAssignedProgram()])
+                        ->asArray()->all(), 'id', 'title'),
                         // 'visible' => in_array($searchModel->item_name,['Trainee','OjtCoordinator',NULL,'']) ? true : false,
                         'visible' => Yii::$app->user->can('view-column-course-program') && in_array($searchModel->item_name,['Trainee','OjtCoordinator',NULL,'']),
                     ],
