@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 25, 2023 at 08:50 AM
+-- Generation Time: Apr 26, 2023 at 04:15 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -240,6 +240,7 @@ INSERT INTO `auth_item_child` (`parent`, `child`) VALUES
 ('OjtCoordinator', 'announcement-viewer-type-select-programs'),
 ('OjtCoordinator', 'create-button-company-supervisor'),
 ('OjtCoordinator', 'create-button-trainee'),
+('OjtCoordinator', 'import-button-trainees'),
 ('OjtCoordinator', 'menu-map-markers'),
 ('OjtCoordinator', 'menu-settings'),
 ('OjtCoordinator', 'menu-tasks'),
