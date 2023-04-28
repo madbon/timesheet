@@ -169,8 +169,6 @@ $this->registerJs(<<<JS
     }
 
     let faceFoundSent = false;
-    let frameCounter = 0;
-
 
     async function processVideoFrame() {
 
@@ -183,27 +181,9 @@ $this->registerJs(<<<JS
             const currentFrame = canvas.toDataURL('image/png');
             const currentDescriptor = await getFaceDescriptor(currentFrame);
 
-            // frameCounter++;
-            // const percentage = (frameCounter % 100);
-            // faceMessage.textContent = 'Loading... ' + percentage + '%';
-
             if (currentDescriptor) {
                 console.log('face detected');
-                // faceMessage.textContent = "The system has captured an image of your face. Please wait for a few seconds while the system searches its database to see if there is a match.";
-
-                frameCounter++;
-                const percentage = (frameCounter % 100);
-                
-
-                if(percentage == 100)
-                {
-                    faceMessage.textContent = 'No face found. Please try again.';
-                    frameCounter = 0;
-                }
-                else
-                {
-                    faceMessage.textContent = 'Face searching... ' + percentage + '%';
-                }
+                faceMessage.textContent = "The system has captured an image of your face. Please wait for a few seconds while the system searches its database to see if there is a match.";
                 
                 contentDifferentTimeIn.style.display = "";
                 const response = await fetch('site/get-images');
@@ -212,14 +192,7 @@ $this->registerJs(<<<JS
                 const closestMatch = await isFaceSimilar(currentDescriptor, storedImages);
                 const distance = closestMatch.distance;
 
-                
-
                 if (distance < threshold && !faceFoundSent) {
-
-                    // frameCounter++;
-                    // const percentage = (frameCounter % 100);
-                    // faceMessage.textContent = 'Loading... ' + percentage + '%';
-
                     // Save the captured photo
                     capturedPhoto = currentFrame;
                     const matchedFilename = closestMatch.imagePath.split('/').pop();
@@ -259,18 +232,11 @@ $this->registerJs(<<<JS
                         faceFoundSent = false;
                     });
                 } else {
-                    // faceMessage.textContent = 'Face not recognized. Please try again.';
-                    // frameCounter++;
-                    // const percentage = (frameCounter % 100);
-                    // faceMessage.textContent = 'Loading... ' + percentage + '%';
-                    
+                    faceMessage.textContent = 'Face not recognized. Please try again.';
                     capturedPhoto = null;
                 }
             } else {
-                // frameCounter++;
-                // const percentage = (frameCounter % 100);
-                // faceMessage.textContent = 'Loading... ' + percentage + '%';
-                // faceMessage.textContent = 'No face detected..';
+                faceMessage.textContent = 'No face detected..';
                 console.log('no face detected..');
             }
         }
