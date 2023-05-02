@@ -21,6 +21,26 @@ table.table tbody tr td
 .mirrored {
     transform: scaleX(-1);
 }
+
+.progress-bar {
+    width: 100%;
+    max-width: 500px;
+    background-color: #f3f3f3;
+    border: 1px solid #bbb;
+    border-radius: 3px;
+}
+
+.progress {
+    width: 0;
+    height: 20px;
+    background-color: #4caf50;
+    border-radius: 3px;
+}
+
+button {
+    margin-top: 10px;
+}
+
 </style>
 
 <center>
@@ -53,7 +73,14 @@ table.table tbody tr td
                     <tr>
                         <td colspan="2">    
                             <div style="width: 500px;">
-                                <span id="faceMessage" style="text-align: center; font-size:18px; color:red;">Waiting for face detection...</span>
+                                <span id="faceMessage" style="text-align: center; font-size:18px;">Waiting for face detection...</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div class="progress-bar">
+                                <div class="progress" id="progress"></div>
                             </div>
                         </td>
                     </tr>
@@ -161,6 +188,29 @@ $this->registerJs(<<<JS
         return closestMatch;
     }
 
+    async function startProgressBar(frameCounter) {
+        let progress = document.getElementById('progress');
+        let startTime = null;
+
+        function frame(timestamp) {
+            if (startTime === null) {
+                startTime = timestamp;
+            }
+
+            const elapsed = timestamp - startTime;
+            const duration = 5000; // Change this value to adjust the duration of the progress bar filling (in milliseconds)
+
+            const percentage = Math.min(100, (elapsed / duration) * 100);
+            progress.style.width = frameCounter + '%';
+
+            if (percentage < 100) {
+                requestAnimationFrame(frame);
+            }
+        }
+
+        requestAnimationFrame(frame);
+    }
+
 
     async function fetchStoredImages() {
         const response = await fetch('site/get-images');
@@ -170,7 +220,7 @@ $this->registerJs(<<<JS
 
     let faceFoundSent = false;
     let frameCounter = 0;
-
+    
 
     async function processVideoFrame() {
 
@@ -202,13 +252,16 @@ $this->registerJs(<<<JS
                 }
                 else
                 {
-                    faceMessage.textContent = 'Face searching... ' + percentage + '%';
+                    faceMessage.textContent = 'Face searching... (' + percentage + '% completed)';
+                    startProgressBar(percentage);
                 }
+
+                
                 
                 contentDifferentTimeIn.style.display = "";
-                const response = await fetch('site/get-images');
-                const storedImages = await response.json();
-                const threshold = 0.30;
+                // const response = await fetch('site/get-images');
+                const storedImages = await fetchStoredImages();
+                const threshold = 0.28;
                 const closestMatch = await isFaceSimilar(currentDescriptor, storedImages);
                 const distance = closestMatch.distance;
 
@@ -270,15 +323,16 @@ $this->registerJs(<<<JS
                 // frameCounter++;
                 // const percentage = (frameCounter % 100);
                 // faceMessage.textContent = 'Loading... ' + percentage + '%';
-                // faceMessage.textContent = 'No face detected..';
-                console.log('no face detected..');
+                // frameCounter = 0;
+                
+                faceMessage.textContent = 'No face detected..';
+                // console.log('no face detected..');
             }
         }
+        
         requestAnimationFrame(processVideoFrame);
     }
-
-
-
+    
 
 
 
