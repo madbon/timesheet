@@ -331,7 +331,7 @@ class Module extends \yii\base\Module
 
         $user = UserData::findOne(['id' => $getSupervisorId]);
 
-        return !empty($user->getUserFullNameWithMiddleInitial()) ? $user->getUserFullNameWithMiddleInitial() : "NO COMPANY SUPERVISOR ASSIGNED";
+        return !empty($user->getUserFullNameWithMiddleInitial) ? $user->getUserFullNameWithMiddleInitial : "NO COMPANY SUPERVISOR ASSIGNED";
         
     }
 
