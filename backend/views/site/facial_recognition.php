@@ -81,6 +81,7 @@ button {
                         <td colspan="2">
                             <div class="progress-bar">
                                 <div class="progress" id="progress"></div>
+                                <!-- <div id="progress-status" style="position: absolute; margin-left:120px;">Face searching.. (100% completed)</div> -->
                             </div>
                         </td>
                     </tr>
@@ -188,27 +189,9 @@ $this->registerJs(<<<JS
         return closestMatch;
     }
 
-    async function startProgressBar(frameCounter) {
+    async function startProgressBar(percentage) {
         let progress = document.getElementById('progress');
-        let startTime = null;
-
-        function frame(timestamp) {
-            if (startTime === null) {
-                startTime = timestamp;
-            }
-
-            const elapsed = timestamp - startTime;
-            const duration = 5000; // Change this value to adjust the duration of the progress bar filling (in milliseconds)
-
-            const percentage = Math.min(100, (elapsed / duration) * 100);
-            progress.style.width = frameCounter + '%';
-
-            if (percentage < 100) {
-                requestAnimationFrame(frame);
-            }
-        }
-
-        requestAnimationFrame(frame);
+        progress.style.width = percentage + '%';
     }
 
 
