@@ -18,9 +18,13 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'required_uploading')->dropDownList([0 => 'NO', 1 => 'YES'], ['prompt' => '-','class' => 'form-control'])->label("Required Uploading?") ?>
 
+    <?= $form->field($model, 'required_remarks')->dropDownList([0 => 'NO', 1 => 'YES'], ['prompt' => '-','class' => 'form-control'])->label("Required Remarks?") ?>
+
     <?= $form->field($model, 'enable_tagging')->dropDownList([0 => 'NO', 1 => 'YES'], ['prompt' => '-','class' => 'form-control'])->label("Enable Tagging?") ?>
 
     <?= $form->field($model, 'enable_commenting')->dropDownList([0 => 'NO', 1 => 'YES'], ['prompt' => '-','class' => 'form-control'])->label("Enable Commenting?") ?>
+
+    
 
 
     <div class="form-group">

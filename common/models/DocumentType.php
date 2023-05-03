@@ -29,7 +29,7 @@ class DocumentType extends \yii\db\ActiveRecord
     {
         return [
             [['title','action_title'], 'string', 'max' => 150],
-            [['required_uploading','enable_tagging','enable_commenting'],'integer'],
+            [['required_uploading','enable_tagging','enable_commenting','required_remarks'],'integer'],
         ];
     }
 

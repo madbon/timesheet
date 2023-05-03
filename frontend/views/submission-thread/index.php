@@ -202,7 +202,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'PROGRAM/COURSE',
                 'attribute' => 'program',
                 'format' => 'raw',
-                'visible' => Yii::$app->user->can('view-column-course-program'),
+                'visible' => (!empty($searchModel->ref_document_type_id) && $searchModel->ref_document_type_id != 5) || Yii::$app->user->can('view-column-course-program'),
                 'value' => function($model) use($searchModel)
                 {
                     if(Yii::$app->getModule('admin')->documentTypeAttrib($searchModel->ref_document_type_id,'enable_tagging'))
@@ -281,7 +281,7 @@ $this->params['breadcrumbs'][] = $this->title;
             //     }
             // ],
             [
-                'label' => "REMARKS",
+                'label' => "CONTENT/REMARKS",
                 'attribute' => 'remarks',
                 'format' => 'raw',
                 'value' => function($model)

@@ -38,6 +38,11 @@ class Module extends \yii\base\Module
         // custom initialization code goes here
     }
 
+    // public static function requiredRemarks()
+    // {
+    //     $query = DocumentType::find()->where([''])
+    // }
+
     public static function systemOtherFeature($feature){
         $query = SystemOtherFeature::find()->where(['feature' => $feature])->one();
 

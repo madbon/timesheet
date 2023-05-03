@@ -31,6 +31,35 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'id',
             'title',
+            'action_title',
+            [
+                'label' => 'Required Uploading of Files?',
+                'value' => function($model)
+                {
+                    return $model->required_uploading ? "YES" : "NO";
+                }
+            ],
+            [
+                'label' => 'Required Remarks?',
+                'value' => function($model)
+                {
+                    return $model->required_remarks ? "YES" : "NO";
+                }
+            ],
+            [
+                'label' => 'Enabled Tagging?',
+                'value' => function($model)
+                {
+                    return $model->enable_tagging ? "YES" : "NO";
+                }
+            ],
+            [
+                'label' => 'Enabled Commenting?',
+                'value' => function($model)
+                {
+                    return $model->enable_commenting ? "YES" : "NO";
+                }
+            ],
         ],
     ]) ?>
 
