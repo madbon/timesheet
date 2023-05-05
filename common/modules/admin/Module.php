@@ -318,11 +318,15 @@ class Module extends \yii\base\Module
 
     public static function GetSupervisorByTraineeUserId($trainee_user_id)
     {
-        // print_r($trainee_user_id); exit;
         $getCompany = UserCompany::findOne(['user_id' => $trainee_user_id]);
         $company = !empty($getCompany->ref_company_id) ? $getCompany->ref_company_id : NULL;
 
-        $getUserIdsInCompany = UserCompany::find()->where(['ref_company_id' => $company])->all();
+        $getUserIdsInCompany = UserCompany::find()
+        ->joinWith('users')
+        ->where(['user_company.ref_company_id' => $company])
+        ->andWhere(['user.status' => 10])
+        ->andWhere(['NOT',['.user_company.user_id' => NULL]])
+        ->all();
 
         $userIds = [];
 
@@ -336,7 +340,7 @@ class Module extends \yii\base\Module
 
         $user = UserData::findOne(['id' => $getSupervisorId]);
 
-        return !empty($user->getUserFullNameWithMiddleInitial) ? $user->getUserFullNameWithMiddleInitial : "NO COMPANY SUPERVISOR ASSIGNED";
+        return !empty($user->userFullNameWithMiddleInitial) ? $user->userFullNameWithMiddleInitial : "NO COMPANY SUPERVISOR ASSIGNED";
         
     }
 
