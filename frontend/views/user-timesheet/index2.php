@@ -225,10 +225,13 @@ date_default_timezone_set('Asia/Manila');
                     }
 
                     // TOTAL NO. OF HOURS_END
+
                         $formatted_in_am = !empty($model->time_in_am) ? date('g:i:s A', strtotime($model->time_in_am)) : "";
                         $formatted_out_am = !empty($model->time_out_am) ? date('g:i:s A', strtotime($model->time_out_am)) : "";
                         $formatted_in_pm = !empty($model->time_in_pm) ? date('g:i:s A', strtotime($model->time_in_pm)) : "";
                         $formatted_out_pm = !empty($model->time_out_pm) ? date('g:i:s A', strtotime($model->time_out_pm)) : "";
+
+                        
 
                         $start_time = new DateTime($formatted_in_am);
                         $end_time = new DateTime($formatted_out_am);
@@ -328,13 +331,21 @@ date_default_timezone_set('Asia/Manila');
                             }
                         }
 
-                        $total_minutes = $interval->h * 60 + $interval->i;
+                        $total_minutes = $model->status ? $interval->h * 60 + $interval->i : 0;
 
-                        $total_minutes2 = $interval2->h * 60 + $interval2->i;
-
-                        $main_total_minutes = $total_minutes + $total_minutes2;
+                        $total_minutes2 = $model->status ? $interval2->h * 60 + $interval2->i : 0;
 
                         $totalMinutesRendered += ($total_minutes + $total_minutes2);
+
+                        // OT
+                        $total_minutesOT = $interval->h * 60 + $interval->i;
+
+                        $total_minutes2OT = $interval2->h * 60 + $interval2->i;
+                        // OT-end
+
+                        $main_total_minutes = $total_minutesOT + $total_minutes2OT;
+
+                        
                         
                         // Check if the total duration is greater than 8 hours
                         $overtime_hours = 0;
@@ -343,8 +354,10 @@ date_default_timezone_set('Asia/Manila');
                             // Calculate the overtime in minutes
                             $overtime_minutes = $main_total_minutes - 8 * 60;
 
-                            $totalMinutesOvertime += $main_total_minutes - 8 * 60;
-                            
+                            if($model->status)
+                            {
+                                $totalMinutesOvertime += $main_total_minutes - 8 * 60;
+                            }
                             // Convert the overtime to hours and minutes
                             $overtime_hours = floor($overtime_minutes / 60);
                             $overtime_minutes = $overtime_minutes % 60;
@@ -711,17 +724,21 @@ date_default_timezone_set('Asia/Manila');
                     
                     
 
-                    $total_minutes2 = $interval3->h * 60 + $interval->i;
-                    $total_minutes1 = $interval2->h * 60 + $interval2->i;
+                    $total_minutes2 = $model2->status ? $interval3->h * 60 + $interval->i : 0;
+                    $total_minutes1 = $model2->status ? $interval2->h * 60 + $interval2->i : 0;
 
                     $totalMinutesRendered2 += ($total_minutes2 + $total_minutes1);
                     
                   
                     switch ($model2->month_val) {
                         case '1':
-                            $jan_total  += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                            if($model2->status)
+                            {
+                                $jan_total  += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                            }
                         break;
                         case '2':
+                            
                             $feb_total  += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
                         break;
                         case '3':
