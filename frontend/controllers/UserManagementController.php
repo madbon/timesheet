@@ -562,7 +562,7 @@ class UserManagementController extends Controller
 
         if (Yii::$app->request->isPost) {
 
-            $modelUpload->model_name = basename(get_class($this->findModel($id)));
+            $modelUpload->model_name = 'UserData';
             $modelUpload->model_id = $id;
 
             $modelUpload->imageFile = UploadedFile::getInstance($modelUpload, 'imageFile');
@@ -598,7 +598,7 @@ class UserManagementController extends Controller
 
         if (Yii::$app->request->isPost) {
 
-            $modelUpload->model_name = basename(get_class($this->findModel($id)));
+            $modelUpload->model_name = 'UserData';
             $modelUpload->model_id = $id;
 
             $modelUpload->imageFile = UploadedFile::getInstance($modelUpload, 'imageFile');
