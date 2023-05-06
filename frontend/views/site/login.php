@@ -11,6 +11,14 @@ $this->title = 'LOGIN';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <style>
+    body {
+        background-image: url(<?= Yii::$app->request->baseUrl . '/ref/images/login_bg.jpg' ?>);
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-attachment: fixed;
+    }
+
     div.row .col-sm-6 a.btn
     {
         background:none;
@@ -50,6 +58,15 @@ $this->params['breadcrumbs'][] = $this->title;
     {
         color:black;
     }
+    footer.footer
+    {
+        /* background:#ffffff75; */
+        background: none;
+    }
+    footer.footer p
+    {
+        color:white;
+    }
 </style>
 
 <div class="site-login" >
@@ -62,17 +79,19 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div style="padding:10px; ">
                     <div style="margin-bottom:20px;">
                         <div class="d-flex justify-content-center align-items-center">
-                            <?php  
-                                $imageUrl = Yii::$app->request->baseUrl . '/ref/images/logo_university.png';
+                            <!-- <div style="background:white;"> -->
+                                <?php  
+                                    $imageUrl = Yii::$app->request->baseUrl . '/ref/images/logo_unclear.png';
 
-                                echo Html::img($imageUrl, ['alt' => 'Example Image','style' => 'filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));']);
-                            ?>
+                                    echo Html::img($imageUrl, ['alt' => 'Example Image','style' => 'filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));','width' => 150, 'height' => 200]);
+                                ?>
+                            <!-- </div> -->
                         </div>
                     </div>
 
                     
                     
-                    <div style="border:1px solid #ddd; padding:10px; padding-top:0px; border-radius:5px;">
+                    <div style="border:1px solid #ddd; padding:10px; padding-top:0px; border-radius:5px; background:#ffffffc7;">
 
                         <p style="text-align: center; font-weight:normal; font-size:15px; color:#ae0505; padding:5px; padding-right:50px; padding-left:50px; padding-top:30px; padding-bottom:30px;">OJT Timesheet Monitoring System for CICT Trainees</p>
                         
