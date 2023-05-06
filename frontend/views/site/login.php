@@ -83,7 +83,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <?php  
                                     $imageUrl = Yii::$app->request->baseUrl . '/ref/images/logo_unclear.png';
 
-                                    echo Html::img($imageUrl, ['alt' => 'Example Image','style' => 'filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));','width' => 150, 'height' => 200]);
+                                    echo Html::img($imageUrl, ['alt' => 'Example Image','style' => 'filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));','width' => 150, 'height' => 210]);
                                 ?>
                             <!-- </div> -->
                         </div>
