@@ -60,12 +60,15 @@ $this->params['breadcrumbs'][] = $this->title;
     }
     footer.footer
     {
-        /* background:#ffffff75; */
+        /* background:#ff000061; */
         background: none;
     }
     footer.footer p
     {
         color:white;
+        margin-top:15px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+        text-align: center;
     }
 </style>
 
@@ -83,7 +86,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <?php  
                                     $imageUrl = Yii::$app->request->baseUrl . '/ref/images/logo_unclear.png';
 
-                                    echo Html::img($imageUrl, ['alt' => 'Example Image','style' => 'filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));','width' => 150, 'height' => 210]);
+                                    echo Html::img($imageUrl, ['alt' => 'Example Image','style' => 'filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));','width' => 180, 'height' => 260]);
                                 ?>
                             <!-- </div> -->
                         </div>
@@ -106,7 +109,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <?= $form->field($model, 'rememberMe')->checkbox() ?>
 
                                 <div class="form-group">
-                                    <?= Html::submitButton('LOGIN', ['class' => 'btn btn-danger', 'name' => 'login-button', 'style' => 'width:100%; border-radius:25px;']) ?>
+                                    <?= Html::submitButton('LOGIN <i class="fas fa-sign-in-alt"></i>', ['class' => 'btn btn-danger', 'name' => 'login-button', 'style' => 'width:100%; border-radius:25px;']) ?>
                                 </div>
 
                             <?php ActiveForm::end(); ?>
