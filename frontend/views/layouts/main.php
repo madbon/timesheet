@@ -340,6 +340,7 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
         
         $countTask = Yii::$app->getModule('admin')->submissionThreadSeen();
         $countReply = Yii::$app->getModule('admin')->submissionReplySeen();
+        $countAnn = Yii::$app->getModule('admin')->unseenAnnouncement();
 
         $menuItemsLeft = [
             [
@@ -355,7 +356,7 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
                 'visible' => Yii::$app->user->can('menu-map-markers'),
             ],
             [
-                'label' => '<i class="fas fa-bullhorn"></i> Announcement', 'url' => ['/announcement/index', 'AnnouncementSearch[date_time]' => 'today'], 'active' => Yii::$app->controller->id == "announcement" ? true : false,
+                'label' => $countAnn ? '<i class="fas fa-bullhorn" style="color:#ffcd39;"></i> Announcement <i style="font-size:11px; font-style:normal; color:#ffcd39; font-weight:bold;" title="Unread Announcement">('.$countAnn.')</i>' : '<i class="fas fa-bullhorn"></i> Announcement', 'url' => ['/announcement/index', 'AnnouncementSearch[date_time]' => 'today'], 'active' => Yii::$app->controller->id == "announcement" ? true : false,
                 'visible' => Yii::$app->user->can('announcement-menu'),
             ],
             [

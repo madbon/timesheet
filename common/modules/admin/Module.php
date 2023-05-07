@@ -1,6 +1,9 @@
 <?php
 
 namespace common\modules\admin;
+
+use common\models\Announcement;
+use common\models\AnnouncementProgramTags;
 use common\models\Files;
 use common\models\UserData;
 use common\models\UserCompany;
@@ -16,6 +19,7 @@ use common\models\SubmissionReply;
 use common\models\SubmissionReplySeen;
 use common\models\SubmissionThreadSearch;
 use common\models\SystemOtherFeature;
+use common\models\AnnouncementSeen;
 use Yii;
 
 /**
@@ -42,6 +46,47 @@ class Module extends \yii\base\Module
     // {
     //     $query = DocumentType::find()->where([''])
     // }
+
+    public static function unseenAnnouncement($date = null)
+    {
+        $annTags = AnnouncementProgramTags::find()
+        ->select(['announcement_program_tags.announcement_id'])
+        ->joinWith('announcement')
+        ->where(['announcement_program_tags.ref_program_id' => Yii::$app->getModule('admin')->GetAssignedProgram()])
+        ->andFilterWhere(['LIKE','announcement.date_time', $date])
+        ->all();
+        // ->createCommand()->rawSql;
+
+        // print_r($annTags); exit;
+
+        $arrAnnIds = [];
+        $countUnseen = 0;
+        foreach ($annTags as $tag) {
+            $arrAnnIds[] = $tag->announcement_id;
+            if(!AnnouncementSeen::find()->where(['announcement_id' => $tag->announcement_id, 'user_id' => Yii::$app->user->identity->id])->exists())
+            {
+                $countUnseen += 1;
+            }
+        }
+
+        // print_r($arrAnnIds); exit;
+
+        $allProgramAnn = Announcement::find()
+        ->where(['viewer_type' => 'all_program'])
+        ->andFilterWhere(['LIKE','date_time', $date])
+        ->all();
+
+        foreach ($allProgramAnn as $allProg) {
+            if(!AnnouncementSeen::find()->where(['announcement_id' => $allProg->id, 'user_id' => Yii::$app->user->identity->id])->exists())
+            {
+                $countUnseen += 1;
+            }
+        }
+
+        
+
+       return $countUnseen;
+    }
 
     public static function systemOtherFeature($feature){
         $query = SystemOtherFeature::find()->where(['feature' => $feature])->one();
