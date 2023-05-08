@@ -83,6 +83,16 @@ class SubmissionThread extends \yii\db\ActiveRecord
         return $this->hasMany(SubmissionReply::class, ['submission_thread_id' => 'id']);
     }
 
+     /**
+     * Gets query for [[SubmissionArchive]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSubmissionArchive()
+    {
+        return $this->hasOne(SubmissionArchive::class, ['submission_thread_id' => 'id']);
+    }
+
     /**
      * Gets query for [[RefDocumentType]].
      *

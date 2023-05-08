@@ -18,6 +18,7 @@ use frontend\models\UploadMultipleForm;
 use yii\web\UploadedFile;
 use common\models\Files;
 use yii\helpers\Url;
+use common\models\SubmissionArchive;
 use Yii;
 
 /**
@@ -372,8 +373,16 @@ class SubmissionThreadController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        // $this->findModel($id)->delete();
 
+        $model = new SubmissionArchive();
+
+        $model->submission_thread_id = $id;
+        $model->user_id = Yii::$app->user->identity->id;
+        $model->date_time = date('Y-m-d H:i:s');
+        $model->save();
+
+        Yii::$app->session->setFlash('success', 'Item has been deleted');
         return $this->redirect(Yii::$app->request->referrer);
     }
 
