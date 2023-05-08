@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 26, 2023 at 08:05 AM
+-- Generation Time: May 08, 2023 at 05:01 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -47,6 +47,19 @@ CREATE TABLE `announcement_program_tags` (
   `announcement_id` int(11) DEFAULT NULL COMMENT 'foreign key (announcement table)',
   `ref_program_id` int(11) DEFAULT NULL COMMENT 'foreign key (ref_program table)'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='This table will store data on which courses/programs will see the announcement';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `announcement_seen`
+--
+
+CREATE TABLE `announcement_seen` (
+  `id` int(11) NOT NULL,
+  `announcement_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `date_time` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- --------------------------------------------------------
 
@@ -220,7 +233,6 @@ INSERT INTO `auth_item_child` (`parent`, `child`) VALUES
 ('CompanySupervisor', 'access-trainee-index'),
 ('CompanySupervisor', 'create-activity-reminder'),
 ('CompanySupervisor', 'create-transaction'),
-('CompanySupervisor', 'edit-time'),
 ('CompanySupervisor', 'menu-tasks'),
 ('CompanySupervisor', 'menu-user-management'),
 ('CompanySupervisor', 'SETTINGS'),
@@ -357,7 +369,10 @@ INSERT INTO `migration` (`version`, `apply_time`) VALUES
 ('m200409_110543_rbac_update_mssql_trigger', 1678417445),
 ('m230401_054400_another_permission', 1680328127),
 ('m230402_020608_update_program_id', 1680401805),
-('m230402_125314_add_permission_assignment', 1680440013);
+('m230402_125314_add_permission_assignment', 1680440013),
+('m230502_084102_update_mobile_no', 1683017011),
+('m230503_000856_add_column_ref_document_type_required_remarks', 1683072831),
+('m230503_004527_update_required_uploading', 1683074872);
 
 -- --------------------------------------------------------
 
@@ -433,17 +448,18 @@ CREATE TABLE `ref_document_type` (
   `action_title` varchar(150) DEFAULT NULL COMMENT 'title of task to be performed',
   `required_uploading` int(11) NOT NULL COMMENT '1 - required uploading of file / 0 - optional',
   `enable_tagging` int(11) NOT NULL COMMENT '1 - enable tagging of user / 0 - disabl tagging of user',
-  `enable_commenting` int(11) NOT NULL COMMENT '1 - enable creating comment / 0 - disable creating of comment'
+  `enable_commenting` int(11) NOT NULL COMMENT '1 - enable creating comment / 0 - disable creating of comment',
+  `required_remarks` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Reference table: types of task';
 
 --
 -- Dumping data for table `ref_document_type`
 --
 
-INSERT INTO `ref_document_type` (`id`, `title`, `action_title`, `required_uploading`, `enable_tagging`, `enable_commenting`) VALUES
-(1, 'Trainees Evaluation Form', 'Submit Trainees Evaluation Form', 1, 1, 0),
-(3, 'Accomplishment Report', 'Submit Accomplishment Report', 1, 0, 1),
-(5, 'Activity Reminder', 'Create Activity Reminder', 0, 0, 0);
+INSERT INTO `ref_document_type` (`id`, `title`, `action_title`, `required_uploading`, `enable_tagging`, `enable_commenting`, `required_remarks`) VALUES
+(1, 'Trainees Evaluation Form', 'Submit Trainees Evaluation Form', 1, 1, 0, 0),
+(3, 'Accomplishment Report', 'Submit Accomplishment Report', 1, 0, 1, 0),
+(5, 'Activity Reminder', 'Create Activity Reminder', 0, 0, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -551,6 +567,19 @@ INSERT INTO `student_year` (`year`, `title`) VALUES
 (3, '3rd Year'),
 (4, '4th Year'),
 (5, '5th Year');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `submission_archive`
+--
+
+CREATE TABLE `submission_archive` (
+  `id` int(11) NOT NULL,
+  `submission_thread_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `date_time` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- --------------------------------------------------------
 
@@ -678,7 +707,7 @@ CREATE TABLE `user` (
   `password_hash` varchar(255) NOT NULL COMMENT 'accounts password (stored in hash code)',
   `password_reset_token` varchar(255) DEFAULT NULL COMMENT 'disregard this column',
   `email` varchar(255) NOT NULL COMMENT 'user''s email',
-  `mobile_no` int(10) DEFAULT NULL COMMENT 'user''s mobile no.',
+  `mobile_no` varchar(10) DEFAULT NULL,
   `tel_no` varchar(150) NOT NULL COMMENT 'user''s telephone no.',
   `address` text DEFAULT NULL COMMENT 'user''s address details',
   `status` smallint(6) NOT NULL DEFAULT 10 COMMENT 'account''s status (10 - active, 9 - inactive)',
@@ -755,6 +784,14 @@ ALTER TABLE `announcement`
 --
 ALTER TABLE `announcement_program_tags`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `announcement_seen`
+--
+ALTER TABLE `announcement_seen`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `announcement_id` (`announcement_id`),
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `auth_assignment`
@@ -886,6 +923,14 @@ ALTER TABLE `student_year`
   ADD UNIQUE KEY `year` (`year`);
 
 --
+-- Indexes for table `submission_archive`
+--
+ALTER TABLE `submission_archive`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `submission_thread_id` (`submission_thread_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
 -- Indexes for table `submission_reply`
 --
 ALTER TABLE `submission_reply`
@@ -990,13 +1035,19 @@ ALTER TABLE `user_timesheet`
 -- AUTO_INCREMENT for table `announcement`
 --
 ALTER TABLE `announcement`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique id of announcement (auto generated)';
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique id of announcement (auto generated)', AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `announcement_program_tags`
 --
 ALTER TABLE `announcement_program_tags`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Unique ID (auto generated)';
+
+--
+-- AUTO_INCREMENT for table `announcement_seen`
+--
+ALTER TABLE `announcement_seen`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `coordinator_programs`
@@ -1053,6 +1104,12 @@ ALTER TABLE `ref_program_major`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique if of major (auto generated)', AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT for table `submission_archive`
+--
+ALTER TABLE `submission_archive`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `submission_reply`
 --
 ALTER TABLE `submission_reply`
@@ -1086,7 +1143,7 @@ ALTER TABLE `system_other_feature`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique id of user', AUTO_INCREMENT=80;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique id of user', AUTO_INCREMENT=84;
 
 --
 -- AUTO_INCREMENT for table `user_archive`
@@ -1117,6 +1174,13 @@ ALTER TABLE `announcement`
   ADD CONSTRAINT `announcement_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
 
 --
+-- Constraints for table `announcement_seen`
+--
+ALTER TABLE `announcement_seen`
+  ADD CONSTRAINT `announcement_seen_ibfk_1` FOREIGN KEY (`announcement_id`) REFERENCES `announcement` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  ADD CONSTRAINT `announcement_seen_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
+
+--
 -- Constraints for table `auth_assignment`
 --
 ALTER TABLE `auth_assignment`
@@ -1140,6 +1204,13 @@ ALTER TABLE `auth_item_child`
 --
 ALTER TABLE `files`
   ADD CONSTRAINT `files_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
+
+--
+-- Constraints for table `submission_archive`
+--
+ALTER TABLE `submission_archive`
+  ADD CONSTRAINT `submission_archive_ibfk_1` FOREIGN KEY (`submission_thread_id`) REFERENCES `submission_thread` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  ADD CONSTRAINT `submission_archive_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `submission_reply`
