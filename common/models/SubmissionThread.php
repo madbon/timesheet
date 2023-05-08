@@ -39,9 +39,10 @@ class SubmissionThread extends \yii\db\ActiveRecord
             // [['imageFiles'], 'file', 'skipOnEmpty' => Yii::$app->controller->action->id == "update" ? true : true, 'extensions' => 'png, jpg, jpeg, gif, pdf, docx, xlsx, xls', 'maxFiles' => 10, 'maxSize' => 5 * 1024 * 1024, 'tooBig' => 'Maximum file size is less than 5MB'],
             [['ref_document_type_id'],'required'],
             [['user_id', 'ref_document_type_id', 'created_at','tagged_user_id'], 'integer'],
-            [['remarks'], 'string'],
+            [['remarks'], $this->documentType->required_remarks ? 'required' : 'safe'],
             [['subject'], 'string','max' => 250],
-            [['date_time'],'safe'],
+            [['date_time','remarks'],'safe'],
+            
             // [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
             // [['ref_document_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => RefDocumentType::class, 'targetAttribute' => ['ref_document_type_id' => 'id']],
         ];
@@ -80,6 +81,16 @@ class SubmissionThread extends \yii\db\ActiveRecord
     public function getSubmissionReply()
     {
         return $this->hasMany(SubmissionReply::class, ['submission_thread_id' => 'id']);
+    }
+
+     /**
+     * Gets query for [[SubmissionArchive]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSubmissionArchive()
+    {
+        return $this->hasOne(SubmissionArchive::class, ['submission_thread_id' => 'id']);
     }
 
     /**

@@ -1,6 +1,9 @@
 <?php
 
 namespace common\modules\admin;
+
+use common\models\Announcement;
+use common\models\AnnouncementProgramTags;
 use common\models\Files;
 use common\models\UserData;
 use common\models\UserCompany;
@@ -16,6 +19,7 @@ use common\models\SubmissionReply;
 use common\models\SubmissionReplySeen;
 use common\models\SubmissionThreadSearch;
 use common\models\SystemOtherFeature;
+use common\models\AnnouncementSeen;
 use Yii;
 
 /**
@@ -36,6 +40,52 @@ class Module extends \yii\base\Module
         parent::init();
 
         // custom initialization code goes here
+    }
+
+    // public static function requiredRemarks()
+    // {
+    //     $query = DocumentType::find()->where([''])
+    // }
+
+    public static function unseenAnnouncement($date = null)
+    {
+        $annTags = AnnouncementProgramTags::find()
+        ->select(['announcement_program_tags.announcement_id'])
+        ->joinWith('announcement')
+        ->where(['announcement_program_tags.ref_program_id' => Yii::$app->getModule('admin')->GetAssignedProgram()])
+        ->andFilterWhere(['LIKE','announcement.date_time', $date])
+        ->all();
+        // ->createCommand()->rawSql;
+
+        // print_r($annTags); exit;
+
+        $arrAnnIds = [];
+        $countUnseen = 0;
+        foreach ($annTags as $tag) {
+            $arrAnnIds[] = $tag->announcement_id;
+            if(!AnnouncementSeen::find()->where(['announcement_id' => $tag->announcement_id, 'user_id' => Yii::$app->user->identity->id])->exists())
+            {
+                $countUnseen += 1;
+            }
+        }
+
+        // print_r($arrAnnIds); exit;
+
+        $allProgramAnn = Announcement::find()
+        ->where(['viewer_type' => 'all_program'])
+        ->andFilterWhere(['LIKE','date_time', $date])
+        ->all();
+
+        foreach ($allProgramAnn as $allProg) {
+            if(!AnnouncementSeen::find()->where(['announcement_id' => $allProg->id, 'user_id' => Yii::$app->user->identity->id])->exists())
+            {
+                $countUnseen += 1;
+            }
+        }
+
+        
+
+       return $countUnseen;
     }
 
     public static function systemOtherFeature($feature){
@@ -313,11 +363,15 @@ class Module extends \yii\base\Module
 
     public static function GetSupervisorByTraineeUserId($trainee_user_id)
     {
-        // print_r($trainee_user_id); exit;
         $getCompany = UserCompany::findOne(['user_id' => $trainee_user_id]);
         $company = !empty($getCompany->ref_company_id) ? $getCompany->ref_company_id : NULL;
 
-        $getUserIdsInCompany = UserCompany::find()->where(['ref_company_id' => $company])->all();
+        $getUserIdsInCompany = UserCompany::find()
+        ->joinWith('users')
+        ->where(['user_company.ref_company_id' => $company])
+        ->andWhere(['user.status' => 10])
+        ->andWhere(['NOT',['.user_company.user_id' => NULL]])
+        ->all();
 
         $userIds = [];
 
@@ -331,7 +385,7 @@ class Module extends \yii\base\Module
 
         $user = UserData::findOne(['id' => $getSupervisorId]);
 
-        return !empty($user->getUserFullNameWithMiddleInitial()) ? $user->getUserFullNameWithMiddleInitial() : "NO COMPANY SUPERVISOR ASSIGNED";
+        return !empty($user->userFullNameWithMiddleInitial) ? $user->userFullNameWithMiddleInitial : "NO COMPANY SUPERVISOR ASSIGNED";
         
     }
 

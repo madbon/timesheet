@@ -52,4 +52,14 @@ class AnnouncementProgramTags extends \yii\db\ActiveRecord
     {
         return $this->hasOne(RefProgram::class, ['id' => 'ref_program_id']);
     }
+
+      /**
+     * Gets query for [[User]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAnnouncement()
+    {
+        return $this->hasOne(Announcement::class, ['id' => 'announcement_id']);
+    }
 }

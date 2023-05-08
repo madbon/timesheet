@@ -40,6 +40,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
             [
+                'label' => 'Required Remarks?',
+                'value' => function($model)
+                {
+                    return $model->required_remarks ? "YES" : "NO";
+                }
+            ],
+            [
                 'label' => 'Enabled Tagging?',
                 'value' => function($model)
                 {

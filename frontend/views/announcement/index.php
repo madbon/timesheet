@@ -8,6 +8,7 @@ use yii\grid\GridView;
 use yii\widgets\Pjax;
 use common\models\Files;
 use yii\widgets\LinkPager;
+use common\models\AnnouncementSeen;
 /** @var yii\web\View $this */
 /** @var common\models\AnnouncementSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
@@ -137,15 +138,15 @@ $this->title = 'Announcements';
         <div class="col-sm-6">
             <div class="container">
                 <div style="margin-bottom:10px;">
-                    <?= Html::a('Today',['index', 'AnnouncementSearch[date_time]' => 'today'],[
+                    <?= Html::a('Today ('.(Yii::$app->getModule('admin')->unseenAnnouncement(date('Y-m-d'))).')',['index', 'AnnouncementSearch[date_time]' => 'today'],[
                         'class' => $searchModel->date_time == 'today' ? 'btn btn-dark' : 'btn btn-outline-dark', 
                         'style' => 'border-radius:25px; padding-left:20px; padding-right:20px;']) ?>
 
-                    <?= Html::a('Yesterday', ['index', 'AnnouncementSearch[date_time]' => 'yesterday'], [
+                    <?= Html::a('Yesterday ('.(Yii::$app->getModule('admin')->unseenAnnouncement(date('Y-m-d', strtotime('-1 day')))).')', ['index', 'AnnouncementSearch[date_time]' => 'yesterday'], [
                         'class' => $searchModel->date_time == 'yesterday' ? 'btn btn-dark' : 'btn btn-outline-dark',
                         'style' => 'border-radius:25px; padding-left:20px; padding-right:20px;']) ?>
 
-                    <?= Html::a('All',['index', 'AnnouncementSearch[date_time]' => 'all-days'],[
+                    <?= Html::a('All ('.(Yii::$app->getModule('admin')->unseenAnnouncement()).')',['index', 'AnnouncementSearch[date_time]' => 'all-days'],[
                         'class' => $searchModel->date_time == 'all-days' ? 'btn btn-dark' : 'btn btn-outline-dark',
                         'style' => 'border-radius:25px; padding-left:20px; padding-right:20px;']) ?>
 
@@ -155,6 +156,17 @@ $this->title = 'Announcements';
                 </div>
 
                 <?php foreach ($dataProvider->models as $row) { ?>
+
+                    <?php
+                        $annSeen = new AnnouncementSeen();    
+                        if(!AnnouncementSeen::find()->where(['announcement_id' => $row->id, 'user_id' => Yii::$app->user->identity->id])->exists())
+                        {
+                            $annSeen->announcement_id = $row->id;
+                            $annSeen->user_id = Yii::$app->user->identity->id;
+                            $annSeen->date_time = date('Y-m-d H:i:s');
+                            $annSeen->save();
+                        }
+                    ?>
                     
                     <div class="card" >
                         <div style="text-align: right; padding-top:0; margin-top:0; margin-top:-10px;">

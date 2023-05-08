@@ -21,26 +21,6 @@ table.table tbody tr td
 .mirrored {
     transform: scaleX(-1);
 }
-
-.progress-bar {
-    width: 100%;
-    max-width: 500px;
-    background-color: #f3f3f3;
-    border: 1px solid #bbb;
-    border-radius: 3px;
-}
-
-.progress {
-    width: 0;
-    height: 20px;
-    background-color: #4caf50;
-    border-radius: 3px;
-}
-
-button {
-    margin-top: 10px;
-}
-
 </style>
 
 <center>
@@ -73,15 +53,7 @@ button {
                     <tr>
                         <td colspan="2">    
                             <div style="width: 500px;">
-                                <span id="faceMessage" style="text-align: center; font-size:18px;">Waiting for face detection...</span>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            <div class="progress-bar">
-                                <div class="progress" id="progress"></div>
-                                <!-- <div id="progress-status" style="position: absolute; margin-left:120px;">Face searching.. (100% completed)</div> -->
+                                <span id="faceMessage" style="text-align: center; font-size:18px; color:red;">Waiting for face detection...</span>
                             </div>
                         </td>
                     </tr>
@@ -189,11 +161,6 @@ $this->registerJs(<<<JS
         return closestMatch;
     }
 
-    async function startProgressBar(percentage) {
-        let progress = document.getElementById('progress');
-        progress.style.width = percentage + '%';
-    }
-
 
     async function fetchStoredImages() {
         const response = await fetch('site/get-images');
@@ -202,8 +169,6 @@ $this->registerJs(<<<JS
     }
 
     let faceFoundSent = false;
-    let frameCounter = 0;
-    
 
     async function processVideoFrame() {
 
@@ -216,46 +181,18 @@ $this->registerJs(<<<JS
             const currentFrame = canvas.toDataURL('image/png');
             const currentDescriptor = await getFaceDescriptor(currentFrame);
 
-            // frameCounter++;
-            // const percentage = (frameCounter % 100);
-            // faceMessage.textContent = 'Loading... ' + percentage + '%';
-
             if (currentDescriptor) {
                 console.log('face detected');
-                // faceMessage.textContent = "The system has captured an image of your face. Please wait for a few seconds while the system searches its database to see if there is a match.";
-
-                frameCounter++;
-                const percentage = (frameCounter % 100);
-                
-
-                if(percentage == 100)
-                {
-                    faceMessage.textContent = 'No face found. Please try again.';
-                    frameCounter = 0;
-                }
-                else
-                {
-                    faceMessage.textContent = 'Face searching... (' + percentage + '% completed)';
-                    startProgressBar(percentage);
-                }
-
-                
+                faceMessage.textContent = "The system has captured an image of your face. Please wait for a few seconds while the system searches its database to see if there is a match.";
                 
                 contentDifferentTimeIn.style.display = "";
-                // const response = await fetch('site/get-images');
-                const storedImages = await fetchStoredImages();
-                const threshold = 0.28;
+                const response = await fetch('site/get-images');
+                const storedImages = await response.json();
+                const threshold = 0.30;
                 const closestMatch = await isFaceSimilar(currentDescriptor, storedImages);
                 const distance = closestMatch.distance;
 
-                
-
                 if (distance < threshold && !faceFoundSent) {
-
-                    // frameCounter++;
-                    // const percentage = (frameCounter % 100);
-                    // faceMessage.textContent = 'Loading... ' + percentage + '%';
-
                     // Save the captured photo
                     capturedPhoto = currentFrame;
                     const matchedFilename = closestMatch.imagePath.split('/').pop();
@@ -295,27 +232,19 @@ $this->registerJs(<<<JS
                         faceFoundSent = false;
                     });
                 } else {
-                    // faceMessage.textContent = 'Face not recognized. Please try again.';
-                    // frameCounter++;
-                    // const percentage = (frameCounter % 100);
-                    // faceMessage.textContent = 'Loading... ' + percentage + '%';
-                    
+                    faceMessage.textContent = 'Face not recognized. Please try again.';
                     capturedPhoto = null;
                 }
             } else {
-                // frameCounter++;
-                // const percentage = (frameCounter % 100);
-                // faceMessage.textContent = 'Loading... ' + percentage + '%';
-                // frameCounter = 0;
-                
                 faceMessage.textContent = 'No face detected..';
-                // console.log('no face detected..');
+                console.log('no face detected..');
             }
         }
-        
         requestAnimationFrame(processVideoFrame);
     }
-    
+
+
+
 
 
 

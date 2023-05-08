@@ -147,7 +147,7 @@ date_default_timezone_set('Asia/Manila');
                     <td style="font-weight:bold;">MONTH:</td>
                     <td colspan="3" style="border-bottom:2px solid black; font-weight:bold;">
                         <?php // date('F', strtotime('M')) ?>
-                        <?= $month ?>
+                        <?= $month.'-'.$year ?>
                     </td>
                 </tr>
                 <tr>
@@ -203,10 +203,16 @@ date_default_timezone_set('Asia/Manila');
             $totalMinutesRendered = 0;
             $totalSecondsRendered = 0;
             $countPendingRecord = 0;
+            $countPendingRecordWithTimeOut = 0;
             $total_minutes = 0;
             $totalMinutesOvertime = 0;
+            
 
             foreach ($date_range as $date) {
+                $main_total_minutes = 0;
+                $overtime_hours = 0;
+                $overtime_minutes = 0;
+
                 $models = UserTimesheet::findAll([
                     'date' => $date->format('Y-m-d'), 
                     'user_id' => $model->user->id
@@ -219,16 +225,16 @@ date_default_timezone_set('Asia/Manila');
 
                     foreach ($models as $model) {
 
-                    if(empty($model->status))
-                    {
-                        $countPendingRecord += 1;
-                    }
+                    
 
                     // TOTAL NO. OF HOURS_END
+
                         $formatted_in_am = !empty($model->time_in_am) ? date('g:i:s A', strtotime($model->time_in_am)) : "";
                         $formatted_out_am = !empty($model->time_out_am) ? date('g:i:s A', strtotime($model->time_out_am)) : "";
                         $formatted_in_pm = !empty($model->time_in_pm) ? date('g:i:s A', strtotime($model->time_in_pm)) : "";
                         $formatted_out_pm = !empty($model->time_out_pm) ? date('g:i:s A', strtotime($model->time_out_pm)) : "";
+
+                        
 
                         $start_time = new DateTime($formatted_in_am);
                         $end_time = new DateTime($formatted_out_am);
@@ -328,28 +334,80 @@ date_default_timezone_set('Asia/Manila');
                             }
                         }
 
-                        $total_minutes = $interval->h * 60 + $interval->i;
+                        if($model->time_in_am && empty($model->time_out_am) && empty($model->time_out_pm))
+                        {
+                            $interval = 0;
+                            $interval2 = 0;
+                        }
+                        else
+                        {
+                            if($model->time_in_pm && empty($model->time_out_pm))
+                            {
+                                $interval = 0;
+                                $interval2 = 0;
+                            }
+                            else
+                            {
+                                
+                            }
+                        }
+                        
+                        if($interval && $interval2)
+                        {
+                            $countPendingRecordWithTimeOut += 1;
 
-                        $total_minutes2 = $interval2->h * 60 + $interval2->i;
+                            if(empty($model->status))
+                            {
+                                $countPendingRecord += 1;
+                            }
 
-                        $main_total_minutes = $total_minutes + $total_minutes2;
+                            $total_minutes = $model->status ? $interval->h * 60 + $interval->i : 0;
+
+                            $total_minutes2 = $model->status ? $interval2->h * 60 + $interval2->i : 0;
+                        }
+                        else
+                        {
+                            $total_minutes = 0;
+
+                            $total_minutes2 = 0;
+                        }
+
+                        
 
                         $totalMinutesRendered += ($total_minutes + $total_minutes2);
+
+                        if($interval && $interval2)
+                        {
+                            $total_minutesOT = $interval->h * 60 + $interval->i;
+
+                            $total_minutes2OT = $interval2->h * 60 + $interval2->i;
+                        }
+                        else
+                        {
+                            $total_minutesOT = 0;
+
+                            $total_minutes2OT = 0;
+                        }
+
+                        $main_total_minutes += ($total_minutesOT + $total_minutes2OT);
                         
                         // Check if the total duration is greater than 8 hours
-                        $overtime_hours = 0;
-                        $overtime_minutes = 0;
+                        
                         if ($main_total_minutes > 8 * 60) {
                             // Calculate the overtime in minutes
                             $overtime_minutes = $main_total_minutes - 8 * 60;
 
-                            $totalMinutesOvertime += $main_total_minutes - 8 * 60;
-                            
+                            if($model->status)
+                            {
+                                $totalMinutesOvertime += ($main_total_minutes - 8 * 60);
+                            }
+
                             // Convert the overtime to hours and minutes
                             $overtime_hours = floor($overtime_minutes / 60);
                             $overtime_minutes = $overtime_minutes % 60;
                             
                         }
+                        
 
                         $view_photo_in_am = !empty($model->time_in_am) ? Html::button($formatted_in_am, ['value'=>Url::to('@web/user-timesheet/preview-photo?timesheet_id='.$model->id.'&time='.$model->time_in_am), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => 'border:none;']) : "";
 
@@ -366,8 +424,31 @@ date_default_timezone_set('Asia/Manila');
                             echo "<td>" . ($view_photo_in_pm) . "</td>";
                             echo "<td>" . ($view_photo_out_pm) . "</td>";
 
-                            echo "<td>" . ($overtime_hours." hrs. ".$overtime_minutes." mins. ") . "</td>";
-                            echo "<td>" . (($interval->h + $interval2->h). " hrs. ". ($interval->i + $interval2->i)." mins. ") . "</td>";
+                            if($interval && $interval2)
+                            {
+                                echo "<td>" . ($overtime_hours." hrs. ".$overtime_minutes." mins. ") . "</td>";
+                                // Calculate the total minutes
+                                $total_minutes_sam = $interval->i + $interval2->i;
+
+                                // Calculate how many hours to add from the minutes
+                                $extra_hours = floor($total_minutes_sam / 60);
+
+                                // Calculate the remaining minutes
+                                $display_minutes = $total_minutes_sam % 60;
+
+                                // Calculate the total hours
+                                $total_hours_sam = $interval->h + $interval2->h + $extra_hours;
+
+                                // Display the result
+                                echo "<td>" . $total_hours_sam . " hrs. " . $display_minutes . " mins. " . "</td>";
+
+                            }
+                            else
+                            {
+                                echo "<td></td>";
+                                echo "<td></td>";
+                            }
+                            
                             
 
                             echo "<td>" . Html::encode($model->remarks) . "</td>";
@@ -392,32 +473,41 @@ date_default_timezone_set('Asia/Manila');
                                 $countCompleteTime += 1;
                             }
 
-                            if(Yii::$app->user->can('validate-timesheet'))
+                            if($interval && $interval2)
                             {
-                                if($model->status)
+                                if(Yii::$app->user->can('validate-timesheet'))
                                 {
+                                    if($model->status)
+                                    {
 
-                                    echo "<td>";
-                                    
-                                    echo Html::a('<i class="fas fa-undo"></i> VALIDATED',['validate-timesheet','id' => $model->id],['class' => 'btn btn-primary btn-sm']);
-                                    echo "</td>";
+                                        echo "<td>";
+                                        
+                                        echo Html::a('<i class="fas fa-undo"></i> VALIDATED',['validate-timesheet','id' => $model->id],['class' => 'btn btn-primary btn-sm']);
+                                        echo "</td>";
+                                    }
+                                    else{
+                                        echo "<td>";
+                                        echo Html::a('<i class="fas fa-thumbs-up"></i> VALIDATE',['validate-timesheet','id' => $model->id],['class' => 'btn btn-outline-primary btn-sm']);
+                                        echo "</td>";
+                                    }
                                 }
-                                else{
-                                    echo "<td>";
-                                    echo Html::a('<i class="fas fa-thumbs-up"></i> VALIDATE',['validate-timesheet','id' => $model->id],['class' => 'btn btn-outline-primary btn-sm']);
-                                    echo "</td>";
+                                else
+                                {
+                                    if($model->status)
+                                    {
+                                        echo "<td style='color:green;'>VALIDATED</td>";
+                                    }
+                                    else{
+                                        echo "<td style='color:orange;'>PENDING</td>";
+                                    }
                                 }
                             }
                             else
                             {
-                                if($model->status)
-                                {
-                                    echo "<td style='color:green;'>VALIDATED</td>";
-                                }
-                                else{
-                                    echo "<td style='color:orange;'>PENDING</td>";
-                                }
+                                echo "<td style='color:red;'>NO TIME OUT</td>";
                             }
+
+                            
                             
                             if(Yii::$app->user->can('timesheet-remarks'))
                             {
@@ -517,7 +607,7 @@ date_default_timezone_set('Asia/Manila');
                 <tr>
                     <td style="display: flex; justify-content: center; align-items: center;">
                         <?php
-                            if(empty($countPendingRecord))
+                            if(empty($countPendingRecord) && $countPendingRecordWithTimeOut)
                             {
                                 $uploadedFileNameCP = Yii::$app->getModule('admin')->GetFileNameExt('UserData',$model->user->id);
 
@@ -711,48 +801,84 @@ date_default_timezone_set('Asia/Manila');
                     
                     
 
-                    $total_minutes2 = $interval3->h * 60 + $interval->i;
-                    $total_minutes1 = $interval2->h * 60 + $interval2->i;
+                    $total_minutes2 = $model2->status ? $interval3->h * 60 + $interval3->i : 0;
+                    $total_minutes1 = $model2->status ? $interval2->h * 60 + $interval2->i : 0;
 
                     $totalMinutesRendered2 += ($total_minutes2 + $total_minutes1);
                     
                   
                     switch ($model2->month_val) {
                         case '1':
-                            $jan_total  += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                            if($model2->status)
+                            {
+                                $jan_total  += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                            }
                         break;
                         case '2':
-                            $feb_total  += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                            if($model2->status)
+                            {
+                                $feb_total  += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                            }
                         break;
                         case '3':
-                            $march_total  += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                            if($model2->status)
+                            {
+                                $march_total  += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                            }
                         break;
                         case '4':
-                            $april_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                            if($model2->status)
+                            {
+                                $april_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                            }
                         break;
                         case '5':
-                            $may_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                            if($model2->status)
+                            {
+                                $may_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                            }
                         break;
                         case '6':
-                            $june_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                            if($model2->status)
+                            {
+                                $june_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                            }
                         break;
                         case '7':
-                            $july_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                            if($model2->status)
+                            {
+                                $july_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                            }
                         break;
                         case '8':
-                            $aug_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                            if($model2->status)
+                            {
+                                $aug_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                            }
                         break;
                         case '9':
-                            $sept_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                            if($model2->status)
+                            {
+                                $sept_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                            }
                         break;
                         case '10':
-                            $oct_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                            if($model2->status)
+                            {
+                                $oct_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                            }
                         break;
                         case '11':
-                            $nov_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                            if($model2->status)
+                            {
+                                $nov_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                            }
                         break;
                         case '12':
-                            $dec_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                            if($model2->status)
+                            {
+                                $dec_total += (($interval3->h * 60) + ($interval2->h * 60)) + ($interval3->i + $interval2->i); 
+                            }
                         break;
                         
                         default:

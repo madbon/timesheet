@@ -7,6 +7,7 @@ use yii\data\ActiveDataProvider;
 use common\models\SubmissionThread;
 use common\models\DocumentType;
 use common\models\DocumentAssignment;
+use common\models\SubmissionArchive;
 use Yii;
 
 /**
@@ -153,7 +154,8 @@ class SubmissionThreadSearch extends SubmissionThread
         $query->andFilterWhere(['user_company.ref_company_id' => $this->company]);
         $query->andFilterWhere(['user.ref_department_id' => $this->department]);
 
-        $query->orderBy(['id' => SORT_DESC]);
+
+        $query->groupBy(['submission_thread.id'])->orderBy(['id' => SORT_DESC]);
 
         // $query->andFilterWhere(['=', 'ref_document_type.id', $this->type]);
 

@@ -129,24 +129,54 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'rowOptions' => function($model, $key, $index, $column) {
-            if(Yii::$app->getModule('admin')->documentAssignedAttrib($model->ref_document_type_id,'RECEIVER'))
+
+            if(!empty($model->submissionArchive))
             {
-                if(!empty($model->submissionThreadSeen->submission_thread_id))
+                if($model->submissionArchive->submission_thread_id == $model->id && $model->submissionArchive->user_id == Yii::$app->user->identity->id)
                 {
-                    if($model->submissionThreadSeen->submission_thread_id == $model->id && $model->submissionThreadSeen->user_id == Yii::$app->user->identity->id){
-                        return ['style' => 'background-color:#ffffff;'];
+                    return ['style' => 'display:none;'];
+                }
+                else
+                {
+                    if(Yii::$app->getModule('admin')->documentAssignedAttrib($model->ref_document_type_id,'RECEIVER'))
+                    {
+                        if(!empty($model->submissionThreadSeen->submission_thread_id))
+                        {
+                            if($model->submissionThreadSeen->submission_thread_id == $model->id && $model->submissionThreadSeen->user_id == Yii::$app->user->identity->id){
+                                return ['style' => 'background-color:#ffffff;'];
+                            }
+                            else
+                            {
+                                return ['style' => 'background-color: #ffdbdb'];
+                            }
+                        }
+                        else
+                        {
+                            return ['style' => 'background-color: #ffdbdb'];
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if(Yii::$app->getModule('admin')->documentAssignedAttrib($model->ref_document_type_id,'RECEIVER'))
+                {
+                    if(!empty($model->submissionThreadSeen->submission_thread_id))
+                    {
+                        if($model->submissionThreadSeen->submission_thread_id == $model->id && $model->submissionThreadSeen->user_id == Yii::$app->user->identity->id){
+                            return ['style' => 'background-color:#ffffff;'];
+                        }
+                        else
+                        {
+                            return ['style' => 'background-color: #ffdbdb'];
+                        }
                     }
                     else
                     {
                         return ['style' => 'background-color: #ffdbdb'];
                     }
                 }
-                else
-                {
-                    return ['style' => 'background-color: #ffdbdb'];
-                }
             }
-            
         },
         'tableOptions' => ['class' => 'table table-condensed table-hover'],
         'columns' => [
@@ -202,7 +232,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'PROGRAM/COURSE',
                 'attribute' => 'program',
                 'format' => 'raw',
-                'visible' => Yii::$app->user->can('view-column-course-program'),
+                'visible' => (!empty($searchModel->ref_document_type_id) && $searchModel->ref_document_type_id != 5) || Yii::$app->user->can('view-column-course-program'),
                 'value' => function($model) use($searchModel)
                 {
                     if(Yii::$app->getModule('admin')->documentTypeAttrib($searchModel->ref_document_type_id,'enable_tagging'))
@@ -281,7 +311,7 @@ $this->params['breadcrumbs'][] = $this->title;
             //     }
             // ],
             [
-                'label' => "REMARKS",
+                'label' => "CONTENT/REMARKS",
                 'attribute' => 'remarks',
                 'format' => 'raw',
                 'value' => function($model)
@@ -386,7 +416,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'class' => ActionColumn::className(),
-                'template' => Yii::$app->getModule('admin')->documentAssignedAttrib($searchModel->ref_document_type_id,'SENDER') ?  '{view} {update} {delete}' : '{view}',
+                'template' => Yii::$app->getModule('admin')->documentAssignedAttrib($searchModel->ref_document_type_id,'SENDER') ?  '{view} {update} {delete}' : '{view} {delete}',
                 'urlCreator' => function ($action, SubmissionThread $model, $key, $index, $column) {
                     return Url::toRoute([$action, 'id' => $model->id]);
                  }
