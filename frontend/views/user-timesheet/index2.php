@@ -512,15 +512,23 @@ date_default_timezone_set('Asia/Manila');
                             if(Yii::$app->user->can('timesheet-remarks'))
                             {
                                 echo "<td>";
-                                if(Yii::$app->user->can('edit-time'))
+                                if($interval && $interval2)
                                 {
-                                    if(empty($model->status))
+                                    
+                                }
+                                else
+                                {
+                                    if(Yii::$app->user->can('edit-time'))
                                     {
-                                        // echo Html::a('<i class="fas fa-edit"></i> TIME',['update-timeout','id' => $model->id,'count_complete_time' => $countCompleteTime],['class' => 'btn btn-outline-primary btn-sm'])." ";
+                                        if(empty($model->status))
+                                        {
+                                            // echo Html::a('<i class="fas fa-edit"></i> TIME',['update-timeout','id' => $model->id,'count_complete_time' => $countCompleteTime],['class' => 'btn btn-outline-primary btn-sm'])." ";
 
-                                        echo Html::button('<i class="fas fa-edit"></i> TIME', ['value'=>Url::to('@web/user-timesheet/update-timeout?id='.$model->id.'&count_complete_time='.$countCompleteTime), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => ''])." ";
+                                            echo Html::button('<i class="fas fa-edit"></i> TIME', ['value'=>Url::to('@web/user-timesheet/update-timeout?id='.$model->id.'&count_complete_time='.$countCompleteTime), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => ''])." ";
+                                        }
                                     }
                                 }
+                                
 
                                 if(empty($model->status))
                                 {
@@ -530,15 +538,23 @@ date_default_timezone_set('Asia/Manila');
                             }
                             else
                             {
-                                if(Yii::$app->user->can('edit-time'))
+                                if($interval && $interval2)
                                 {
-                                    echo "<td>";
-                                    if(empty($model->status))
-                                    {
-                                        echo Html::a('EDIT TIME',['update-timeout','id' => $model->id,'count_complete_time' => $countCompleteTime],['class' => 'btn btn-outline-primary btn-sm']);
-                                    }
-                                    echo "</td>";
+
                                 }
+                                else
+                                {
+                                    if(Yii::$app->user->can('edit-time'))
+                                    {
+                                        echo "<td>";
+                                        if(empty($model->status))
+                                        {
+                                            echo Html::a('EDIT TIME',['update-timeout','id' => $model->id,'count_complete_time' => $countCompleteTime],['class' => 'btn btn-outline-primary btn-sm']);
+                                        }
+                                        echo "</td>";
+                                    }
+                                }
+                                
                             }
                             
                         echo "</tr>";
