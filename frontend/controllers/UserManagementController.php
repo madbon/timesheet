@@ -467,7 +467,7 @@ class UserManagementController extends Controller
                 $randomString = Yii::$app->security->generateRandomString(5);
 
                 $username = $firstIntial.$middleInitial.$lastName.'_'.$randomString;
-                $password = $firstIntial.$middleInitial.$lastName.'_'.$randomString;
+                $password = !empty($model->password) ? $model->password : $firstIntial.$middleInitial.$lastName.'_'.$randomString;
 
                 $email = $model->email ? $model->email : $firstIntial.$middleInitial.$lastName.'@bpsu.edu.ph';
 
@@ -479,7 +479,7 @@ class UserManagementController extends Controller
 
                 if($model->save())
                 {
-                    Yii::$app->getModule('admin')->sendMail($email,$fullName,$username,$password);
+                    // Yii::$app->getModule('admin')->sendMail($email,$fullName,$username,$password);
                     \Yii::$app->getSession()->setFlash('success', 'Successfully registered! Login credentials has been sent to their email.');
                 }
                 else
