@@ -105,7 +105,7 @@ class UserManagementController extends Controller
                         'roles' => ['user-management-update-status'],
                     ],
                     [
-                        'actions' => ['company-json','update-my-account','upload-my-signature','register-image','preview-captured-photo','delete-face-photo','import-trainees','save-imported-trainees','download-template','upload-profile-photo'],
+                        'actions' => ['company-json','update-my-account','upload-my-signature','register-image','preview-captured-photo','delete-face-photo','import-trainees','save-imported-trainees','download-template','upload-profile-photo','send-mail'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -118,6 +118,22 @@ class UserManagementController extends Controller
                 ],
             ],
         ];
+    }
+
+    public function actionSendMail()
+    {
+        $to = 'bonmarkangelo@gmail.com';
+        $subject = 'Example Subject';
+        $body = '<p>This is an example email.</p>';
+        $from = 'management@bpsutimesheet.online';
+
+        $model = new UserData();
+
+        if ($model->sendEmail($to, $subject, $body, $from)) {
+            echo 'Email sent successfully!';
+        } else {
+            echo 'Failed to send email.';
+        }
     }
 
     public function actionUpdateStatus($id)
@@ -443,14 +459,28 @@ class UserManagementController extends Controller
             
             if ($model->load($this->request->post())) {
 
+                $firstIntial = strtolower($model->getInitial($model->fname));
+                $middleInitial = strtolower($model->getInitial($model->mname));
+                $lastName = strtolower($model->sname);
+                $fullName = $model->userFullName;
 
-                $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
+                $randomString = Yii::$app->security->generateRandomString(5);
+
+                $username = $firstIntial.$middleInitial.$lastName.'_'.$randomString;
+                $password = $firstIntial.$middleInitial.$lastName.'_'.$randomString;
+
+                $email = $model->email ? $model->email : $firstIntial.$middleInitial.$lastName.'@bpsu.edu.ph';
+
+                $model->password_hash = Yii::$app->security->generatePasswordHash($password);
                 $model->auth_key = Yii::$app->security->generateRandomString();
                 $model->verification_token = Yii::$app->security->generateRandomString() . '_' . time();
+                $model->email = $email;
+                $model->username = $username;
 
                 if($model->save())
                 {
-                    \Yii::$app->getSession()->setFlash('success', 'Data has been saved');
+                    Yii::$app->getModule('admin')->sendMail($email,$fullName,$username,$password);
+                    \Yii::$app->getSession()->setFlash('success', 'Successfully registered! Login credentials has been sent to their email.');
                 }
                 else
                 {

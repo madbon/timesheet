@@ -3,6 +3,8 @@
 namespace common\models;
 
 use Yii;
+use yii\base\InvalidConfigException;
+use yii\mail\BaseMailer;
 
 /**
  * This is the model class for table "user".
@@ -47,8 +49,8 @@ class UserData extends \yii\db\ActiveRecord
         return [
             // [[ 'status', 'created_at', 'updated_at'], 'integer'],
             // [['bday'], 'safe'],
-            [['fname', 'sname', 'email', 'sex','bday','username'], 'required'],
-            [['mname','password_hash','password_reset_token','verification_token','auth_key'],'safe'],
+            [['fname', 'sname', 'sex','bday'], 'required'],
+            [['mname','password_hash','password_reset_token','verification_token','auth_key','password'],'safe'],
             [['fname'], 'string', 'max' => 250],
             [['mname'], 'string', 'max' => 150],
             [['sname'], 'string', 'max' => 50],
@@ -62,7 +64,7 @@ class UserData extends \yii\db\ActiveRecord
             [['email'], 'unique'],
             ['email', 'email'],
             // ['confirm_password', 'compare', 'compareAttribute' => 'password', 'message' => "Passwords don't match"],
-            [['password'],Yii::$app->controller->id == "user-management" && Yii::$app->controller->action->id == "create" ? 'required' : 'safe'],
+            // [['password'],Yii::$app->controller->id == "user-management" && Yii::$app->controller->action->id == "create" ? 'required' : 'safe'],
 
             // TRAINEE REQUIRED FIELDS
             [['student_idno','mobile_no','ref_program_id','ref_program_major_id','student_year','student_section','address'], in_array(Yii::$app->request->get('account_type'),['trainee']) ? 'required' : 'safe'],
@@ -117,6 +119,37 @@ class UserData extends \yii\db\ActiveRecord
             'ref_position_id' => 'Position',
             // 'role_name' => 'Role',
         ];
+    }
+
+    /**
+     * Sends an email using the Yii2 mailer component.
+     * @param string $to the recipient email address
+     * @param string $subject the email subject
+     * @param string $body the email body
+     * @param string $from the email address of the sender
+     * @return bool whether the email was sent successfully
+     * @throws InvalidConfigException if the mailer component is not configured correctly
+     */
+    function sendEmail($to, $subject, $body, $from)
+    {
+        /** @var BaseMailer $mailer */
+        $mailer = Yii::$app->mailer;
+
+        // Set the recipient email address, subject, and sender
+        $message = $mailer->compose()
+            ->setTo($to)
+            ->setSubject($subject)
+            ->setHtmlBody($body)
+            ->setFrom($from);
+
+        // Attempt to send the email
+        try {
+            $sent = $message->send();
+        } catch (\Exception $e) {
+            $sent = false;
+        }
+
+        return $sent;
     }
 
     public function validateCompanyDepartment($attribute)
@@ -178,6 +211,16 @@ class UserData extends \yii\db\ActiveRecord
             $middleInitial .= strtoupper(substr($name, 0, 1)).".";
         }
         return !empty($middleName) ? $middleInitial : "";
+    }
+
+    public function getInitial($middleName)
+    {
+        $middleNameArray = explode(' ', trim($middleName));
+        $middleInitial = '';
+        foreach ($middleNameArray as $name) {
+            $middleInitial .= strtoupper(substr($name, 0, 1));
+        }
+        return !empty($middleName) ? $middleInitial : '';
     }
 
      /**

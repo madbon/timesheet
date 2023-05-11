@@ -47,6 +47,42 @@ class Module extends \yii\base\Module
     //     $query = DocumentType::find()->where([''])
     // }
 
+    public static function sendMail($email,$fullname,$username,$password)
+    {
+        $to = $email;
+        $subject = 'Your registration details for BPSU OJT Timesheet Monitoring System for CICT Trainees';
+        $body = '<pre>
+<p>Dear '.($fullname).', 
+
+    We are pleased to inform you that your account has been successfully created in our system. Here are your login details:
+
+Username: '.($username).'
+Password: '.($password).'
+            
+Please keep these details safe and do not share them with anyone. You can log in to our system at https://bpsutimesheet.online using the above credentials.
+            
+Please note that for security reasons, we recommend that you change your password after your first login. You can do this by going to My Account > Login Credentials.
+            
+In addition, we encourage you to update your personal details to ensure that our records are accurate and up to date.
+            
+If you have any questions or concerns, please do not hesitate to contact us.
+            
+Thank you!
+            
+Best regards,
+BPSU Management
+            </p></pre>';
+        $from = 'management@bpsutimesheet.online';
+
+        $model = new UserData();
+
+        if ($model->sendEmail($to, $subject, $body, $from)) {
+            echo 'Email sent successfully!';
+        } else {
+            echo 'Failed to send email.';
+        }
+    }
+
     public static function unseenAnnouncement($date = null)
     {
         $annTags = AnnouncementProgramTags::find()
