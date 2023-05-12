@@ -221,6 +221,8 @@ class UserManagementController extends Controller
         $rows = Yii::$app->session['imported_trainees'];
         $program = Yii::$app->session['program_course'];
 
+        $model = new UserData();
+
         foreach ($rows as $row) {
             $student = new UserImport();
             $student->student_idno = $row[0];
@@ -236,15 +238,28 @@ class UserManagementController extends Controller
             $student->ref_program_major_id = Yii::$app->getModule('admin')->getMajorCode($row[9],$program_id);
             $student->student_year = $row[10];
             $student->student_section = $row[11];
-            $student->email = $row[12];
             
-            // $student->ref_program_id = $row[12];
+            $firstIntial = strtolower($model->getInitial($row[1]));
+            $middleInitial = strtolower($model->getInitial($row[2]));
+            $lastName = strtolower(str_replace(' ', '', $row[3])); ;
+            $fullName = $row[1].' '.(!empty($row[2]) ? $row[2] : '').$row[3].' '.$row[4];
 
-            $student->username = $row[0];
-            $student->password_hash = Yii::$app->security->generatePasswordHash($row[0]);
+            $randomString = Yii::$app->security->generateRandomString(5);
+
+            $username = $firstIntial.$middleInitial.$lastName.'_'.$randomString;
+            $password = $firstIntial.$middleInitial.$lastName.'_'.$randomString;
+
+            $email = $row[12] ? $row[12] : $firstIntial.$middleInitial.$lastName.'@bpsu.edu.ph';
+
+            $student->password_hash = Yii::$app->security->generatePasswordHash($password);
+            $student->auth_key = Yii::$app->security->generateRandomString();
+            $student->verification_token = Yii::$app->security->generateRandomString() . '_' . time();
+            $student->email = $email;
+            $student->username = $username;
 
             if($student->save())
             {
+                 Yii::$app->getModule('admin')->sendMail($email,$fullName,$username,$password);
                 $student_id = $student->id;
                 $authAssignment = new AuthAssignment();
                 $authAssignment->item_name = 'Trainee';
@@ -486,7 +501,7 @@ class UserManagementController extends Controller
 
                 $randomString = Yii::$app->security->generateRandomString(5);
 
-                $username = $firstIntial.$middleInitial.$lastName.'_'.$randomString;
+                $username = !empty($model->username) ? $model->username : $firstIntial.$middleInitial.$lastName.'_'.$randomString;
                 $password = !empty($model->password) ? $model->password : $firstIntial.$middleInitial.$lastName.'_'.$randomString;
 
                 $email = $model->email ? $model->email : $firstIntial.$middleInitial.$lastName.'@bpsu.edu.ph';

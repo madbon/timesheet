@@ -70,7 +70,18 @@ If you have any questions or concerns, please do not hesitate to contact us.
 Thank you!
             
 Best regards,
-BPSU Management
+<strong>Bataan Peninsula State University</strong>
+
+
+
+<strong>This is a system-generated email. Please do not reply.</strong>
+
+
+
+<strong>DISCLAIMER:</strong>
+
+This email and its contents are confidential and intended solely for the individual or entity to whom it is addressed. If you are not the intended recipient, please notify us immediately and delete this email from your system. Any unauthorized use, disclosure, or distribution of this email is strictly prohibited.
+
             </p></pre>';
         $from = 'management@bpsutimesheet.online';
 

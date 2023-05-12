@@ -72,6 +72,21 @@ class UserData extends \yii\db\ActiveRecord
 
             [['student_idno'], 'required', 'when' => function ($model) { return $model->item_name == 'Trainee'; }, 'whenClient' => "function (attribute, value) { return $('#userdata-item_name').val() == 'Trainee'; }"],
 
+            // LOGIN USER REQUIRED FIELDS
+            [['company'],Yii::$app->user->can('Trainee') ? 'required' : 'safe'],
+            [['ref_department_id'],Yii::$app->user->can('Trainee') ? 'required' : 'validateCompanyDepartment'],
+            [['student_idno'],Yii::$app->user->can('Trainee') ? 'required' : 'unique'],
+            [['ref_program_id'],Yii::$app->user->can('Trainee') ? 'required' : 'safe'],
+            [['ref_program_major_id'],Yii::$app->user->can('Trainee') ? 'required' : 'safe'],
+            [['student_year'],Yii::$app->user->can('Trainee') ? 'required' : 'safe'],
+            [['student_section'],Yii::$app->user->can('Trainee') ? 'required' : 'safe'],
+            [['bday'],Yii::$app->user->can('Trainee') ? 'required' : 'safe'],
+            [['sex'],Yii::$app->user->can('Trainee') ? 'required' : 'safe'],
+            [['address'],Yii::$app->user->can('Trainee') ? 'required' : 'safe'],
+            [['mobile_no'],Yii::$app->user->can('Trainee') ? 'required' : 'safe'],
+            [['email'],Yii::$app->user->can('Trainee') ? 'required' : 'unique'],
+            [['username'],Yii::$app->user->can('Trainee') ? 'required' : 'unique'],
+            
 
             // COMPANY SUPERVISOR FIELDS
             [['ref_position_id'],'safe'],
