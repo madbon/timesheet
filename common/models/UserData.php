@@ -49,14 +49,14 @@ class UserData extends \yii\db\ActiveRecord
         return [
             // [[ 'status', 'created_at', 'updated_at'], 'integer'],
             // [['bday'], 'safe'],
-            [['fname', 'sname', 'sex','bday'], 'required'],
+            [['fname', 'sname'], 'required'],
             [['mname','password_hash','password_reset_token','verification_token','auth_key','password'],'safe'],
             [['fname'], 'string', 'max' => 250],
             [['mname'], 'string', 'max' => 150],
             [['sname'], 'string', 'max' => 50],
             [['sex'], 'string', 'max' => 1],
             // [['mobile_no'],'integer'],
-            [['mobile_no','tel_no','suffix','item_name'],'safe'],
+            [['mobile_no','tel_no','suffix','item_name','bday'],'safe'],
             // [['username', 'password_hash', 'password_reset_token', 'email', 'verification_token'], 'string', 'max' => 255],
             // [['auth_key'], 'string', 'max' => 32],
             [['student_idno'], 'unique'],
@@ -67,15 +67,17 @@ class UserData extends \yii\db\ActiveRecord
             // [['password'],Yii::$app->controller->id == "user-management" && Yii::$app->controller->action->id == "create" ? 'required' : 'safe'],
 
             // TRAINEE REQUIRED FIELDS
-            [['student_idno','mobile_no','ref_program_id','ref_program_major_id','student_year','student_section','address'], in_array(Yii::$app->request->get('account_type'),['trainee']) ? 'required' : 'safe'],
+            [['mobile_no','ref_program_id','ref_program_major_id','student_year','student_section','address'],'safe'],
+            [['student_idno'], in_array(Yii::$app->request->get('account_type'),['trainee']) ? 'required' : 'safe'],
 
-            [['student_idno','mobile_no','ref_program_id','ref_program_major_id','student_year','student_section','address'], 'required', 'when' => function ($model) { return $model->item_name == 'Trainee'; }, 'whenClient' => "function (attribute, value) { return $('#userdata-item_name').val() == 'Trainee'; }"],
+            [['student_idno'], 'required', 'when' => function ($model) { return $model->item_name == 'Trainee'; }, 'whenClient' => "function (attribute, value) { return $('#userdata-item_name').val() == 'Trainee'; }"],
 
 
             // COMPANY SUPERVISOR FIELDS
-            [['company','ref_department_id','ref_position_id'], in_array(Yii::$app->request->get('account_type'),['companysupervisor']) ? 'required' : 'safe'],
+            [['ref_position_id'],'safe'],
+            [['company','email'], in_array(Yii::$app->request->get('account_type'),['companysupervisor']) ? 'required' : 'safe'],
 
-            [['company','ref_department_id','ref_position_id'], 'required', 'when' => function ($model) { return $model->item_name == 'CompanySupervisor'; }, 'whenClient' => "function (attribute, value) { return $('#userdata-item_name').val() == 'CompanySupervisor'; }"],
+            [['company','email'], 'required', 'when' => function ($model) { return $model->item_name == 'CompanySupervisor'; }, 'whenClient' => "function (attribute, value) { return $('#userdata-item_name').val() == 'CompanySupervisor'; }"],
             
 
             [['ref_department_id'], 'validateCompanyDepartment'],
