@@ -323,7 +323,7 @@ ul.archive-details li
                     [   
                         'format' => 'raw',
                         'label' => 'Has e-Signature?',
-                        'visible' => !Yii::$app->user->can('upload-others-esig'),
+                        'visible' => !empty($searchModel->item_name) ? in_array($searchModel->item_name,['CompanySupervisor','Trainee']) : true,
                         'value' => function($model)
                         {
                             $buttons = "";
