@@ -49,7 +49,7 @@ class UserData extends \yii\db\ActiveRecord
         return [
             // [[ 'status', 'created_at', 'updated_at'], 'integer'],
             // [['bday'], 'safe'],
-            [['fname', 'sname'], 'required'],
+            [['fname', 'sname','email'], 'required'],
             [['mname','password_hash','password_reset_token','verification_token','auth_key','password'],'safe'],
             [['fname'], 'string', 'max' => 250],
             [['mname'], 'string', 'max' => 150],
@@ -68,16 +68,18 @@ class UserData extends \yii\db\ActiveRecord
 
             // TRAINEE REQUIRED FIELDS
             [['mobile_no','ref_program_id','ref_program_major_id','student_year','student_section','address'],'safe'],
-            [['student_idno'], in_array(Yii::$app->request->get('account_type'),['trainee']) ? 'required' : 'safe'],
+            [['student_idno','email'], in_array(Yii::$app->request->get('account_type'),['trainee']) ? 'required' : 'unique'],
 
             [['student_idno'], 'required', 'when' => function ($model) { return $model->item_name == 'Trainee'; }, 'whenClient' => "function (attribute, value) { return $('#userdata-item_name').val() == 'Trainee'; }"],
 
 
             // COMPANY SUPERVISOR FIELDS
             [['ref_position_id'],'safe'],
-            [['company','email'], in_array(Yii::$app->request->get('account_type'),['companysupervisor']) ? 'required' : 'safe'],
+            [['company'], in_array(Yii::$app->request->get('account_type'),['companysupervisor']) ? 'required' : 'safe'],
+            [['email'], in_array(Yii::$app->request->get('account_type'),['companysupervisor']) ? 'required' : 'unique'],
 
-            [['company','email'], 'required', 'when' => function ($model) { return $model->item_name == 'CompanySupervisor'; }, 'whenClient' => "function (attribute, value) { return $('#userdata-item_name').val() == 'CompanySupervisor'; }"],
+            [['company'], 'required', 'when' => function ($model) { return $model->item_name == 'CompanySupervisor'; }, 'whenClient' => "function (attribute, value) { return $('#userdata-item_name').val() == 'CompanySupervisor'; }"],
+            [['email'], 'required', 'when' => function ($model) { return $model->item_name == 'CompanySupervisor'; }, 'whenClient' => "function (attribute, value) { return $('#userdata-item_name').val() == 'CompanySupervisor'; }"],
             
 
             [['ref_department_id'], 'validateCompanyDepartment'],

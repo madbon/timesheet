@@ -448,6 +448,26 @@ class UserManagementController extends Controller
         $company = ArrayHelper::map(Company::find()->select(['id','CONCAT(name," (", address, ")") as name'])->all(), 'id', 'name');
        
         $itemName = NULL;
+        
+        switch ($account_type) {
+            case 'trainee':
+                $model->item_name = "Trainee";
+            break;
+            case 'ojtcoordinator':
+                
+                $model->item_name = "OjtCoordinator";
+            break;
+            case 'companysupervisor':
+                $model->item_name = "CompanySupervisor";
+            break;
+            case 'administrator':
+                $model->item_name = "Administrator";
+            break;
+            
+            default:
+                # code...
+            break;
+        }
 
 
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
@@ -461,7 +481,7 @@ class UserManagementController extends Controller
 
                 $firstIntial = strtolower($model->getInitial($model->fname));
                 $middleInitial = strtolower($model->getInitial($model->mname));
-                $lastName = strtolower($model->sname);
+                $lastName = strtolower(str_replace(' ', '', $model->sname)); ;
                 $fullName = $model->userFullName;
 
                 $randomString = Yii::$app->security->generateRandomString(5);
