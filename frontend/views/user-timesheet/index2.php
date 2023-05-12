@@ -426,7 +426,15 @@ date_default_timezone_set('Asia/Manila');
 
                             if($interval && $interval2)
                             {
-                                echo "<td>" . ($overtime_hours." hrs. ".$overtime_minutes." mins. ") . "</td>";
+                                if(empty($model->time_in_am) && empty($model->time_out_am) && empty($model->time_in_pm) && empty($model->time_out_pm))
+                                {
+                                    echo "<td></td>";
+                                }
+                                else
+                                {
+                                    echo "<td>" . ($overtime_hours." hrs. ".$overtime_minutes." mins. ") . "</td>";
+                                }
+                               
                                 // Calculate the total minutes
                                 $total_minutes_sam = $interval->i + $interval2->i;
 
@@ -440,7 +448,15 @@ date_default_timezone_set('Asia/Manila');
                                 $total_hours_sam = $interval->h + $interval2->h + $extra_hours;
 
                                 // Display the result
-                                echo "<td>" . $total_hours_sam . " hrs. " . $display_minutes . " mins. " . "</td>";
+                                if(empty($model->time_in_am) && empty($model->time_out_am) && empty($model->time_in_pm) && empty($model->time_out_pm))
+                                {
+                                    echo "<td></td>";
+                                }
+                                else
+                                {
+                                    echo "<td>" . $total_hours_sam . " hrs. " . $display_minutes . " mins. " . "</td>";
+                                }
+                                
 
                             }
                             else
@@ -449,9 +465,18 @@ date_default_timezone_set('Asia/Manila');
                                 echo "<td></td>";
                             }
                             
-                            
+                            // if(empty($model->time_in_am) && empty($model->time_out_am) && empty($model->time_in_pm) && empty($model->time_out_pm))
+                            // {
+                            //     echo "<td>ABSENT</td>";
+                            // }
+                            // else
+                            // {
+                                
+                            // }
 
-                            echo "<td>" . Html::encode($model->remarks) . "</td>";
+                            echo "<td style='color: #ff7d89; font-style:italic; '>" . Html::encode($model->remarks) . "</td>";
+
+                            
 
                             if($model->time_in_am)
                             {
@@ -568,9 +593,17 @@ date_default_timezone_set('Asia/Manila');
                     echo "<td></td>";
                     echo "<td></td>";
                     echo "<td></td>";
+                    if(date('Y-m-d') > $date->format('Y-m-d'))
+                    {
+                        echo "<td>ABSENT</td>";
+                    }
+                    else
+                    {
+                        echo "<td></td>";
+                    }
+                    
                     echo "<td></td>";
-                    echo "<td></td>";
-                    echo Yii::$app->user->can('timesheet-remarks') || Yii::$app->user->can('edit-time') ? "<td></td>" : "";
+                    echo "<td>".Html::button('<i class="fas fa-edit"></i> REMARKS', ['value'=>Url::to('@web/user-timesheet/update?user_id='.$trainee_user_id.'&date='.($date->format('Y-m-d'))), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => '']) ."</td>";
                     echo "</tr>";
                 }
             }

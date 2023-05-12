@@ -291,6 +291,7 @@ class UserTimesheetController extends Controller
             'month' => $month,
             'month_id' => $month_id,
             'year' => $year,
+            'trainee_user_id' => $user_id,
         ]);
     }
 
@@ -650,18 +651,38 @@ class UserTimesheetController extends Controller
      * @return string|\yii\web\Response
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
+    public function actionUpdate($id = null,$user_id = null,$date =  null)
     {
-        $model = $this->findModel($id);
+        if($id)
+        {
+            $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
+            if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
 
-            \Yii::$app->getSession()->setFlash('success', 'Remarks has been saved');
-            return $this->redirect(Yii::$app->request->referrer);
+                \Yii::$app->getSession()->setFlash('success', 'Remarks has been saved');
+                return $this->redirect(Yii::$app->request->referrer);
+            }
         }
+        else
+        {
+            $model = new UserTimesheet();
+            $model->user_id = $user_id;
+            $model->date = $date;
+            $model->status = Yii::$app->user->can('validate-timesheet') ? 1 : 0;
+
+            if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
+
+                \Yii::$app->getSession()->setFlash('success', 'Remarks has been saved');
+                return $this->redirect(Yii::$app->request->referrer);
+            }
+           
+        }
+        
 
         return $this->renderAjax('update', [
             'model' => $model,
+            'user_id' => $user_id,
+            'date' => $date,
         ]);
     }
 
