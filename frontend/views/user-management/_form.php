@@ -13,6 +13,7 @@ use yii\widgets\ActiveForm;
     {
         color:red;
         font-size:20px;
+        font-weight: bold;
     }
 </style>
 
@@ -348,7 +349,7 @@ use yii\widgets\ActiveForm;
             </div>
             
             <div class="row">
-                <div class="col-sm-3">
+                <div class="col-sm-3" style=<?= in_array($model->item_name,['OjtCoordinator','CompanySupervisor','Administrator']) ? 'display:none;' : ''  ?> >
                     <?= $form->field($model, 'bday')->textInput(['type' => 'date', 'max' => (date('Y') - 18).date('-m-d')])->label('Birth Date'.($astBday)); ?>
                 </div>
                 <div class="col-sm-3">
@@ -361,7 +362,7 @@ use yii\widgets\ActiveForm;
             </div>
 
             <div class="row">
-                <div class="col-sm-12">
+                <div class="col-sm-12" style=<?= in_array($model->item_name,['OjtCoordinator','CompanySupervisor','Administrator']) ? 'display:none;' : ''  ?> >
                     <?= $form->field($model, 'address')->textInput(['maxlength' => true])->label("Complete Address <i>(House Block/Lot No, Street Name, Subdivision/Village, Barangay, City/Municipality, Province, Zip Code)</i>".($astAddress)); ?>
                 </div>
             </div>  
@@ -376,7 +377,7 @@ use yii\widgets\ActiveForm;
                         <?= $form->field($model, 'mobile_no')->textInput(['maxlength' => 10, 'placeholder' => '+63 9123456789'])->label('Mobile No.'.($astMobile)) ?>
                         
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-4" style=<?= in_array($model->item_name,['OjtCoordinator','Trainee','Administrator']) ? 'display:none;' : ''  ?> >
                         <?= $form->field($model, 'tel_no')->textInput(['maxlength' => true])->label('Telephone No.'.($astTelephone)) ?>
                     </div>
                 </div>
@@ -389,8 +390,8 @@ use yii\widgets\ActiveForm;
             <div class="row">
                 <div class="col-sm-5">
                     <?= $form->field($model, 'email')->textInput(['maxlength' => true])->label('Email'.($astEmail)) ?>
-                    <?= $form->field($model, 'username')->textInput(['maxlength' => true])->label('Username'.($astUsername).' <code style="font-size:10px;">NOTE: The system will generate a username if you leave it blank.</code>') ?>
-                    <?= $form->field($model, 'password')->textInput(['maxlength' => true])->label('Password <code style="font-size:10px;">NOTE: The system will generate a password if you leave it blank.</code>') ?>
+                    <?= $form->field($model, 'username')->textInput(['maxlength' => true])->label('Username'.($astUsername).(Yii::$app->controller->action->id == 'create' ? ' <code style="font-size:10px;">NOTE: The system will generate a username if you leave it blank.</code>' : '')) ?>
+                    <?= $form->field($model, 'password')->textInput(['maxlength' => true])->label('Password'.(Yii::$app->controller->action->id == 'create' ? ' <code style="font-size:10px;">NOTE: The system will generate a password if you leave it blank.</code>' : '')) ?>
                     <?php // $form->field($model, 'confirm_password')->textInput(['maxlength' => true]) ?>
                 </div>
             </div>   
@@ -406,7 +407,7 @@ use yii\widgets\ActiveForm;
 </div>
 
 <?php
-if($model->item_name == "Trainee" || $model->item_name == "OjtCoordinator")
+if(in_array($model->item_name,["Trainee","OjtCoordinator","Administrator"]) && Yii::$app->controller->action->id == "create")
 {
     $js = <<< JS
         $(document).ready(function() {
