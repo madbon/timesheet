@@ -668,7 +668,7 @@ class UserTimesheetController extends Controller
             $model = new UserTimesheet();
             $model->user_id = $user_id;
             $model->date = $date;
-            $model->status = Yii::$app->user->can('validate-timesheet') ? 1 : 0;
+            // $model->status = Yii::$app->user->can('validate-timesheet') ? 1 : 0;
 
             if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
 

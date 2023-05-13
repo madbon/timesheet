@@ -20,6 +20,7 @@ use common\models\SubmissionReplySeen;
 use common\models\SubmissionThreadSearch;
 use common\models\SystemOtherFeature;
 use common\models\AnnouncementSeen;
+use yii\helpers\FormatConverter;
 use Yii;
 
 /**
@@ -40,6 +41,33 @@ class Module extends \yii\base\Module
         parent::init();
 
         // custom initialization code goes here
+    }
+
+    public static function getDayOfWeek($date)
+    {
+        $timestamp = strtotime($date);
+        $dayOfWeek = date('N', $timestamp);
+
+        // Day of week: 1 (Monday) to 7 (Sunday)
+        switch ($dayOfWeek) {
+            case 6:
+                return 'Sat';
+            case 7:
+                return 'Sun';
+            default:
+                return '';
+        }
+    }
+
+    public static function isWeekend($date)
+    {
+        
+        // $timestamp = strtotime(FormatConverter::toDate($date, 'yyyy-MM-dd'));
+        $timestamp = strtotime($date);
+        $dayOfWeek = date('N', $timestamp);
+    
+        // Day of week: 1 (Monday) to 7 (Sunday)
+        return $dayOfWeek >= 6; // Return true if day is Saturday or Sunday
     }
 
     // public static function requiredRemarks()

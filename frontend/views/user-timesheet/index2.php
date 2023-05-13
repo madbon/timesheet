@@ -78,6 +78,11 @@ date_default_timezone_set('Asia/Manila');
     }
     /* TABLE SUMMARY DETAILS_END */
 
+    table tbody tr.weekend td.weekend
+    {
+        background:#ffe3e3;
+    }
+
 </style>
 
 <div class="user-timesheet-index">
@@ -417,8 +422,18 @@ date_default_timezone_set('Asia/Manila');
 
                         $view_photo_out_pm = !empty($model->time_out_pm) ? Html::button($formatted_out_pm, ['value'=>Url::to('@web/user-timesheet/preview-photo?timesheet_id='.$model->id.'&time='.$model->time_out_pm), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => 'border:none;']) : "";
 
-                        echo "<tr>";
-                            echo "<td>" . Html::encode(date('j', strtotime($model->date))) . "</td>";
+                            if(Yii::$app->getModule('admin')->isWeekend($model->date))
+                            {
+                                echo "<tr class='weekend'>";
+                                echo "<td class='weekend'>" . Html::encode(date('j', strtotime($model->date))). (!empty(Yii::$app->getModule('admin')->getDayOfWeek($model->date)) ? '-'.Yii::$app->getModule('admin')->getDayOfWeek($model->date) : '') . "</td>";
+                            }
+                            else
+                            {
+                                echo "<tr>";
+                                echo "<td>" . Html::encode(date('j', strtotime($model->date))) . "</td>";
+                            }
+                        
+                            
                             echo "<td>" . ($view_photo_in_am) . "</td>";
                             echo "<td>" . ($view_photo_out_am).  "</td>";
                             echo "<td>" . ($view_photo_in_pm) . "</td>";
@@ -465,14 +480,6 @@ date_default_timezone_set('Asia/Manila');
                                 echo "<td></td>";
                             }
                             
-                            // if(empty($model->time_in_am) && empty($model->time_out_am) && empty($model->time_in_pm) && empty($model->time_out_pm))
-                            // {
-                            //     echo "<td>ABSENT</td>";
-                            // }
-                            // else
-                            // {
-                                
-                            // }
 
                             echo "<td style='color: #ff7d89; font-style:italic; '>" . Html::encode($model->remarks) . "</td>";
 
@@ -502,18 +509,25 @@ date_default_timezone_set('Asia/Manila');
                             {
                                 if(Yii::$app->user->can('validate-timesheet'))
                                 {
-                                    if($model->status)
+                                    if(Yii::$app->getModule('admin')->isWeekend($date->format('Y-m-d')) && (empty($model->time_in_am) && empty($model->time_out_am) && empty($model->time_in_pm) && empty($model->time_out_pm)))
                                     {
-
-                                        echo "<td>";
-                                        
-                                        echo Html::a('<i class="fas fa-undo"></i> VALIDATED',['validate-timesheet','id' => $model->id],['class' => 'btn btn-primary btn-sm']);
-                                        echo "</td>";
+                                        echo "<td></td>";
                                     }
-                                    else{
-                                        echo "<td>";
-                                        echo Html::a('<i class="fas fa-thumbs-up"></i> VALIDATE',['validate-timesheet','id' => $model->id],['class' => 'btn btn-outline-primary btn-sm']);
-                                        echo "</td>";
+                                    else
+                                    {
+                                        if($model->status)
+                                        {
+
+                                            echo "<td>";
+                                            
+                                            echo Html::a('<i class="fas fa-undo"></i> VALIDATED',['validate-timesheet','id' => $model->id],['class' => 'btn btn-primary btn-sm']);
+                                            echo "</td>";
+                                        }
+                                        else{
+                                            echo "<td>";
+                                            echo Html::a('<i class="fas fa-thumbs-up"></i> VALIDATE',['validate-timesheet','id' => $model->id],['class' => 'btn btn-outline-primary btn-sm']);
+                                            echo "</td>";
+                                        }
                                     }
                                 }
                                 else
@@ -536,6 +550,7 @@ date_default_timezone_set('Asia/Manila');
                             
                             if(Yii::$app->user->can('timesheet-remarks'))
                             {
+                                
                                 echo "<td>";
                                 if($interval && $interval2)
                                 {
@@ -555,10 +570,10 @@ date_default_timezone_set('Asia/Manila');
                                 }
                                 
 
-                                if(empty($model->status))
-                                {
+                                // if(empty($model->status))
+                                // {
                                     echo Html::button('<i class="fas fa-edit"></i> REMARKS', ['value'=>Url::to('@web/user-timesheet/update?id='.$model->id), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => '']) . "</td>";
-                                }
+                                // }
                                 
                             }
                             else
@@ -585,8 +600,19 @@ date_default_timezone_set('Asia/Manila');
                         echo "</tr>";
                     }
                 } else {
-                    echo "<tr>";
-                    echo "<td>" . Html::encode(date('j', $date->getTimestamp())) . "</td>";
+                     
+                    if(Yii::$app->getModule('admin')->isWeekend($date->format('Y-m-d')))
+                    {
+                        echo "<tr class='weekend'>";
+                        echo "<td class='weekend'>" . Html::encode(date('j', $date->getTimestamp())) . (!empty(Yii::$app->getModule('admin')->getDayOfWeek($date->format('Y-m-d'))) ? '-'.Yii::$app->getModule('admin')->getDayOfWeek($date->format('Y-m-d')) : '') . "</td>";
+                    }
+                    else
+                    {
+                        echo "<tr>";
+                        echo "<td>" . Html::encode(date('j', $date->getTimestamp())) . (!empty(Yii::$app->getModule('admin')->getDayOfWeek($date->format('Y-m-d'))) ? '-'.Yii::$app->getModule('admin')->getDayOfWeek($date->format('Y-m-d')) : '') . "</td>";
+                    }
+
+                   
                     echo "<td></td>";
                     echo "<td></td>";
                     echo "<td></td>";
@@ -595,7 +621,14 @@ date_default_timezone_set('Asia/Manila');
                     echo "<td></td>";
                     if(date('Y-m-d') > $date->format('Y-m-d'))
                     {
-                        echo "<td>ABSENT</td>";
+                        if(Yii::$app->getModule('admin')->isWeekend($date->format('Y-m-d')))
+                        {
+                            echo "<td></td>";
+                        }
+                        else
+                        {
+                            echo "<td>ABSENT</td>";
+                        }
                     }
                     else
                     {
