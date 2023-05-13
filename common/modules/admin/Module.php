@@ -43,6 +43,31 @@ class Module extends \yii\base\Module
         // custom initialization code goes here
     }
 
+    public static function calculateLateness($time_in)
+    {
+        $targetTime = strtotime('8:00 AM'); // Convert the target time to a timestamp
+        $currentTime = strtotime($time_in); // Get the current time as a timestamp
+    
+        // Check if the current time is after the target time
+        if ($currentTime > $targetTime) {
+            $lateness = $currentTime - $targetTime; // Calculate the lateness in seconds
+    
+            // Convert the lateness to hours and minutes
+            $latenessHours = floor($lateness / 3600);
+            $latenessMinutes = ceil(($lateness % 3600) / 60);
+    
+            return [
+                'hours' => $latenessHours,
+                'minutes' => $latenessMinutes,
+            ];
+        }
+    
+        return [
+            'hours' => 0,
+            'minutes' => 0,
+        ]; // Return 0 hours and 0 minutes if the current time is before the target time
+    }
+
     public static function getDayOfWeek($date)
     {
         $timestamp = strtotime($date);

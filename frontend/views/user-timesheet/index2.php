@@ -187,7 +187,7 @@ date_default_timezone_set('Asia/Manila');
                     <th style='border-left:1px solid #f5f6ff; background-color:#f5f6ff; border-top:1px solid #f5f6ff;'></th>
                     <th colspan='2'>AM</th>
                     <th colspan='2'>PM</th>
-                    <th colspan='5' style='border-top:1px solid #f5f6ff; border-right:1px solid #f5f6ff; background:#f5f6ff;'></th>
+                    <th colspan='6' style='border-top:1px solid #f5f6ff; border-right:1px solid #f5f6ff; background:#f5f6ff;'></th>
             </tr>";
             echo "<tr>
                     <th>DAYS</th>
@@ -197,6 +197,7 @@ date_default_timezone_set('Asia/Manila');
                     <th>OUT</th>
                     <th>OVERTIME</th>
                     <th>TOTAL NO. OF HOURS</th>
+                    <th>LATE</th>
                     <th>REMARKS</th>
                     <th>STATUS</th>
                     ".(Yii::$app->user->can('timesheet-remarks') || Yii::$app->user->can('edit-time') ? "<th>AVAILABLE ACTIONS</th>" : "")."
@@ -447,7 +448,7 @@ date_default_timezone_set('Asia/Manila');
                                 }
                                 else
                                 {
-                                    echo "<td>" . ($overtime_hours." hrs. ".$overtime_minutes." mins. ") . "</td>";
+                                    echo "<td>" . ($overtime_hours." hr(s). ".$overtime_minutes." min(s). ") . "</td>";
                                 }
                                
                                 // Calculate the total minutes
@@ -469,13 +470,35 @@ date_default_timezone_set('Asia/Manila');
                                 }
                                 else
                                 {
-                                    echo "<td>" . $total_hours_sam . " hrs. " . $display_minutes . " mins. " . "</td>";
+                                    echo "<td>" . $total_hours_sam . " hr(s). " . $display_minutes . " min(s). " . "</td>";
                                 }
-                                
+
+                                $lateness = Yii::$app->getModule('admin')->calculateLateness($formatted_in_am);
+                                $latenessHours = $lateness['hours'];
+                                $latenessMinutes = $lateness['minutes'];
+
+                                $lateDisplay = '';
+
+                                if ($latenessHours > 0 || $latenessMinutes > 0) {
+                                   
+                                    if ($latenessHours > 0) {
+                                        $lateDisplay .= $latenessHours . " hr(s) ";
+                                    }
+                                    if ($latenessMinutes > 0) {
+                                        $lateDisplay .= $latenessMinutes . " min(s) ";
+                                    }
+                                    
+                                } else {
+                                    // echo "You are on time.";
+                                }
+
+
+                                echo "<td>".($lateDisplay)."</td>";
 
                             }
                             else
                             {
+                                echo "<td></td>";
                                 echo "<td></td>";
                                 echo "<td></td>";
                             }
@@ -570,10 +593,17 @@ date_default_timezone_set('Asia/Manila');
                                 }
                                 
 
-                                // if(empty($model->status))
-                                // {
+                                if(empty($model->status))
+                                {
                                     echo Html::button('<i class="fas fa-edit"></i> REMARKS', ['value'=>Url::to('@web/user-timesheet/update?id='.$model->id), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => '']) . "</td>";
-                                // }
+                                }
+                                else
+                                {
+                                    if(Yii::$app->user->can('validate-timesheet'))
+                                    {
+                                        echo Html::button('<i class="fas fa-edit"></i> REMARKS', ['value'=>Url::to('@web/user-timesheet/update?id='.$model->id), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => '']) . "</td>";
+                                    }
+                                }
                                 
                             }
                             else
@@ -612,7 +642,7 @@ date_default_timezone_set('Asia/Manila');
                         echo "<td>" . Html::encode(date('j', $date->getTimestamp())) . (!empty(Yii::$app->getModule('admin')->getDayOfWeek($date->format('Y-m-d'))) ? '-'.Yii::$app->getModule('admin')->getDayOfWeek($date->format('Y-m-d')) : '') . "</td>";
                     }
 
-                   
+                    echo "<td></td>";
                     echo "<td></td>";
                     echo "<td></td>";
                     echo "<td></td>";
@@ -649,8 +679,9 @@ date_default_timezone_set('Asia/Manila');
 
             echo "<tr>";
             echo "<td colspan='5' style='font-weight:bold; text-align:right; text-transform:uppercase;'> TOTAL NO. OF HOURS RENDERED FOR THE MONTH OF {$month}</td>";
-            echo "<td>".($total_hours_ot." hrs. ".$totalMinutesOvertime." mins.")."</td>";
-            echo "<td>".($total_hours_val." hrs. ".$totalMinutesRendered." mins.")."</td>";
+            echo "<td>".($total_hours_ot." hr(s). ".$totalMinutesOvertime." min(s).")."</td>";
+            echo "<td>".($total_hours_val." hr(s). ".$totalMinutesRendered." min(s).")."</td>";
+            echo "<td></td>";
             echo "<td></td>";
             echo "<td></td>";
             echo Yii::$app->user->can('timesheet-remarks') || Yii::$app->user->can('edit-time') ? "<td></td>" : "";
@@ -1155,7 +1186,7 @@ date_default_timezone_set('Asia/Manila');
 
             <tr>
                 <td>TOTAL HOURS REQUIRED</td>
-                <td style="font-weight:bold;"><?= $model->user->program->required_hours." hrs " ?></td>
+                <td style="font-weight:bold;"><?= $model->user->program->required_hours." hr(s) " ?></td>
             </tr>
             
 
