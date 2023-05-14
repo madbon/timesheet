@@ -47,10 +47,20 @@ class Module extends \yii\base\Module
     {
         $targetTime = strtotime('8:00 AM'); // Convert the target time to a timestamp
         $currentTime = strtotime($time_in); // Get the current time as a timestamp
+
+        // Exclude the minutes between 12:00 PM and 1:00 PM from the lateness calculation
+        if (date('G', $currentTime) >= 12 && date('G', $currentTime) < 13) {
+            $currentTime = strtotime('12:00 PM');
+        }
     
         // Check if the current time is after the target time
         if ($currentTime > $targetTime) {
-            $lateness = $currentTime - $targetTime; // Calculate the lateness in seconds
+            $lateness = $currentTime - $targetTime;
+
+            if (date('G', $currentTime) >= 13) {
+                $lateness = ($currentTime - $targetTime) - 3600;
+            }
+             // Calculate the lateness in seconds
     
             // Convert the lateness to hours and minutes
             $latenessHours = floor($lateness / 3600);

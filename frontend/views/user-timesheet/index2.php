@@ -218,6 +218,7 @@ date_default_timezone_set('Asia/Manila');
                 $main_total_minutes = 0;
                 $overtime_hours = 0;
                 $overtime_minutes = 0;
+                $countDay = 0;
 
                 $models = UserTimesheet::findAll([
                     'date' => $date->format('Y-m-d'), 
@@ -228,11 +229,14 @@ date_default_timezone_set('Asia/Manila');
 
                     $countCompleteTime = 0;
                     
-
-                    foreach ($models as $model) {
-
                     
-
+                    foreach ($models as $model) {
+                        $lateDisplay = '';
+                    
+                        if($model->date == $date->format('Y-m-d'))
+                        {
+                            $countDay += 1;
+                        }
                     // TOTAL NO. OF HOURS_END
 
                         $formatted_in_am = !empty($model->time_in_am) ? date('g:i:s A', strtotime($model->time_in_am)) : "";
@@ -473,11 +477,25 @@ date_default_timezone_set('Asia/Manila');
                                     echo "<td>" . $total_hours_sam . " hr(s). " . $display_minutes . " min(s). " . "</td>";
                                 }
 
-                                $lateness = Yii::$app->getModule('admin')->calculateLateness($formatted_in_am);
+                                if($model->time_in_am)
+                                {
+                                    $lateness = Yii::$app->getModule('admin')->calculateLateness($formatted_in_am);
+                                    $lateDisplay = '';
+                                }
+                                else
+                                {
+                                    $lateness = Yii::$app->getModule('admin')->calculateLateness($formatted_in_pm);
+                                    $lateDisplay = '';
+                                }
+
+                                
                                 $latenessHours = $lateness['hours'];
                                 $latenessMinutes = $lateness['minutes'];
 
-                                $lateDisplay = '';
+                                // $latenessPM = Yii::$app->getModule('admin')->calculateLateness($formatted_in_pm);
+                                // $latenessHoursPM = $latenessPM['hours'];
+                                // $latenessMinutesPM = $latenessPM['minutes'];
+                                
 
                                 if ($latenessHours > 0 || $latenessMinutes > 0) {
                                    
@@ -492,8 +510,16 @@ date_default_timezone_set('Asia/Manila');
                                     // echo "You are on time.";
                                 }
 
-
-                                echo "<td>".($lateDisplay)."</td>";
+                                if($countDay == 1)
+                                {
+                                    echo "<td>".($lateDisplay)."</td>";
+                                }
+                                else
+                                {
+                                    echo "<td></td>";
+                                }
+                                
+                               
 
                             }
                             else
@@ -502,6 +528,7 @@ date_default_timezone_set('Asia/Manila');
                                 echo "<td></td>";
                                 echo "<td></td>";
                             }
+
                             
 
                             echo "<td style='color: #ff7d89; font-style:italic; '>" . Html::encode($model->remarks) . "</td>";
