@@ -64,7 +64,7 @@ class Module extends \yii\base\Module
     
             // Convert the lateness to hours and minutes
             $latenessHours = floor($lateness / 3600);
-            $latenessMinutes = ceil(($lateness % 3600) / 60);
+            $latenessMinutes = intval(($lateness % 3600) / 60);
     
             return [
                 'hours' => $latenessHours,
