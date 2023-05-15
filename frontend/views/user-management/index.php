@@ -355,7 +355,7 @@ ul.archive-details li
                     // ],
                     [
                         'class' => ActionColumn::className(),
-                        'template' => '{regface} {timesheet} {esig} {view} {update} {delete}',
+                        'template' => '{regface} {timesheet} {esig} {evalform} {view} {update} {delete}',
                         'buttons' => [
                             'regface' => function ($url, $model) {
                                 if(Yii::$app->user->can('user-management-register-face'))
@@ -403,6 +403,9 @@ ul.archive-details li
                                 }
 
                                 return Yii::$app->user->can('upload-others-esig') ? $buttons : false;
+                            },
+                            'evalform' => function ($url, $model) {
+                                return Yii::$app->user->can('submit_trainees_evaluation') ? Html::a('EVAL',['/evaluation-form/index','trainee_user_id' => $model->id],['class' => 'btn btn-primary btn-sm','target' => '_blank']) : false;
                             },
                             'view' => function ($url, $model) {
                                 return Yii::$app->user->can('user-management-view') ? Html::a('View', $url, [

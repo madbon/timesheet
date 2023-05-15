@@ -42,6 +42,7 @@ class SubmissionThread extends \yii\db\ActiveRecord
             [['remarks'], $this->documentType->required_remarks ? 'required' : 'safe'],
             [['subject'], 'string','max' => 250],
             [['date_time','remarks'],'safe'],
+            [['tagged_user_id','date_completed','date_commenced'],Yii::$app->request->get('ref_document_type_id') == '1' ? 'required' : 'safe'],
             
             // [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
             // [['ref_document_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => RefDocumentType::class, 'targetAttribute' => ['ref_document_type_id' => 'id']],

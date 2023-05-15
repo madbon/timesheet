@@ -19,6 +19,8 @@ use yii\web\UploadedFile;
 use common\models\Files;
 use yii\helpers\Url;
 use common\models\SubmissionArchive;
+use common\models\UserData;
+use common\models\EvaluationForm;
 use Yii;
 
 /**
@@ -245,7 +247,7 @@ class SubmissionThreadController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
-    public function actionCreate($ref_document_type_id=null,$required_uploading=null)
+    public function actionCreate($ref_document_type_id=null,$required_uploading=null,$from_eval_form=null,$trainee_user_id = null)
     {
         $model = new SubmissionThread();
 
@@ -261,23 +263,16 @@ class SubmissionThreadController extends Controller
             $docAss[] = $row['ref_document_type_id'];
         }
 
-        // if($transaction_type == "ACTIVITY_REMINDER")
-        // {
-            
-        // }
-        // else
-        // {
-        //     $documentType = ArrayHelper::map(DocumentType::find()
-        //     ->where(['id' => $docAss])
-        //     ->andWhere(['NOT',['id' => 5]]) // NOT ACTIVITY REMINDEr
-        //     ->all(),'id','title');
-        // }
 
         $model->ref_document_type_id = $ref_document_type_id;
         $documentType = ArrayHelper::map(DocumentType::find()->where(['id' => $docAss])
         ->andWhere(['id' => $ref_document_type_id]) // ACTIVITY REMINDEr
             ->all(),'id','action_title');
-       
+
+        if(!empty($trainee_user_id))
+        {
+            $model->tagged_user_id = $trainee_user_id;
+        }
 
         // UPLOAD FILE
         $modelUpload = new UploadMultipleForm();
@@ -289,37 +284,62 @@ class SubmissionThreadController extends Controller
                 $model->created_at = $time;
                 $model->date_time = date('Y-m-d H:i:s');
 
-                $model->save();
+                if(EvaluationForm::find()->where(['trainee_user_id' => $model->tagged_user_id, 'submission_thread_id' => NULL])->exists())
+                {
+                    $evalForm = EvaluationForm::find()->where(['trainee_user_id' => $model->tagged_user_id, 'submission_thread_id' => NULL])->all();
 
-                $model_id = $model->id;
+                    $model->save();
+                    $sub_thread_id = $model->id;
 
-                 // UPLOAD FILE
-                 $modelUpload->model_name = "SubmissionThread";
-                 $modelUpload->model_id = $model_id;
+                    foreach ($evalForm as $eval) {
+                        $eval->submission_thread_id = $sub_thread_id;
+                        $eval->update();
+                    }
 
-                 $modelUpload->imageFiles = UploadedFile::getInstances($modelUpload, 'imageFiles');
-                 if ($modelUpload->uploadMultiple()) {
-                     // file is uploaded successfully
-                     \Yii::$app->getSession()->setFlash('success', 'Created successfully');
-                    //  return $this->redirect(['upload-file', 'id' => $model_id]);
-                 }
-                 else
-                 {
-                    // print_r($modelUpload->errors); exit;
-                 }
-                 // UPLOADED_FILE_END
+                    $model_id = $sub_thread_id;
 
-                return $this->redirect(['view', 'id' => $model->id]);
+                    // UPLOAD FILE
+                    $modelUpload->model_name = "SubmissionThread";
+                    $modelUpload->model_id = $model_id;
+
+                    $modelUpload->imageFiles = UploadedFile::getInstances($modelUpload, 'imageFiles');
+                    if ($modelUpload->uploadMultiple()) {
+                        // file is uploaded successfully
+                        \Yii::$app->getSession()->setFlash('success', 'Created successfully');
+                        //  return $this->redirect(['upload-file', 'id' => $model_id]);
+                    }
+                    else
+                    {
+                        // print_r($modelUpload->errors); exit;
+                    }
+                    // UPLOADED_FILE_END
+
+                    
+
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
+                else
+                {
+                    return $this->redirect(Yii::$app->request->referrer);
+                    $model->loadDefaultValues();
+                }
+                
             }
         } else {
             $model->loadDefaultValues();
         }
+
+        $userData = UserData::find()->where(['id' => $trainee_user_id])->one();
 
         return $this->render('create', [
             'model' => $model,
             'documentType' => $documentType,
             'modelUpload' => $modelUpload,
             'documentType' => $documentType,
+            'from_eval_form' => $from_eval_form,
+            'trainee_user_id' => $trainee_user_id,
+            'traineeName' => !empty($userData->userFullNameWithMiddleInitial) ? $userData->userFullNameWithMiddleInitial : "",
+            
         ]);
     }
 

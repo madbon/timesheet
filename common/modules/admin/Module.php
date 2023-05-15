@@ -43,6 +43,17 @@ class Module extends \yii\base\Module
         // custom initialization code goes here
     }
 
+    public static function arrayNumber($value)
+    {
+        $numbers = []; // Initialize an empty array
+
+        for ($i = 1; $i <= $value; $i++) {
+            $numbers[$i] = $i; // Add the current number to the array
+        }
+
+        return $numbers;
+    }
+
     public static function calculateLateness($time_in)
     {
         $targetTime = strtotime('8:00 AM'); // Convert the target time to a timestamp
