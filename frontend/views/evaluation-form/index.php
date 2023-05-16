@@ -11,7 +11,7 @@ use yii\grid\GridView;
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
 $this->title = 'Evaluation Form: '.$traineeName;
-$this->params['breadcrumbs'][] = ['label' => 'Evaluation Forms', 'url' => ['/user-management/index']];
+$this->params['breadcrumbs'][] = ['label' => 'User Management', 'url' => ['/user-management/index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="evaluation-form-index">
@@ -77,6 +77,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                     [
                         'class' => ActionColumn::className(),
+                        'visible' => Yii::$app->user->can('submit_trainees_evaluation'),
                         'template' => '{update}',
                         'buttons' => [
                             'update' => function ($url, $model) {

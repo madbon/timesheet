@@ -51,7 +51,7 @@ class SubmissionThreadController extends Controller
      *
      * @return string
      */
-    public function actionIndex()
+    public function actionIndex($archive=null)
     {
         $searchModel = new SubmissionThreadSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
@@ -76,6 +76,7 @@ class SubmissionThreadController extends Controller
             'dataProvider' => $dataProvider,
             'documentAss' => $documentAss,
             'documentSender' => $documentSender,
+            'archive' => $archive,
         ]);
     }
 
@@ -403,6 +404,24 @@ class SubmissionThreadController extends Controller
         $model->save();
 
         Yii::$app->session->setFlash('success', 'Item has been deleted');
+        return $this->redirect(Yii::$app->request->referrer);
+    }
+
+    public function actionRestore($id)
+    {
+        $model = SubmissionArchive::find()->where(['submission_thread_id' => $id,'user_id' => Yii::$app->user->identity->id])->one();
+        $model->delete();
+
+        Yii::$app->session->setFlash('success', 'Item has been restored');
+        return $this->redirect(Yii::$app->request->referrer);
+    }
+
+    public function actionDeletePermanent($id)
+    {
+        $model = $this->findModel($id);
+        $model->delete();
+
+        Yii::$app->session->setFlash('success', 'Item has been deleted permanently');
         return $this->redirect(Yii::$app->request->referrer);
     }
 

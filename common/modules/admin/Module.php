@@ -20,6 +20,7 @@ use common\models\SubmissionReplySeen;
 use common\models\SubmissionThreadSearch;
 use common\models\SystemOtherFeature;
 use common\models\AnnouncementSeen;
+use common\models\SubmissionArchive;
 use yii\helpers\FormatConverter;
 use Yii;
 
@@ -41,6 +42,18 @@ class Module extends \yii\base\Module
         parent::init();
 
         // custom initialization code goes here
+    }
+
+    public static function isTaskArchive($submission_thread_id, $user_id)
+    {
+        if(SubmissionArchive::find()->where(['submission_thread_id' => $submission_thread_id, 'user_id' => $user_id])->exists())
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
     }
 
     public static function arrayNumber($value)
