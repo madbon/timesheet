@@ -41,6 +41,7 @@ class EvaluationForm extends \yii\db\ActiveRecord
             [['submission_thread_id', 'trainee_user_id', 'user_id', 'evaluation_criteria_id'], 'integer'],
             [['date_commenced', 'date_complete'], 'safe'],
             [['points_scored'], 'number'],
+            [['points_scored'],'required'],
             [['remarks'], 'string', 'max' => 255],
             [['evaluation_criteria_id'], 'exist', 'skipOnError' => true, 'targetClass' => EvaluationCriteria::class, 'targetAttribute' => ['evaluation_criteria_id' => 'id']],
             [['trainee_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['trainee_user_id' => 'id']],

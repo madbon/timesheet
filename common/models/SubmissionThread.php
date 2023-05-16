@@ -43,6 +43,7 @@ class SubmissionThread extends \yii\db\ActiveRecord
             [['subject'], 'string','max' => 250],
             [['date_time','remarks'],'safe'],
             [['tagged_user_id','date_completed','date_commenced'],Yii::$app->request->get('ref_document_type_id') == '1' ? 'required' : 'safe'],
+            [['tagged_user_id'],'validateTaggedUser'],
             
             // [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
             // [['ref_document_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => RefDocumentType::class, 'targetAttribute' => ['ref_document_type_id' => 'id']],
@@ -62,6 +63,14 @@ class SubmissionThread extends \yii\db\ActiveRecord
             'created_at' => 'Created At',
             'tagged_user_id' => 'Trainee',
         ];
+    }
+
+    public function validateTaggedUser($attribute)
+    {
+        if(EvaluationForm::find()->where(['trainee_user_id' => $this->tagged_user_id, 'points_scored' => NULL])->exists())
+        {
+            $this->addError($attribute, 'Incomplete Score');
+        }
     }
 
      /**

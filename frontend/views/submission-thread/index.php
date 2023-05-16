@@ -461,7 +461,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     },
                     'deletepermanent' => function ($url, $model) use($archive){
                         return $archive && Yii::$app->getModule('admin')->documentAssignedAttrib($model->ref_document_type_id,'SENDER') ?  Html::a('<span class="fas fa-trash"></span>', ['delete-permanent', 'id' => $model->id], [
-                            'title' => Yii::t('yii', 'Delete Permanent'),
+                            'title' => Yii::t('yii', 'Permanent Delete'),
                             'class' => 'btn btn-sm btn-outline-danger', // set the button class to outline-danger
                             'data' => [
                                 'confirm' => Yii::t('yii', 'Are you sure you want to delete this permanently?'),

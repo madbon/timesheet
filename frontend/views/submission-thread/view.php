@@ -5,6 +5,7 @@ use yii\widgets\DetailView;
 use yii\helpers\Url;
 use common\models\Files;
 use yii\widgets\ActiveForm;
+use common\models\EvaluationForm;
 
 /** @var yii\web\View $this */
 /** @var common\models\SubmissionThread $model */
@@ -307,6 +308,40 @@ card {
         </table>
     </div> -->
 
+</div>
+
+<div class="container" style="margin-top:20px;">
+<div class="card">
+        <div class="card-body">
+            <h4>Evaluation</h4>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Criteria</th>
+                        <th>Max Points</th>
+                        <th>Points Scored</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php 
+                    $evalForm = EvaluationForm::find()->where(['trainee_user_id' => $model->tagged_user_id])->all();
+                    $totalPoints = 0;
+                    foreach ($evalForm as $eval) { 
+                        $totalPoints += $eval->points_scored;
+                        ?>
+                        <tr>
+                            <td><?= $eval->evaluationCriteria->title ?></td>
+                            <td><?= $eval->evaluationCriteria->max_points ?></td>
+                            <td><?= $eval->points_scored ?></td>
+                            <td><?= $eval->remarks ?></td>
+                        </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
+            <h5>Total Score: <?= $totalPoints ?> points</h5>
+        </div>
+    </div>
 </div>
 
 <?php if($replyQuery){ ?>

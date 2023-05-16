@@ -405,7 +405,14 @@ ul.archive-details li
                                 return Yii::$app->user->can('upload-others-esig') ? $buttons : false;
                             },
                             'evalform' => function ($url, $model) {
-                                return Yii::$app->user->can('submit_trainees_evaluation') ? Html::a('EVAL',['/evaluation-form/index','trainee_user_id' => $model->id],['class' => 'btn btn-primary btn-sm']) : false;
+                                if(!empty($model->evaluationForm))
+                                {
+                                    return Yii::$app->user->can('submit_trainees_evaluation') ? Html::a('VIEW EVAL',['/evaluation-form/index','trainee_user_id' => $model->id],['class' => 'btn btn-primary btn-sm']) : false;
+                                }
+                                else
+                                {
+                                    return Yii::$app->user->can('submit_trainees_evaluation') ? Html::a('CREATE EVAL',['/evaluation-form/index','trainee_user_id' => $model->id],['class' => 'btn btn-primary btn-sm']) : false;
+                                }
                             },
                             'view' => function ($url, $model) {
                                 return Yii::$app->user->can('user-management-view') ? Html::a('View', $url, [

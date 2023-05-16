@@ -21,6 +21,8 @@ use yii\helpers\Url;
 use common\models\SubmissionArchive;
 use common\models\UserData;
 use common\models\EvaluationForm;
+use yii\web\Response;
+use yii\widgets\ActiveForm;
 use Yii;
 
 /**
@@ -278,6 +280,11 @@ class SubmissionThreadController extends Controller
         // UPLOAD FILE
         $modelUpload = new UploadMultipleForm();
 
+        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ActiveForm::validate($model);
+        }
+
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $modelUpload->load($this->request->post())) {
                 date_default_timezone_set('Asia/Manila');
@@ -351,7 +358,7 @@ class SubmissionThreadController extends Controller
      * @return string|\yii\web\Response
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
+    public function actionUpdate($id,$from_eval_form=null)
     {
         $model = $this->findModel($id);
 
@@ -382,6 +389,8 @@ class SubmissionThreadController extends Controller
             'model' => $model,
             'documentType' => $documentType,
             'modelUpload' => $modelUpload,
+            'from_eval_form' => $model->ref_document_type_id == 1 ? 'yes' : '',
+            'trainee_user_id' => !empty($model->tagged_user_id) ? $model->tagged_user_id : null,
         ]);
     }
 

@@ -81,7 +81,15 @@ $this->params['breadcrumbs'][] = $this->title;
                         'template' => '{update}',
                         'buttons' => [
                             'update' => function ($url, $model) {
-                                return Html::button('<i class="fas fa-edit"></i> Score', ['value'=>Url::to('@web/evaluation-form/update?id='.$model->id), 'class' => 'btn btn-warning btn-sm modalButton','style' => 'border:none;']);
+                                if($model->submission_thread_id)
+                                {
+                                    return false;
+                                }
+                                else
+                                {
+                                    return Html::button('<i class="fas fa-edit"></i> Score', ['value'=>Url::to('@web/evaluation-form/update?id='.$model->id), 'class' => 'btn btn-warning btn-sm modalButton','style' => 'border:none;']);
+                                }
+                                
                             },
                         ],
                         'urlCreator' => function ($action, EvaluationForm $model, $key, $index, $column) {
@@ -90,10 +98,17 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ],
             ]); ?>
+
+            <h1>Total Score: <?= Yii::$app->getModule('admin')->computePoints($trainee_user_id) ?> Points</h1>
         </div>
     </div>
 
     <div style="text-align: right;">
-    <?= Html::a('Proceed to Submission <i class="fas fa-arrow-right"></i>',['/submission-thread/create','ref_document_type_id' => 1,'from_eval_form' => 'yes', 'trainee_user_id' => $trainee_user_id],['class' => 'btn btn-success', 'style' => 'margin-top:20px;']); ?>
+    <?php 
+        if(Yii::$app->getModule('admin')->isCompletePoints($trainee_user_id) && Yii::$app->getModule('admin')->isEvalNotSubmitted($trainee_user_id))
+        {
+            echo Html::a('Proceed to Submission <i class="fas fa-arrow-right"></i>',['/submission-thread/create','ref_document_type_id' => 1,'from_eval_form' => 'yes', 'trainee_user_id' => $trainee_user_id],['class' => 'btn btn-success', 'style' => 'margin-top:20px;']); 
+        }
+    ?>
     </div>
 </div>

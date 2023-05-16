@@ -20,6 +20,7 @@ use common\models\SubmissionReplySeen;
 use common\models\SubmissionThreadSearch;
 use common\models\SystemOtherFeature;
 use common\models\AnnouncementSeen;
+use common\models\EvaluationForm;
 use common\models\SubmissionArchive;
 use yii\helpers\FormatConverter;
 use Yii;
@@ -42,6 +43,42 @@ class Module extends \yii\base\Module
         parent::init();
 
         // custom initialization code goes here
+    }
+
+    public static function isEvalNotSubmitted($trainee_user_id)
+    {
+        if(EvaluationForm::find()->where(['trainee_user_id' => $trainee_user_id, 'submission_thread_id' => NULL])->exists())
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    public static function computePoints($trainee_user_id)
+    {
+        $complete = EvaluationForm::find()->where(['trainee_user_id' => $trainee_user_id])->all();
+
+        $count = 0;
+        foreach ($complete as $point) {
+            $count += $point->points_scored;
+        }
+
+        return $count;
+    }
+
+    public static function isCompletePoints($trainee_user_id)
+    {
+        if(EvaluationForm::find()->where(['trainee_user_id' => $trainee_user_id,'points_scored' => NULL])->exists())
+        {
+            return 0;
+        }
+        else
+        {
+            return 1;
+        }
     }
 
     public static function isTaskArchive($submission_thread_id, $user_id)

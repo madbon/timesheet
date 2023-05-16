@@ -243,6 +243,16 @@ class UserData extends \yii\db\ActiveRecord
     }
 
      /**
+     * Gets query for [[EvaluationForm]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEvaluationForm()
+    {
+        return $this->hasOne(EvaluationForm::class, ['trainee_user_id' => 'id']);
+    }
+
+     /**
      * Gets query for [[CmsRole]].
      *
      * @return \yii\db\ActiveQuery
