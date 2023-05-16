@@ -49,11 +49,13 @@ class SubmissionThreadController extends Controller
         );
     }
 
-    public function actionPreviewPdf($trainee_id)
+    public function actionPreviewPdf($trainee_id,$submission_thread_id = null)
     {
        
         $query = EvaluationForm::find()->where(['trainee_user_id' => $trainee_id])->all();
-        $content = $this->renderPartial('_eval_form_pdf',['query' => $query]);
+        $user = UserData::find()->where(['id' => $trainee_id])->one();
+        $subThreadOne = SubmissionThread::find()->where(['id' => $submission_thread_id])->one();
+        $content = $this->renderPartial('_eval_form_pdf',['query' => $query, 'user' => $user,'subThreadOne' => $subThreadOne]);
     
         // setup kartik\mpdf\Pdf component
         $pdf = new Pdf([
@@ -81,7 +83,43 @@ class SubmissionThreadController extends Controller
                     page-break-before: always;
                 }
 
-                
+                table.table-bordered
+                {
+                    margin-left:50px;
+                    margin-right:50px;
+                }
+
+                table tbody tr td,table thead tr th,p
+                {
+                    font-size:11px;
+                }
+
+                table.table-bordered thead tr th
+                {
+                    border:1px solid black;
+                    border-bottom:none;
+                    text-align:center;
+                    font-size:11px;
+                }
+
+                table.table-bordered tbody tr td
+                {
+                    border:1px solid black;
+                    padding:1px;
+                    font-size:11px;
+                }
+
+                table.table-bordered tbody tr td:nth-child(1)
+                {
+                    width:200px;
+                    padding-left:5px;
+                }
+
+                table.table-bordered tbody tr td:nth-child(2),table.table-bordered tbody tr td:nth-child(3)
+                {
+                    text-align:center;
+                    width:120px;
+                }
             ', 
             // set mPDF properties on the fly
             'options' => ['title' => 'Krajee Report Title'],

@@ -313,7 +313,9 @@ card {
 <div class="container" style="margin-top:20px;">
 <div class="card">
         <div class="card-body">
-            <h4>Evaluation</h4>
+            <h4>Evaluation 
+                <?= Html::a('<i class="fas fa-file-pdf"></i> Preview Form',['preview-pdf','trainee_id' => $model->tagged_user_id,'submission_thread_id' => $model->id],['class' => 'btn btn-outline-danger btn-sm', 'target' => '_blank']) ?>
+            </h4>
             <table class="table table-bordered">
                 <thead>
                     <tr>
