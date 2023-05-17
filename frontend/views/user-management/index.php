@@ -323,7 +323,7 @@ ul.archive-details li
                     [   
                         'format' => 'raw',
                         'label' => 'Has e-Signature?',
-                        'visible' => !Yii::$app->user->can('upload-others-esig'),
+                        'visible' => !empty($searchModel->item_name) ? in_array($searchModel->item_name,['CompanySupervisor','Trainee']) : true,
                         'value' => function($model)
                         {
                             $buttons = "";
@@ -355,7 +355,7 @@ ul.archive-details li
                     // ],
                     [
                         'class' => ActionColumn::className(),
-                        'template' => '{regface} {timesheet} {esig} {view} {update} {delete}',
+                        'template' => '{regface} {timesheet} {esig} {evalform} {view} {update} {delete}',
                         'buttons' => [
                             'regface' => function ($url, $model) {
                                 if(Yii::$app->user->can('user-management-register-face'))
@@ -403,6 +403,40 @@ ul.archive-details li
                                 }
 
                                 return Yii::$app->user->can('upload-others-esig') ? $buttons : false;
+                            },
+                            'evalform' => function ($url, $model) {
+                                if(!empty($model->evaluationForm))
+                                {
+                                    $countNullPoints = 0;
+                                    foreach ($model->evaluationFormAll as $eval) {
+                                        if(empty($eval->points_scored))
+                                        {
+                                            $countNullPoints +=1;
+                                        }
+                                    }
+
+                                    if($countNullPoints)
+                                    {
+                                        return Yii::$app->user->can('submit_trainees_evaluation') ? Html::a('EDIT EVAL',['/evaluation-form/index','trainee_user_id' => $model->id],['class' => 'btn btn-primary btn-sm']) : false;
+                                    }
+                                    else
+                                    {
+                                        if(!empty($model->evaluationForm->submissionThread))
+                                        {
+                                            return Yii::$app->user->can('submit_trainees_evaluation') ? Html::a('VIEW EVAL',['/evaluation-form/index','trainee_user_id' => $model->id],['class' => 'btn btn-primary btn-sm']) : false;
+                                        }
+                                        else
+                                        {
+                                            return Yii::$app->user->can('submit_trainees_evaluation') ? Html::a('SUBMIT EVAL',['/evaluation-form/index','trainee_user_id' => $model->id],['class' => 'btn btn-primary btn-sm']) : false;
+                                        }
+                                    }
+                                    
+                                    
+                                }
+                                else
+                                {
+                                    return Yii::$app->user->can('submit_trainees_evaluation') ? Html::a('CREATE EVAL',['/evaluation-form/index','trainee_user_id' => $model->id],['class' => 'btn btn-primary btn-sm']) : false;
+                                }
                             },
                             'view' => function ($url, $model) {
                                 return Yii::$app->user->can('user-management-view') ? Html::a('View', $url, [

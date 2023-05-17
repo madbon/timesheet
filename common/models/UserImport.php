@@ -55,11 +55,11 @@ class UserImport extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['student_year', 'ref_program_id', 'ref_program_major_id', 'ref_department_id', 'ref_position_id', 'mobile_no', 'status', 'created_at', 'updated_at'], 'integer'],
+            [['student_year', 'ref_program_id', 'ref_program_major_id', 'ref_department_id', 'ref_position_id', 'status', 'created_at', 'updated_at'], 'integer'],
             [['bday'], 'safe'],
             // [['username', 'auth_key', 'password_hash', 'email', 'tel_no', 'created_at', 'updated_at'], 'required'],
             [['address'], 'safe'],
-            [['student_idno', 'sname'], 'safe'],
+            [['student_idno', 'sname','mobile_no'], 'safe'],
             [['student_section', 'sex'], 'safe'],
             [['fname'], 'safe'],
             [['mname', 'tel_no'], 'safe'],

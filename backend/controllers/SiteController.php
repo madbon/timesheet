@@ -104,6 +104,7 @@ class SiteController extends Controller
         else
         {
             if (date('a', $timestamp) === 'am') {
+                
                 if($model->time_out_am)
                 {
                     $model = new UserTimesheet();
@@ -111,7 +112,14 @@ class SiteController extends Controller
                     $model->date = date('Y-m-d');
                     $model->time_in_am = date('H:i:s', $timestamp);
                 }else{
-                    $model->time_out_am = date('H:i:s', $timestamp);
+                    if(empty($model->time_in_am))
+                    {
+                        $model->time_in_am = date('H:i:s', $timestamp);
+                    }
+                    else
+                    {
+                        $model->time_out_am = date('H:i:s', $timestamp);
+                    }
                 }
                 
             } else { // PM
@@ -147,7 +155,15 @@ class SiteController extends Controller
                     }
                     else
                     {
-                        $model->time_out_pm = date('H:i:s', $timestamp);
+                        if(empty($model->time_in_pm))
+                        {
+                            $model->time_in_pm = date('H:i:s', $timestamp);
+                        }
+                        else
+                        {
+                            $model->time_out_pm = date('H:i:s', $timestamp);
+                        }
+                        
                     }
                 }
             }

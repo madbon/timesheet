@@ -125,14 +125,41 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
+    <div style="text-align: right; margin-bottom:20px;">
+    <?php 
+        if(in_array($searchModel->ref_document_type_id,[1,3,5]))
+        {
+            if($archive)
+            {
+            echo Html::a('<i class="fas fa-trash"></i> Deleted Item(s)',[Yii::$app->controller->action->id,'archive' => 1, 'SubmissionThreadSearch[ref_document_type_id]' => $searchModel->ref_document_type_id],['class' => 'btn btn-secondary btn-sm', 'style' => 'border-radius:25px;']);
+            }
+            else
+            {
+                echo Html::a('<i class="fas fa-trash"></i> Deleted Item(s)',[Yii::$app->controller->action->id,'archive' => 1, 'SubmissionThreadSearch[ref_document_type_id]' => $searchModel->ref_document_type_id],['class' => 'btn btn-outline-secondary btn-sm', 'style' => 'border-radius:25px;']);
+            }
+        }
+    ?>
+    </div>
+
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
-        'rowOptions' => function($model, $key, $index, $column) {
+        'rowOptions' => function($model, $key, $index, $column) use($archive){
 
-            if(!empty($model->submissionArchive))
+            if($archive)
             {
-                if($model->submissionArchive->submission_thread_id == $model->id && $model->submissionArchive->user_id == Yii::$app->user->identity->id)
+                if(Yii::$app->getModule('admin')->isTaskArchive($model->id, Yii::$app->user->identity->id))
+                {
+                    return ['style' => 'background-color: #b4b4b4;'];
+                }
+                else
+                {
+                    return ['style' => 'display:none;'];
+                }
+            }
+            else
+            {
+                if(Yii::$app->getModule('admin')->isTaskArchive($model->id, Yii::$app->user->identity->id))
                 {
                     return ['style' => 'display:none;'];
                 }
@@ -154,26 +181,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         {
                             return ['style' => 'background-color: #ffdbdb'];
                         }
-                    }
-                }
-            }
-            else
-            {
-                if(Yii::$app->getModule('admin')->documentAssignedAttrib($model->ref_document_type_id,'RECEIVER'))
-                {
-                    if(!empty($model->submissionThreadSeen->submission_thread_id))
-                    {
-                        if($model->submissionThreadSeen->submission_thread_id == $model->id && $model->submissionThreadSeen->user_id == Yii::$app->user->identity->id){
-                            return ['style' => 'background-color:#ffffff;'];
-                        }
-                        else
-                        {
-                            return ['style' => 'background-color: #ffdbdb'];
-                        }
-                    }
-                    else
-                    {
-                        return ['style' => 'background-color: #ffdbdb'];
                     }
                 }
             }
@@ -416,10 +423,53 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'class' => ActionColumn::className(),
-                'template' => Yii::$app->getModule('admin')->documentAssignedAttrib($searchModel->ref_document_type_id,'SENDER') ?  '{view} {update} {delete}' : '{view} {delete}',
+                'template' => Yii::$app->getModule('admin')->documentAssignedAttrib($searchModel->ref_document_type_id,'SENDER') ?  '{view} {update} {delete} {restore} {deletepermanent}' : '{view} {restore} {delete}',
                 'urlCreator' => function ($action, SubmissionThread $model, $key, $index, $column) {
                     return Url::toRoute([$action, 'id' => $model->id]);
-                 }
+                 },
+                 'buttons' => [
+                    'delete' => function($url, $model) use($archive)
+                    {
+                        if($archive)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            return Html::a('<i class="fas fa-trash-alt"></i>', ['delete', 'id' => $model->id], [
+                                'title' => Yii::t('yii', 'Delete'),
+                                'class' => 'btn-link', // set the button class to outline-danger
+                                'data' => [
+                                    'confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                    'method' => 'post',
+                                ],
+                            ]);
+                        }
+                    },
+                    'restore' => function ($url, $model) use($archive){
+                        if($archive)
+                        {
+                            return Html::a('<i class="fas fa-sync-alt"></i>', ['restore', 'id' => $model->id], [
+                                'title' => Yii::t('yii', 'Restore'),
+                                'class' => 'btn btn-sm btn-outline-success', // set the button class to outline-danger
+                                'data' => [
+                                    'confirm' => Yii::t('yii', 'Are you sure you want to restore this item?'),
+                                    'method' => 'post',
+                                ],
+                            ]);
+                        }
+                    },
+                    'deletepermanent' => function ($url, $model) use($archive){
+                        return $archive && Yii::$app->getModule('admin')->documentAssignedAttrib($model->ref_document_type_id,'SENDER') ?  Html::a('<span class="fas fa-trash"></span>', ['delete-permanent', 'id' => $model->id], [
+                            'title' => Yii::t('yii', 'Permanent Delete'),
+                            'class' => 'btn btn-sm btn-outline-danger', // set the button class to outline-danger
+                            'data' => [
+                                'confirm' => Yii::t('yii', 'Are you sure you want to delete this permanently?'),
+                                'method' => 'post',
+                            ],
+                        ]) : false;
+                    },
+                 ],
             ],
         ],
     ]); ?>

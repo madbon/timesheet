@@ -18,6 +18,8 @@ $this->params['breadcrumbs'][] = 'Update';
         'model' => $model,
         'documentType' => $documentType,
         'modelUpload' => $modelUpload,
+        'from_eval_form' => $from_eval_form,
+        'trainee_user_id' => $trainee_user_id,
     ]) ?>
 
 </div>

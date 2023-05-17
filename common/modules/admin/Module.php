@@ -20,6 +20,9 @@ use common\models\SubmissionReplySeen;
 use common\models\SubmissionThreadSearch;
 use common\models\SystemOtherFeature;
 use common\models\AnnouncementSeen;
+use common\models\EvaluationForm;
+use common\models\SubmissionArchive;
+use yii\helpers\FormatConverter;
 use Yii;
 
 /**
@@ -42,10 +45,195 @@ class Module extends \yii\base\Module
         // custom initialization code goes here
     }
 
+
+    public static function calculateAge($birthdate)
+    {
+        if(!empty($birthdate))
+        {
+            $today = new \DateTime();
+            $birthdate = new \DateTime($birthdate);
+            $age = $birthdate->diff($today)->y;
+            return $age;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+
+    public static function isEvalNotSubmitted($trainee_user_id)
+    {
+        if(EvaluationForm::find()->where(['trainee_user_id' => $trainee_user_id, 'submission_thread_id' => NULL])->exists())
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    public static function computePoints($trainee_user_id)
+    {
+        $complete = EvaluationForm::find()->where(['trainee_user_id' => $trainee_user_id])->all();
+
+        $count = 0;
+        foreach ($complete as $point) {
+            $count += $point->points_scored;
+        }
+
+        return $count;
+    }
+
+    public static function isCompletePoints($trainee_user_id)
+    {
+        if(EvaluationForm::find()->where(['trainee_user_id' => $trainee_user_id,'points_scored' => NULL])->exists())
+        {
+            return 0;
+        }
+        else
+        {
+            return 1;
+        }
+    }
+
+    public static function isTaskArchive($submission_thread_id, $user_id)
+    {
+        if(SubmissionArchive::find()->where(['submission_thread_id' => $submission_thread_id, 'user_id' => $user_id])->exists())
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    public static function arrayNumber($value)
+    {
+        $numbers = []; // Initialize an empty array
+
+        for ($i = 1; $i <= $value; $i++) {
+            $numbers[$i] = $i; // Add the current number to the array
+        }
+
+        return $numbers;
+    }
+
+    public static function calculateLateness($time_in)
+    {
+        $targetTime = strtotime('8:00 AM'); // Convert the target time to a timestamp
+        $currentTime = strtotime($time_in); // Get the current time as a timestamp
+
+        // Exclude the minutes between 12:00 PM and 1:00 PM from the lateness calculation
+        if (date('G', $currentTime) >= 12 && date('G', $currentTime) < 13) {
+            $currentTime = strtotime('12:00 PM');
+        }
+    
+        // Check if the current time is after the target time
+        if ($currentTime > $targetTime) {
+            $lateness = $currentTime - $targetTime;
+
+            if (date('G', $currentTime) >= 13) {
+                $lateness = ($currentTime - $targetTime) - 3600;
+            }
+             // Calculate the lateness in seconds
+    
+            // Convert the lateness to hours and minutes
+            $latenessHours = floor($lateness / 3600);
+            $latenessMinutes = intval(($lateness % 3600) / 60);
+    
+            return [
+                'hours' => $latenessHours,
+                'minutes' => $latenessMinutes,
+            ];
+        }
+    
+        return [
+            'hours' => 0,
+            'minutes' => 0,
+        ]; // Return 0 hours and 0 minutes if the current time is before the target time
+    }
+
+    public static function getDayOfWeek($date)
+    {
+        $timestamp = strtotime($date);
+        $dayOfWeek = date('N', $timestamp);
+
+        // Day of week: 1 (Monday) to 7 (Sunday)
+        switch ($dayOfWeek) {
+            case 6:
+                return 'Sat';
+            case 7:
+                return 'Sun';
+            default:
+                return '';
+        }
+    }
+
+    public static function isWeekend($date)
+    {
+        
+        // $timestamp = strtotime(FormatConverter::toDate($date, 'yyyy-MM-dd'));
+        $timestamp = strtotime($date);
+        $dayOfWeek = date('N', $timestamp);
+    
+        // Day of week: 1 (Monday) to 7 (Sunday)
+        return $dayOfWeek >= 6; // Return true if day is Saturday or Sunday
+    }
+
     // public static function requiredRemarks()
     // {
     //     $query = DocumentType::find()->where([''])
     // }
+
+    public static function sendMail($email,$fullname,$username,$password)
+    {
+        $to = $email;
+        $subject = 'Your registration details for BPSU OJT Timesheet Monitoring System for CICT Trainees';
+        $body = '<pre>
+<p>Dear '.($fullname).', 
+
+    We are pleased to inform you that your account has been successfully created in our system. Here are your login details:
+
+Username: '.($username).'
+Password: '.($password).'
+            
+Please keep these details safe and do not share them with anyone. You can log in to our system at https://bpsutimesheet.online using the above credentials.
+            
+Please note that for security reasons, we recommend that you change your password after your first login. You can do this by going to My Account > Login Credentials.
+            
+In addition, we encourage you to update your personal details to ensure that our records are accurate and up to date.
+            
+If you have any questions or concerns, please do not hesitate to contact us.
+            
+Thank you!
+            
+Best regards,
+<strong>Bataan Peninsula State University</strong>
+
+
+
+<strong>This is a system-generated email. Please do not reply.</strong>
+
+
+
+<strong>DISCLAIMER:</strong>
+
+This email and its contents are confidential and intended solely for the individual or entity to whom it is addressed. If you are not the intended recipient, please notify us immediately and delete this email from your system. Any unauthorized use, disclosure, or distribution of this email is strictly prohibited.
+
+            </p></pre>';
+        $from = 'management@bpsutimesheet.online';
+
+        $model = new UserData();
+
+        if ($model->sendEmail($to, $subject, $body, $from)) {
+            echo 'Email sent successfully!';
+        } else {
+            echo 'Failed to send email.';
+        }
+    }
 
     public static function unseenAnnouncement($date = null)
     {
@@ -361,16 +549,50 @@ class Module extends \yii\base\Module
         return $roles;
     }
 
-    public static function GetSupervisorByTraineeUserId($trainee_user_id)
+    public static function GetSupervisorPositionByTraineeUserId($trainee_user_id)
     {
         $getCompany = UserCompany::findOne(['user_id' => $trainee_user_id]);
         $company = !empty($getCompany->ref_company_id) ? $getCompany->ref_company_id : NULL;
+        $user = UserData::find()->where(['id' => $trainee_user_id])->one();
+        $department = !empty($user->ref_department_id) ? $user->ref_department_id : null;
 
         $getUserIdsInCompany = UserCompany::find()
         ->joinWith('users')
         ->where(['user_company.ref_company_id' => $company])
         ->andWhere(['user.status' => 10])
         ->andWhere(['NOT',['.user_company.user_id' => NULL]])
+        ->andFilterWhere(['user.ref_department_id' => $department])
+        ->all();
+
+        $userIds = [];
+
+        foreach ($getUserIdsInCompany as $key => $row) {
+            $userIds[] = $row['user_id'];
+        }
+
+        $query = AuthAssignment::find()->where(['user_id' => $userIds, 'item_name' => 'CompanySupervisor'])->one();
+
+        $getSupervisorId = !empty($query->user_id) ? $query->user_id : null;
+
+        $user = UserData::findOne(['id' => $getSupervisorId]);
+
+        return !empty($user->position->position) ? $user->position->position : "-NO SELECTED POSITION-";
+        
+    }
+
+    public static function GetSupervisorByTraineeUserId($trainee_user_id)
+    {
+        $getCompany = UserCompany::findOne(['user_id' => $trainee_user_id]);
+        $company = !empty($getCompany->ref_company_id) ? $getCompany->ref_company_id : NULL;
+        $user = UserData::find()->where(['id' => $trainee_user_id])->one();
+        $department = !empty($user->ref_department_id) ? $user->ref_department_id : null;
+
+        $getUserIdsInCompany = UserCompany::find()
+        ->joinWith('users')
+        ->where(['user_company.ref_company_id' => $company])
+        ->andWhere(['user.status' => 10])
+        ->andWhere(['NOT',['.user_company.user_id' => NULL]])
+        ->andFilterWhere(['user.ref_department_id' => $department])
         ->all();
 
         $userIds = [];
@@ -394,8 +616,16 @@ class Module extends \yii\base\Module
         // print_r($trainee_user_id); exit;
         $getCompany = UserCompany::findOne(['user_id' => $trainee_user_id]);
         $company = !empty($getCompany->ref_company_id) ? $getCompany->ref_company_id : NULL;
+        $user = UserData::find()->where(['id' => $trainee_user_id])->one();
+        $department = !empty($user->ref_department_id) ? $user->ref_department_id : null;
 
-        $getUserIdsInCompany = UserCompany::find()->where(['ref_company_id' => $company])->all();
+        $getUserIdsInCompany = UserCompany::find()
+        ->joinWith('users')
+        ->where(['user_company.ref_company_id' => $company])
+        ->andWhere(['user.status' => 10])
+        ->andWhere(['NOT',['.user_company.user_id' => NULL]])
+        ->andFilterWhere(['user.ref_department_id' => $department])
+        ->all();
 
         $userIds = [];
 

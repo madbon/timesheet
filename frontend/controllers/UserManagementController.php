@@ -105,7 +105,7 @@ class UserManagementController extends Controller
                         'roles' => ['user-management-update-status'],
                     ],
                     [
-                        'actions' => ['company-json','update-my-account','upload-my-signature','register-image','preview-captured-photo','delete-face-photo','import-trainees','save-imported-trainees','download-template','upload-profile-photo'],
+                        'actions' => ['company-json','update-my-account','upload-my-signature','register-image','preview-captured-photo','delete-face-photo','import-trainees','save-imported-trainees','download-template','upload-profile-photo','send-mail'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -118,6 +118,22 @@ class UserManagementController extends Controller
                 ],
             ],
         ];
+    }
+
+    public function actionSendMail()
+    {
+        $to = 'bonmarkangelo@gmail.com';
+        $subject = 'Example Subject';
+        $body = '<p>This is an example email.</p>';
+        $from = 'management@bpsutimesheet.online';
+
+        $model = new UserData();
+
+        if ($model->sendEmail($to, $subject, $body, $from)) {
+            echo 'Email sent successfully!';
+        } else {
+            echo 'Failed to send email.';
+        }
     }
 
     public function actionUpdateStatus($id)
@@ -205,6 +221,8 @@ class UserManagementController extends Controller
         $rows = Yii::$app->session['imported_trainees'];
         $program = Yii::$app->session['program_course'];
 
+        $model = new UserData();
+
         foreach ($rows as $row) {
             $student = new UserImport();
             $student->student_idno = $row[0];
@@ -220,15 +238,28 @@ class UserManagementController extends Controller
             $student->ref_program_major_id = Yii::$app->getModule('admin')->getMajorCode($row[9],$program_id);
             $student->student_year = $row[10];
             $student->student_section = $row[11];
-            $student->email = $row[12];
             
-            // $student->ref_program_id = $row[12];
+            $firstIntial = strtolower($model->getInitial($row[1]));
+            $middleInitial = strtolower($model->getInitial($row[2]));
+            $lastName = strtolower(str_replace(' ', '', $row[3])); ;
+            $fullName = $row[1].' '.(!empty($row[2]) ? $row[2] : '').$row[3].' '.$row[4];
 
-            $student->username = $row[0];
-            $student->password_hash = Yii::$app->security->generatePasswordHash($row[0]);
+            $randomString = Yii::$app->security->generateRandomString(5);
+
+            $username = $firstIntial.$middleInitial.$lastName.'_'.$randomString;
+            $password = $firstIntial.$middleInitial.$lastName.'_'.$randomString;
+
+            $email = $row[12] ? $row[12] : $firstIntial.$middleInitial.$lastName.'@bpsu.edu.ph';
+
+            $student->password_hash = Yii::$app->security->generatePasswordHash($password);
+            $student->auth_key = Yii::$app->security->generateRandomString();
+            $student->verification_token = Yii::$app->security->generateRandomString() . '_' . time();
+            $student->email = $email;
+            $student->username = $username;
 
             if($student->save())
             {
+                 Yii::$app->getModule('admin')->sendMail($email,$fullName,$username,$password);
                 $student_id = $student->id;
                 $authAssignment = new AuthAssignment();
                 $authAssignment->item_name = 'Trainee';
@@ -432,6 +463,26 @@ class UserManagementController extends Controller
         $company = ArrayHelper::map(Company::find()->select(['id','CONCAT(name," (", address, ")") as name'])->all(), 'id', 'name');
        
         $itemName = NULL;
+        
+        switch ($account_type) {
+            case 'trainee':
+                $model->item_name = "Trainee";
+            break;
+            case 'ojtcoordinator':
+                
+                $model->item_name = "OjtCoordinator";
+            break;
+            case 'companysupervisor':
+                $model->item_name = "CompanySupervisor";
+            break;
+            case 'administrator':
+                $model->item_name = "Administrator";
+            break;
+            
+            default:
+                # code...
+            break;
+        }
 
 
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
@@ -443,14 +494,28 @@ class UserManagementController extends Controller
             
             if ($model->load($this->request->post())) {
 
+                $firstIntial = strtolower($model->getInitial($model->fname));
+                $middleInitial = strtolower($model->getInitial($model->mname));
+                $lastName = strtolower(str_replace(' ', '', $model->sname)); ;
+                $fullName = $model->userFullName;
 
-                $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
+                $randomString = Yii::$app->security->generateRandomString(5);
+
+                $username = !empty($model->username) ? $model->username : $firstIntial.$middleInitial.$lastName.'_'.$randomString;
+                $password = !empty($model->password) ? $model->password : $firstIntial.$middleInitial.$lastName.'_'.$randomString;
+
+                $email = $model->email ? $model->email : $firstIntial.$middleInitial.$lastName.'@bpsu.edu.ph';
+
+                $model->password_hash = Yii::$app->security->generatePasswordHash($password);
                 $model->auth_key = Yii::$app->security->generateRandomString();
                 $model->verification_token = Yii::$app->security->generateRandomString() . '_' . time();
+                $model->email = $email;
+                $model->username = $username;
 
                 if($model->save())
                 {
-                    \Yii::$app->getSession()->setFlash('success', 'Data has been saved');
+                    Yii::$app->getModule('admin')->sendMail($email,$fullName,$username,$password);
+                    \Yii::$app->getSession()->setFlash('success', 'Successfully registered! Login credentials has been sent to their email.');
                 }
                 else
                 {

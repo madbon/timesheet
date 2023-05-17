@@ -78,6 +78,11 @@ date_default_timezone_set('Asia/Manila');
     }
     /* TABLE SUMMARY DETAILS_END */
 
+    table tbody tr.weekend td.weekend
+    {
+        background:#ffe3e3;
+    }
+
 </style>
 
 <div class="user-timesheet-index">
@@ -182,7 +187,7 @@ date_default_timezone_set('Asia/Manila');
                     <th style='border-left:1px solid #f5f6ff; background-color:#f5f6ff; border-top:1px solid #f5f6ff;'></th>
                     <th colspan='2'>AM</th>
                     <th colspan='2'>PM</th>
-                    <th colspan='5' style='border-top:1px solid #f5f6ff; border-right:1px solid #f5f6ff; background:#f5f6ff;'></th>
+                    <th colspan='6' style='border-top:1px solid #f5f6ff; border-right:1px solid #f5f6ff; background:#f5f6ff;'></th>
             </tr>";
             echo "<tr>
                     <th>DAYS</th>
@@ -192,6 +197,7 @@ date_default_timezone_set('Asia/Manila');
                     <th>OUT</th>
                     <th>OVERTIME</th>
                     <th>TOTAL NO. OF HOURS</th>
+                    <th>LATE</th>
                     <th>REMARKS</th>
                     <th>STATUS</th>
                     ".(Yii::$app->user->can('timesheet-remarks') || Yii::$app->user->can('edit-time') ? "<th>AVAILABLE ACTIONS</th>" : "")."
@@ -206,12 +212,19 @@ date_default_timezone_set('Asia/Manila');
             $countPendingRecordWithTimeOut = 0;
             $total_minutes = 0;
             $totalMinutesOvertime = 0;
+            $countAbsent = 0;
+            $countPresent = 0;
+            $countLateHours = 0;
+            $countLateMinutes = 0;
             
 
             foreach ($date_range as $date) {
                 $main_total_minutes = 0;
                 $overtime_hours = 0;
                 $overtime_minutes = 0;
+                $countDay = 0;
+                
+               
 
                 $models = UserTimesheet::findAll([
                     'date' => $date->format('Y-m-d'), 
@@ -222,11 +235,15 @@ date_default_timezone_set('Asia/Manila');
 
                     $countCompleteTime = 0;
                     
-
-                    foreach ($models as $model) {
-
                     
-
+                    foreach ($models as $model) {
+                        $lateDisplay = '';
+                        
+                    
+                        if($model->date == $date->format('Y-m-d'))
+                        {
+                            $countDay += 1;
+                        }
                     // TOTAL NO. OF HOURS_END
 
                         $formatted_in_am = !empty($model->time_in_am) ? date('g:i:s A', strtotime($model->time_in_am)) : "";
@@ -354,12 +371,12 @@ date_default_timezone_set('Asia/Manila');
                         
                         if($interval && $interval2)
                         {
-                            $countPendingRecordWithTimeOut += 1;
+                            // $countPendingRecordWithTimeOut += 1;
 
-                            if(empty($model->status))
-                            {
-                                $countPendingRecord += 1;
-                            }
+                            // if(empty($model->status))
+                            // {
+                            //     $countPendingRecord += 1;
+                            // }
 
                             $total_minutes = $model->status ? $interval->h * 60 + $interval->i : 0;
 
@@ -417,8 +434,18 @@ date_default_timezone_set('Asia/Manila');
 
                         $view_photo_out_pm = !empty($model->time_out_pm) ? Html::button($formatted_out_pm, ['value'=>Url::to('@web/user-timesheet/preview-photo?timesheet_id='.$model->id.'&time='.$model->time_out_pm), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => 'border:none;']) : "";
 
-                        echo "<tr>";
-                            echo "<td>" . Html::encode(date('j', strtotime($model->date))) . "</td>";
+                            if(Yii::$app->getModule('admin')->isWeekend($model->date))
+                            {
+                                echo "<tr class='weekend'>";
+                                echo "<td class='weekend'>" . Html::encode(date('j', strtotime($model->date))). (!empty(Yii::$app->getModule('admin')->getDayOfWeek($model->date)) ? '-'.Yii::$app->getModule('admin')->getDayOfWeek($model->date) : '') . "</td>";
+                            }
+                            else
+                            {
+                                echo "<tr>";
+                                echo "<td>" . Html::encode(date('j', strtotime($model->date))) . "</td>";
+                            }
+                        
+                            
                             echo "<td>" . ($view_photo_in_am) . "</td>";
                             echo "<td>" . ($view_photo_out_am).  "</td>";
                             echo "<td>" . ($view_photo_in_pm) . "</td>";
@@ -426,7 +453,15 @@ date_default_timezone_set('Asia/Manila');
 
                             if($interval && $interval2)
                             {
-                                echo "<td>" . ($overtime_hours." hrs. ".$overtime_minutes." mins. ") . "</td>";
+                                if(empty($model->time_in_am) && empty($model->time_out_am) && empty($model->time_in_pm) && empty($model->time_out_pm))
+                                {
+                                    echo "<td></td>";
+                                }
+                                else
+                                {
+                                    echo "<td>" . ($overtime_hours." hr(s). ".$overtime_minutes." min(s). ") . "</td>";
+                                }
+                               
                                 // Calculate the total minutes
                                 $total_minutes_sam = $interval->i + $interval2->i;
 
@@ -440,18 +475,96 @@ date_default_timezone_set('Asia/Manila');
                                 $total_hours_sam = $interval->h + $interval2->h + $extra_hours;
 
                                 // Display the result
-                                echo "<td>" . $total_hours_sam . " hrs. " . $display_minutes . " mins. " . "</td>";
+                                if(empty($model->time_in_am) && empty($model->time_out_am) && empty($model->time_in_pm) && empty($model->time_out_pm))
+                                {
+                                    echo "<td></td>";
+                                }
+                                else
+                                {
+                                    echo "<td>" . $total_hours_sam . " hr(s). " . $display_minutes . " min(s). " . "</td>";
+                                }
+
+                                if($model->time_in_am)
+                                {
+                                    $lateness = Yii::$app->getModule('admin')->calculateLateness($formatted_in_am);
+                                    $lateDisplay = '';
+                                }
+                                else
+                                {
+                                    $lateness = Yii::$app->getModule('admin')->calculateLateness($formatted_in_pm);
+                                    $lateDisplay = '';
+                                }
+
+                                
+                                $latenessHours = $lateness['hours'];
+                                $latenessMinutes = $lateness['minutes'];
+
+                                
+
+                                // $latenessPM = Yii::$app->getModule('admin')->calculateLateness($formatted_in_pm);
+                                // $latenessHoursPM = $latenessPM['hours'];
+                                // $latenessMinutesPM = $latenessPM['minutes'];
+                                
+
+                                if ($latenessHours > 0 || $latenessMinutes > 0) {
+                                   
+                                    if ($latenessHours > 0) {
+                                        // $countLateHours += $lateness['hours'];
+                                        $lateDisplay .= $latenessHours . " hr(s) ";
+                                    }
+                                    if ($latenessMinutes > 0) {
+                                        // $countLateMinutes += $lateness['minutes'];
+                                        $lateDisplay .= $latenessMinutes . " min(s) ";
+                                    }
+                                    
+                                } else {
+                                    // echo "You are on time.";
+                                }
+
+                                if($countDay == 1)
+                                {
+                                    if($latenessHours > 0 || $latenessMinutes > 0) {
+                                   
+                                        if ($latenessHours > 0) {
+                                            if($model->status)
+                                            {
+                                                $countLateHours += $latenessHours;
+                                            }
+                                            // $lateDisplay .= $latenessHours . " hr(s) ";
+                                        }
+
+                                        if ($latenessMinutes > 0) {
+                                            if($model->status)
+                                            {
+                                                $countLateMinutes += $latenessMinutes;
+                                            }
+                                            // $lateDisplay .= $latenessMinutes . " min(s) ";
+                                        }
+                                        
+                                    }
+
+                                    echo "<td>".($lateDisplay)."</td>";
+                                }
+                                else
+                                {
+                                    echo "<td></td>";
+                                }
+                                
+                               
 
                             }
                             else
                             {
                                 echo "<td></td>";
                                 echo "<td></td>";
+                                echo "<td></td>";
                             }
-                            
+
                             
 
-                            echo "<td>" . Html::encode($model->remarks) . "</td>";
+                            echo "<td style='color: #ff7d89; font-style:italic; '>" . Html::encode($model->remarks) . "</td>";
+
+                            
 
                             if($model->time_in_am)
                             {
@@ -475,30 +588,54 @@ date_default_timezone_set('Asia/Manila');
 
                             if($interval && $interval2)
                             {
-                                if(Yii::$app->user->can('validate-timesheet'))
+                                if($model->time_in_am || $model->time_out_am || $model->time_in_pm || $model->time_out_pm)
                                 {
                                     if($model->status)
                                     {
-
-                                        echo "<td>";
-                                        
-                                        echo Html::a('<i class="fas fa-undo"></i> VALIDATED',['validate-timesheet','id' => $model->id],['class' => 'btn btn-primary btn-sm']);
-                                        echo "</td>";
+                                        $countPresent += 1;
                                     }
-                                    else{
-                                        echo "<td>";
-                                        echo Html::a('<i class="fas fa-thumbs-up"></i> VALIDATE',['validate-timesheet','id' => $model->id],['class' => 'btn btn-outline-primary btn-sm']);
-                                        echo "</td>";
+                                }
+                                
+
+                                if(Yii::$app->user->can('validate-timesheet'))
+                                {
+                                    if(Yii::$app->getModule('admin')->isWeekend($date->format('Y-m-d')) && (empty($model->time_in_am) && empty($model->time_out_am) && empty($model->time_in_pm) && empty($model->time_out_pm)))
+                                    {
+                                        echo "<td></td>";
+                                    }
+                                    else
+                                    {
+                                        if($model->status)
+                                        {
+                                            echo "<td>";
+                                            
+                                            echo Html::a('<i class="fas fa-undo"></i> VALIDATED',['validate-timesheet','id' => $model->id],['class' => 'btn btn-primary btn-sm']);
+                                            echo "</td>";
+                                        }
+                                        else{
+                                            $countPendingRecord += 1;
+                                            echo "<td>";
+                                            echo Html::a('<i class="fas fa-thumbs-up"></i> VALIDATE',['validate-timesheet','id' => $model->id],['class' => 'btn btn-outline-primary btn-sm']);
+                                            echo "</td>";
+                                        }
                                     }
                                 }
                                 else
                                 {
-                                    if($model->status)
+                                    if(Yii::$app->getModule('admin')->isWeekend($date->format('Y-m-d')) && (empty($model->time_in_am) && empty($model->time_out_am) && empty($model->time_in_pm) && empty($model->time_out_pm)))
                                     {
-                                        echo "<td style='color:green;'>VALIDATED</td>";
+                                        echo "<td></td>";
                                     }
-                                    else{
-                                        echo "<td style='color:orange;'>PENDING</td>";
+                                    else
+                                    {
+                                        if($model->status)
+                                        {
+                                            echo "<td style='color:green;'>VALIDATED</td>";
+                                        }
+                                        else{
+                                            $countPendingRecord += 1;
+                                            echo "<td style='color:orange;'>PENDING</td>";
+                                        }
                                     }
                                 }
                             }
@@ -511,6 +648,7 @@ date_default_timezone_set('Asia/Manila');
                             
                             if(Yii::$app->user->can('timesheet-remarks'))
                             {
+                                
                                 echo "<td>";
                                 if($interval && $interval2)
                                 {
@@ -533,6 +671,13 @@ date_default_timezone_set('Asia/Manila');
                                 if(empty($model->status))
                                 {
                                     echo Html::button('<i class="fas fa-edit"></i> REMARKS', ['value'=>Url::to('@web/user-timesheet/update?id='.$model->id), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => '']) . "</td>";
+                                }
+                                else
+                                {
+                                    if(Yii::$app->user->can('validate-timesheet'))
+                                    {
+                                        echo Html::button('<i class="fas fa-edit"></i> REMARKS', ['value'=>Url::to('@web/user-timesheet/update?id='.$model->id), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => '']) . "</td>";
+                                    }
                                 }
                                 
                             }
@@ -560,8 +705,18 @@ date_default_timezone_set('Asia/Manila');
                         echo "</tr>";
                     }
                 } else {
-                    echo "<tr>";
-                    echo "<td>" . Html::encode(date('j', $date->getTimestamp())) . "</td>";
+                     
+                    if(Yii::$app->getModule('admin')->isWeekend($date->format('Y-m-d')))
+                    {
+                        echo "<tr class='weekend'>";
+                        echo "<td class='weekend'>" . Html::encode(date('j', $date->getTimestamp())) . (!empty(Yii::$app->getModule('admin')->getDayOfWeek($date->format('Y-m-d'))) ? '-'.Yii::$app->getModule('admin')->getDayOfWeek($date->format('Y-m-d')) : '') . "</td>";
+                    }
+                    else
+                    {
+                        echo "<tr>";
+                        echo "<td>" . Html::encode(date('j', $date->getTimestamp())) . (!empty(Yii::$app->getModule('admin')->getDayOfWeek($date->format('Y-m-d'))) ? '-'.Yii::$app->getModule('admin')->getDayOfWeek($date->format('Y-m-d')) : '') . "</td>";
+                    }
+
                     echo "<td></td>";
                     echo "<td></td>";
                     echo "<td></td>";
@@ -569,8 +724,24 @@ date_default_timezone_set('Asia/Manila');
                     echo "<td></td>";
                     echo "<td></td>";
                     echo "<td></td>";
+                    if(date('Y-m-d') > $date->format('Y-m-d'))
+                    {
+                        if(Yii::$app->getModule('admin')->isWeekend($date->format('Y-m-d')))
+                        {
+                            echo "<td></td>";
+                        }
+                        else
+                        {   $countAbsent += 1;
+                            echo "<td>ABSENT</td>";
+                        }
+                    }
+                    else
+                    {
+                        echo "<td></td>";
+                    }
+                    
                     echo "<td></td>";
-                    echo Yii::$app->user->can('timesheet-remarks') || Yii::$app->user->can('edit-time') ? "<td></td>" : "";
+                    echo "<td>".Html::button('<i class="fas fa-edit"></i> REMARKS', ['value'=>Url::to('@web/user-timesheet/update?user_id='.$trainee_user_id.'&date='.($date->format('Y-m-d'))), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => '']) ."</td>";
                     echo "</tr>";
                 }
             }
@@ -583,8 +754,24 @@ date_default_timezone_set('Asia/Manila');
 
             echo "<tr>";
             echo "<td colspan='5' style='font-weight:bold; text-align:right; text-transform:uppercase;'> TOTAL NO. OF HOURS RENDERED FOR THE MONTH OF {$month}</td>";
-            echo "<td>".($total_hours_ot." hrs. ".$totalMinutesOvertime." mins.")."</td>";
-            echo "<td>".($total_hours_val." hrs. ".$totalMinutesRendered." mins.")."</td>";
+            echo "<td>".($total_hours_ot." hr(s). ".$totalMinutesOvertime." min(s).")."</td>";
+            echo "<td>".($total_hours_val." hr(s). ".$totalMinutesRendered." min(s).")."</td>";
+
+
+            $dividedMinutes = $countLateMinutes / 60;
+
+            $additionalHour = 0;
+            $remainingMinutesLate = 0;
+            $totalMinutesWithoutRemainder = 0;
+
+            if($dividedMinutes > 0)
+            {
+                $additionalHour = (int)$dividedMinutes;
+                $totalMinutesWithoutRemainder = $additionalHour * 60;
+                $remainingMinutesLate = $countLateMinutes - $totalMinutesWithoutRemainder;
+            }
+            
+            echo "<td>".(($countLateHours + $additionalHour)." hrs(s) ".($remainingMinutesLate))." min(s)</td>";
             echo "<td></td>";
             echo "<td></td>";
             echo Yii::$app->user->can('timesheet-remarks') || Yii::$app->user->can('edit-time') ? "<td></td>" : "";
@@ -623,9 +810,9 @@ date_default_timezone_set('Asia/Manila');
                 <tr>
                     <td style="display: flex; justify-content: center; align-items: center;">
                         <?php
-                            if(empty($countPendingRecord) && $countPendingRecordWithTimeOut)
+                            if(empty($countPendingRecord))
                             {
-                                $uploadedFileNameCP = Yii::$app->getModule('admin')->GetFileNameExt('UserData',$model->user->id);
+                                $uploadedFileNameCP = Yii::$app->getModule('admin')->GetFileNameExt('UserData',Yii::$app->getModule('admin')->GetSupervisorIdByTraineeUserId($model->user_id));
 
                                 $uploadedFileCP = Yii::$app->getModule('admin')->GetFileUpload('UserData',Yii::$app->getModule('admin')->GetSupervisorIdByTraineeUserId($model->user_id));
                     
@@ -1088,8 +1275,17 @@ date_default_timezone_set('Asia/Manila');
             <?php } ?>
 
             <tr>
+                <td>TOTAL DAYS PRESENT FOR THIS MONTH</td>
+                <td style="font-weight:bold;"><?= $countPresent." day(s) " ?></td>
+            </tr>
+            <tr>
+                <td>TOTAL DAYS ABSENT FOR THIS MONTH</td>
+                <td style="font-weight:bold;"><?= $countAbsent." day(s) " ?></td>
+            </tr>
+
+            <tr>
                 <td>TOTAL HOURS REQUIRED</td>
-                <td style="font-weight:bold;"><?= $model->user->program->required_hours." hrs " ?></td>
+                <td style="font-weight:bold;"><?= $model->user->program->required_hours." hr(s) " ?></td>
             </tr>
             
 

@@ -19,6 +19,11 @@ use yii\web\UploadedFile;
 use common\models\Files;
 use yii\helpers\Url;
 use common\models\SubmissionArchive;
+use common\models\UserData;
+use common\models\EvaluationForm;
+use yii\web\Response;
+use yii\widgets\ActiveForm;
+use kartik\mpdf\Pdf;
 use Yii;
 
 /**
@@ -44,12 +49,97 @@ class SubmissionThreadController extends Controller
         );
     }
 
+    public function actionPreviewPdf($trainee_id,$submission_thread_id = null,$pdf_type)
+    {
+       
+        $query = EvaluationForm::find()->where(['trainee_user_id' => $trainee_id])->all();
+        $user = UserData::find()->where(['id' => $trainee_id])->one();
+        $subThreadOne = SubmissionThread::find()->where(['id' => $submission_thread_id])->one();
+        $content = $this->renderPartial($pdf_type,['query' => $query, 'user' => $user,'subThreadOne' => $subThreadOne]);
+    
+        // setup kartik\mpdf\Pdf component
+        $pdf = new Pdf([
+            // set to use core fonts only
+            'mode' => Pdf::MODE_CORE, 
+            // A4 paper format
+            'format' => Pdf::FORMAT_LEGAL, 
+            // portrait orientation
+            'orientation' => Pdf::ORIENT_PORTRAIT, 
+            // stream to browser inline
+            'destination' => Pdf::DEST_BROWSER, 
+            'marginLeft' => 5,
+            'marginRight' => 5,
+            'marginTop' => 10,
+            'marginBottom' => 1,
+            // your html content input
+            'content' => $content,  
+            // format content from your own css file if needed or use the
+            // enhanced bootstrap css built by Krajee for mPDF formatting 
+            // 'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
+            // any css to be embedded if required
+            'cssInline' => '
+
+                .page-break {
+                    page-break-before: always;
+                }
+
+                table.table-bordered
+                {
+                    margin-left:50px;
+                    margin-right:50px;
+                }
+
+                table tbody tr td,table thead tr th,p
+                {
+                    font-size:11px;
+                }
+
+                table.table-bordered thead tr th
+                {
+                    border:1px solid black;
+                    border-bottom:none;
+                    text-align:center;
+                    font-size:11px;
+                }
+
+                table.table-bordered tbody tr td
+                {
+                    border:1px solid black;
+                    padding:1px;
+                    font-size:11px;
+                }
+
+                table.table-bordered tbody tr td:nth-child(1)
+                {
+                    width:200px;
+                    padding-left:5px;
+                }
+
+                table.table-bordered tbody tr td:nth-child(2),table.table-bordered tbody tr td:nth-child(3)
+                {
+                    text-align:center;
+                    width:120px;
+                }
+            ', 
+            // set mPDF properties on the fly
+            'options' => ['title' => 'Krajee Report Title'],
+            // call mPDF methods on the fly
+            'methods' => [ 
+                // 'SetHeader'=>['Krajee Report Header'], 
+                // 'SetFooter'=>['{PAGENO}'],
+            ]
+        ]);
+        
+        // return the pdf output as per the destination setting
+        return $pdf->render(); 
+    }
+
     /**
      * Lists all SubmissionThread models.
      *
      * @return string
      */
-    public function actionIndex()
+    public function actionIndex($archive=null)
     {
         $searchModel = new SubmissionThreadSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
@@ -74,6 +164,7 @@ class SubmissionThreadController extends Controller
             'dataProvider' => $dataProvider,
             'documentAss' => $documentAss,
             'documentSender' => $documentSender,
+            'archive' => $archive,
         ]);
     }
 
@@ -245,7 +336,7 @@ class SubmissionThreadController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
-    public function actionCreate($ref_document_type_id=null,$required_uploading=null)
+    public function actionCreate($ref_document_type_id=null,$required_uploading=null,$from_eval_form=null,$trainee_user_id = null)
     {
         $model = new SubmissionThread();
 
@@ -261,26 +352,24 @@ class SubmissionThreadController extends Controller
             $docAss[] = $row['ref_document_type_id'];
         }
 
-        // if($transaction_type == "ACTIVITY_REMINDER")
-        // {
-            
-        // }
-        // else
-        // {
-        //     $documentType = ArrayHelper::map(DocumentType::find()
-        //     ->where(['id' => $docAss])
-        //     ->andWhere(['NOT',['id' => 5]]) // NOT ACTIVITY REMINDEr
-        //     ->all(),'id','title');
-        // }
 
         $model->ref_document_type_id = $ref_document_type_id;
         $documentType = ArrayHelper::map(DocumentType::find()->where(['id' => $docAss])
         ->andWhere(['id' => $ref_document_type_id]) // ACTIVITY REMINDEr
             ->all(),'id','action_title');
-       
+
+        if(!empty($trainee_user_id))
+        {
+            $model->tagged_user_id = $trainee_user_id;
+        }
 
         // UPLOAD FILE
         $modelUpload = new UploadMultipleForm();
+
+        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ActiveForm::validate($model);
+        }
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $modelUpload->load($this->request->post())) {
@@ -289,37 +378,62 @@ class SubmissionThreadController extends Controller
                 $model->created_at = $time;
                 $model->date_time = date('Y-m-d H:i:s');
 
-                $model->save();
+                if(EvaluationForm::find()->where(['trainee_user_id' => $model->tagged_user_id, 'submission_thread_id' => NULL])->exists())
+                {
+                    $evalForm = EvaluationForm::find()->where(['trainee_user_id' => $model->tagged_user_id, 'submission_thread_id' => NULL])->all();
 
-                $model_id = $model->id;
+                    $model->save();
+                    $sub_thread_id = $model->id;
 
-                 // UPLOAD FILE
-                 $modelUpload->model_name = "SubmissionThread";
-                 $modelUpload->model_id = $model_id;
+                    foreach ($evalForm as $eval) {
+                        $eval->submission_thread_id = $sub_thread_id;
+                        $eval->update();
+                    }
 
-                 $modelUpload->imageFiles = UploadedFile::getInstances($modelUpload, 'imageFiles');
-                 if ($modelUpload->uploadMultiple()) {
-                     // file is uploaded successfully
-                     \Yii::$app->getSession()->setFlash('success', 'Created successfully');
-                    //  return $this->redirect(['upload-file', 'id' => $model_id]);
-                 }
-                 else
-                 {
-                    // print_r($modelUpload->errors); exit;
-                 }
-                 // UPLOADED_FILE_END
+                    $model_id = $sub_thread_id;
 
-                return $this->redirect(['view', 'id' => $model->id]);
+                    // UPLOAD FILE
+                    $modelUpload->model_name = "SubmissionThread";
+                    $modelUpload->model_id = $model_id;
+
+                    $modelUpload->imageFiles = UploadedFile::getInstances($modelUpload, 'imageFiles');
+                    if ($modelUpload->uploadMultiple()) {
+                        // file is uploaded successfully
+                        \Yii::$app->getSession()->setFlash('success', 'Created successfully');
+                        //  return $this->redirect(['upload-file', 'id' => $model_id]);
+                    }
+                    else
+                    {
+                        // print_r($modelUpload->errors); exit;
+                    }
+                    // UPLOADED_FILE_END
+
+                    
+
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
+                else
+                {
+                    return $this->redirect(Yii::$app->request->referrer);
+                    $model->loadDefaultValues();
+                }
+                
             }
         } else {
             $model->loadDefaultValues();
         }
+
+        $userData = UserData::find()->where(['id' => $trainee_user_id])->one();
 
         return $this->render('create', [
             'model' => $model,
             'documentType' => $documentType,
             'modelUpload' => $modelUpload,
             'documentType' => $documentType,
+            'from_eval_form' => $from_eval_form,
+            'trainee_user_id' => $trainee_user_id,
+            'traineeName' => !empty($userData->userFullNameWithMiddleInitial) ? $userData->userFullNameWithMiddleInitial : "",
+            
         ]);
     }
 
@@ -330,7 +444,7 @@ class SubmissionThreadController extends Controller
      * @return string|\yii\web\Response
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
+    public function actionUpdate($id,$from_eval_form=null)
     {
         $model = $this->findModel($id);
 
@@ -361,6 +475,8 @@ class SubmissionThreadController extends Controller
             'model' => $model,
             'documentType' => $documentType,
             'modelUpload' => $modelUpload,
+            'from_eval_form' => $model->ref_document_type_id == 1 ? 'yes' : '',
+            'trainee_user_id' => !empty($model->tagged_user_id) ? $model->tagged_user_id : null,
         ]);
     }
 
@@ -383,6 +499,24 @@ class SubmissionThreadController extends Controller
         $model->save();
 
         Yii::$app->session->setFlash('success', 'Item has been deleted');
+        return $this->redirect(Yii::$app->request->referrer);
+    }
+
+    public function actionRestore($id)
+    {
+        $model = SubmissionArchive::find()->where(['submission_thread_id' => $id,'user_id' => Yii::$app->user->identity->id])->one();
+        $model->delete();
+
+        Yii::$app->session->setFlash('success', 'Item has been restored');
+        return $this->redirect(Yii::$app->request->referrer);
+    }
+
+    public function actionDeletePermanent($id)
+    {
+        $model = $this->findModel($id);
+        $model->delete();
+
+        Yii::$app->session->setFlash('success', 'Item has been deleted permanently');
         return $this->redirect(Yii::$app->request->referrer);
     }
 

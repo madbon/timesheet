@@ -26,6 +26,8 @@ use yii\helpers\Url;
 <?php  ?>
 
 <?php
+            // Define the date range
+            // print_r(date('m')); exit;
             $current_year = $year;
             $current_month = $month_id;
 
@@ -53,6 +55,7 @@ use yii\helpers\Url;
                     <th>OUT</th>
                     <th>OVERTIME</th>
                     <th>TOTAL NO. OF HOURS</th>
+                    <th>LATE</th>
                     <th>REMARKS</th>
                     <th>STATUS</th>
             </tr>";
@@ -66,12 +69,19 @@ use yii\helpers\Url;
             $countPendingRecordWithTimeOut = 0;
             $total_minutes = 0;
             $totalMinutesOvertime = 0;
+            $countAbsent = 0;
+            $countPresent = 0;
+            $countLateHours = 0;
+            $countLateMinutes = 0;
             
 
             foreach ($date_range as $date) {
                 $main_total_minutes = 0;
                 $overtime_hours = 0;
                 $overtime_minutes = 0;
+                $countDay = 0;
+                
+               
 
                 $models = UserTimesheet::findAll([
                     'date' => $date->format('Y-m-d'), 
@@ -82,10 +92,15 @@ use yii\helpers\Url;
 
                     $countCompleteTime = 0;
                     
-
+                    
                     foreach ($models as $model) {
-                   
-
+                        $lateDisplay = '';
+                        
+                    
+                        if($model->date == $date->format('Y-m-d'))
+                        {
+                            $countDay += 1;
+                        }
                     // TOTAL NO. OF HOURS_END
 
                         $formatted_in_am = !empty($model->time_in_am) ? date('g:i:s A', strtotime($model->time_in_am)) : "";
@@ -213,11 +228,12 @@ use yii\helpers\Url;
                         
                         if($interval && $interval2)
                         {
-                            $countPendingRecordWithTimeOut += 1;
-                            if(empty($model->status))
-                            {
-                                $countPendingRecord += 1;
-                            }
+                            // $countPendingRecordWithTimeOut += 1;
+
+                            // if(empty($model->status))
+                            // {
+                            //     $countPendingRecord += 1;
+                            // }
 
                             $total_minutes = $model->status ? $interval->h * 60 + $interval->i : 0;
 
@@ -275,19 +291,34 @@ use yii\helpers\Url;
 
                         $view_photo_out_pm = !empty($model->time_out_pm) ? Html::button($formatted_out_pm, ['value'=>Url::to('@web/user-timesheet/preview-photo?timesheet_id='.$model->id.'&time='.$model->time_out_pm), 'class' => 'btn btn-outline-dark btn-sm modalButton','style' => 'border:none;']) : "";
 
-                        echo "<tr>";
-                            echo "<td>" . Html::encode(date('j', strtotime($model->date))) . "</td>";
+                            if(Yii::$app->getModule('admin')->isWeekend($model->date))
+                            {
+                                echo "<tr class='weekend'>";
+                                echo "<td class='weekend'>" . Html::encode(date('j', strtotime($model->date))). (!empty(Yii::$app->getModule('admin')->getDayOfWeek($model->date)) ? '-'.Yii::$app->getModule('admin')->getDayOfWeek($model->date) : '') . "</td>";
+                            }
+                            else
+                            {
+                                echo "<tr>";
+                                echo "<td>" . Html::encode(date('j', strtotime($model->date))) . "</td>";
+                            }
+                        
+                            
                             echo "<td>" . ($view_photo_in_am) . "</td>";
                             echo "<td>" . ($view_photo_out_am).  "</td>";
                             echo "<td>" . ($view_photo_in_pm) . "</td>";
                             echo "<td>" . ($view_photo_out_pm) . "</td>";
 
-                           
-                            // echo "<td>" . (((!empty($interval->h) ? $interval->h : 0) + (!empty($interval2->h) ? $interval2->h : 0)). " hrs. ". ((!empty($interval->i) ? $interval->i : 0) + (!empty($interval2->i) ? $interval2->i : 0))." mins. ") . "</td>";
-
                             if($interval && $interval2)
                             {
-                                echo "<td>" . ($overtime_hours." hrs. ".$overtime_minutes." mins. ") . "</td>";
+                                if(empty($model->time_in_am) && empty($model->time_out_am) && empty($model->time_in_pm) && empty($model->time_out_pm))
+                                {
+                                    echo "<td></td>";
+                                }
+                                else
+                                {
+                                    echo "<td>" . ($overtime_hours." hr(s). ".$overtime_minutes." min(s). ") . "</td>";
+                                }
+                               
                                 // Calculate the total minutes
                                 $total_minutes_sam = $interval->i + $interval2->i;
 
@@ -301,19 +332,96 @@ use yii\helpers\Url;
                                 $total_hours_sam = $interval->h + $interval2->h + $extra_hours;
 
                                 // Display the result
-                                echo "<td>" . $total_hours_sam . " hrs. " . $display_minutes . " mins. " . "</td>";
+                                if(empty($model->time_in_am) && empty($model->time_out_am) && empty($model->time_in_pm) && empty($model->time_out_pm))
+                                {
+                                    echo "<td></td>";
+                                }
+                                else
+                                {
+                                    echo "<td>" . $total_hours_sam . " hr(s). " . $display_minutes . " min(s). " . "</td>";
+                                }
 
-                                // echo "<td>" . ($interval->h + $interval2->h). " hrs. ". ($interval->i + $interval2->i)." mins. " . "</td>";
+                                if($model->time_in_am)
+                                {
+                                    $lateness = Yii::$app->getModule('admin')->calculateLateness($formatted_in_am);
+                                    $lateDisplay = '';
+                                }
+                                else
+                                {
+                                    $lateness = Yii::$app->getModule('admin')->calculateLateness($formatted_in_pm);
+                                    $lateDisplay = '';
+                                }
+
+                                
+                                $latenessHours = $lateness['hours'];
+                                $latenessMinutes = $lateness['minutes'];
+
+                                
+
+                                // $latenessPM = Yii::$app->getModule('admin')->calculateLateness($formatted_in_pm);
+                                // $latenessHoursPM = $latenessPM['hours'];
+                                // $latenessMinutesPM = $latenessPM['minutes'];
+                                
+
+                                if ($latenessHours > 0 || $latenessMinutes > 0) {
+                                   
+                                    if ($latenessHours > 0) {
+                                        // $countLateHours += $lateness['hours'];
+                                        $lateDisplay .= $latenessHours . " hr(s) ";
+                                    }
+                                    if ($latenessMinutes > 0) {
+                                        // $countLateMinutes += $lateness['minutes'];
+                                        $lateDisplay .= $latenessMinutes . " min(s) ";
+                                    }
+                                    
+                                } else {
+                                    // echo "You are on time.";
+                                }
+
+                                if($countDay == 1)
+                                {
+                                    if($latenessHours > 0 || $latenessMinutes > 0) {
+                                   
+                                        if ($latenessHours > 0) {
+                                            if($model->status)
+                                            {
+                                                $countLateHours += $latenessHours;
+                                            }
+                                            // $lateDisplay .= $latenessHours . " hr(s) ";
+                                        }
+
+                                        if ($latenessMinutes > 0) {
+                                            if($model->status)
+                                            {
+                                                $countLateMinutes += $latenessMinutes;
+                                            }
+                                            // $lateDisplay .= $latenessMinutes . " min(s) ";
+                                        }
+                                        
+                                    }
+
+                                    echo "<td>".($lateDisplay)."</td>";
+                                }
+                                else
+                                {
+                                    echo "<td></td>";
+                                }
+                                
+                               
+
                             }
                             else
                             {
                                 echo "<td></td>";
                                 echo "<td></td>";
+                                echo "<td></td>";
                             }
-                            
+
                             
 
-                            echo "<td>" . Html::encode($model->remarks) . "</td>";
+                            echo "<td style='color: #ff7d89; font-style:italic; '>" . Html::encode($model->remarks) . "</td>";
+
+                            
 
                             if($model->time_in_am)
                             {
@@ -337,25 +445,52 @@ use yii\helpers\Url;
 
                             if($interval && $interval2)
                             {
-                                if($model->status)
+                                if($model->time_in_am || $model->time_out_am || $model->time_in_pm || $model->time_out_pm)
                                 {
-                                    echo "<td>VALIDATED</td>";
+                                    if($model->status)
+                                    {
+                                        $countPresent += 1;
+                                    }
                                 }
-                                else{
-                                    echo "<td>PENDING</td>";
+                                
+
+                                if(Yii::$app->getModule('admin')->isWeekend($date->format('Y-m-d')) && (empty($model->time_in_am) && empty($model->time_out_am) && empty($model->time_in_pm) && empty($model->time_out_pm)))
+                                {
+                                    echo "<td></td>";
+                                }
+                                else
+                                {
+                                    if($model->status)
+                                    {
+                                        echo "<td style='color:green;'>VALIDATED</td>";
+                                    }
+                                    else{
+                                        $countPendingRecord += 1;
+                                        echo "<td style='color:orange;'>PENDING</td>";
+                                    }
                                 }
                             }
                             else
                             {
                                 echo "<td style='color:red;'>NO TIME OUT</td>";
                             }
-
+                           
                             
                         echo "</tr>";
                     }
                 } else {
-                    echo "<tr>";
-                    echo "<td>" . Html::encode(date('j', $date->getTimestamp())) . "</td>";
+                     
+                    if(Yii::$app->getModule('admin')->isWeekend($date->format('Y-m-d')))
+                    {
+                        echo "<tr class='weekend'>";
+                        echo "<td class='weekend'>" . Html::encode(date('j', $date->getTimestamp())) . (!empty(Yii::$app->getModule('admin')->getDayOfWeek($date->format('Y-m-d'))) ? '-'.Yii::$app->getModule('admin')->getDayOfWeek($date->format('Y-m-d')) : '') . "</td>";
+                    }
+                    else
+                    {
+                        echo "<tr>";
+                        echo "<td>" . Html::encode(date('j', $date->getTimestamp())) . (!empty(Yii::$app->getModule('admin')->getDayOfWeek($date->format('Y-m-d'))) ? '-'.Yii::$app->getModule('admin')->getDayOfWeek($date->format('Y-m-d')) : '') . "</td>";
+                    }
+
                     echo "<td></td>";
                     echo "<td></td>";
                     echo "<td></td>";
@@ -363,6 +498,22 @@ use yii\helpers\Url;
                     echo "<td></td>";
                     echo "<td></td>";
                     echo "<td></td>";
+                    if(date('Y-m-d') > $date->format('Y-m-d'))
+                    {
+                        if(Yii::$app->getModule('admin')->isWeekend($date->format('Y-m-d')))
+                        {
+                            echo "<td></td>";
+                        }
+                        else
+                        {   $countAbsent += 1;
+                            echo "<td>ABSENT</td>";
+                        }
+                    }
+                    else
+                    {
+                        echo "<td></td>";
+                    }
+                    
                     echo "<td></td>";
                     echo "</tr>";
                 }
@@ -376,8 +527,24 @@ use yii\helpers\Url;
 
             echo "<tr>";
             echo "<td colspan='5' style='font-weight:bold; text-align:right; text-transform:uppercase;'> TOTAL NO. OF HOURS RENDERED FOR THE MONTH OF {$month}</td>";
-            echo "<td>".($total_hours_ot." hrs. ".$totalMinutesOvertime." mins.")."</td>";
-            echo "<td>".($total_hours_val." hrs. ".$totalMinutesRendered." mins.")."</td>";
+            echo "<td>".($total_hours_ot." hr(s). ".$totalMinutesOvertime." min(s).")."</td>";
+            echo "<td>".($total_hours_val." hr(s). ".$totalMinutesRendered." min(s).")."</td>";
+
+
+            $dividedMinutes = $countLateMinutes / 60;
+
+            $additionalHour = 0;
+            $remainingMinutesLate = 0;
+            $totalMinutesWithoutRemainder = 0;
+
+            if($dividedMinutes > 0)
+            {
+                $additionalHour = (int)$dividedMinutes;
+                $totalMinutesWithoutRemainder = $additionalHour * 60;
+                $remainingMinutesLate = $countLateMinutes - $totalMinutesWithoutRemainder;
+            }
+            
+            echo "<td>".(($countLateHours + $additionalHour)." hr(s) ".($remainingMinutesLate))." min(s)</td>";
             echo "<td></td>";
             echo "<td></td>";
             echo "</tr>";
@@ -419,7 +586,7 @@ use yii\helpers\Url;
                 <?php
                     if(empty($countPendingRecord) && $countPendingRecordWithTimeOut)
                     {
-                        $uploadedFileNameCP = Yii::$app->getModule('admin')->GetFileNameExt('UserData',$model->user->id);
+                        $uploadedFileNameCP = Yii::$app->getModule('admin')->GetFileNameExt('UserData',Yii::$app->getModule('admin')->GetSupervisorIdByTraineeUserId($model->user_id));
 
                         $uploadedFileCP = Yii::$app->getModule('admin')->GetFileUpload('UserData',Yii::$app->getModule('admin')->GetSupervisorIdByTraineeUserId($model->user_id));
             
@@ -755,7 +922,7 @@ use yii\helpers\Url;
             <?php if($jan_total){ ?>
             <tr>
                 <td>JANUARY</td>
-                <td><?= $totalJan. " hr/s ".$jan_total." min/s "; ?></td>
+                <td><?= $totalJan. " hr(s) ".$jan_total." min(s) "; ?></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -765,7 +932,7 @@ use yii\helpers\Url;
             <?php if($feb_total){ ?>
             <tr>
                 <td>FEBRUARY</td>
-                <td><?= $totalFeb. " hr/s ".$feb_total." min/s "; ?></td>
+                <td><?= $totalFeb. " hr(s) ".$feb_total." min(s) "; ?></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -775,7 +942,7 @@ use yii\helpers\Url;
             <?php if($march_total){ ?>
             <tr>
                 <td>MARCH</td>
-                <td><?= $totalMarch. " hr/s ".$march_total." min/s "; ?></td>
+                <td><?= $totalMarch. " hr(s) ".$march_total." min(s) "; ?></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -785,7 +952,7 @@ use yii\helpers\Url;
             <?php if($april_total){ ?>
             <tr>
                 <td>APRIL</td>
-                <td><?= $totalApril. " hr/s ".$april_total." min/s "; ?></td>
+                <td><?= $totalApril. " hr(s) ".$april_total." min(s) "; ?></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -795,7 +962,7 @@ use yii\helpers\Url;
             <?php if($may_total){ ?>
             <tr>
                 <td>MAY</td>
-                <td><?= $totalMay. " hr/s ".$may_total." min/s "; ?></td>
+                <td><?= $totalMay. " hr(s) ".$may_total." min(s) "; ?></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -805,7 +972,7 @@ use yii\helpers\Url;
             <?php if($june_total){ ?>
             <tr>
                 <td>JUNE</td>
-                <td><?= $totalJune. " hr/s ".$june_total." min/s "; ?></td>
+                <td><?= $totalJune. " hr(s) ".$june_total." min(s) "; ?></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -815,7 +982,7 @@ use yii\helpers\Url;
             <?php if($july_total){ ?>
             <tr>
                 <td>JULY</td>
-                <td><?= $totalJuly. " hr/s ".$july_total." min/s "; ?></td>
+                <td><?= $totalJuly. " hr(s) ".$july_total." min(s) "; ?></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -825,7 +992,7 @@ use yii\helpers\Url;
             <?php if($aug_total){ ?>
             <tr>
                 <td>AUGUST</td>
-                <td><?= $totalAug. " hr/s ".$aug_total." min/s "; ?></td>
+                <td><?= $totalAug. " hr(s) ".$aug_total." min(s) "; ?></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -835,7 +1002,7 @@ use yii\helpers\Url;
             <?php if($sept_total){ ?>
             <tr>
                 <td>SEPTEMBER</td>
-                <td><?= $totalSept. " hr/s ".$sept_total." min/s "; ?></td>
+                <td><?= $totalSept. " hr(s) ".$sept_total." min(s) "; ?></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -845,7 +1012,7 @@ use yii\helpers\Url;
             <?php if($oct_total){ ?>
             <tr>
                 <td>OCTOBER</td>
-                <td><?= $totalOct. " hr/s ".$oct_total." min/s "; ?></td>
+                <td><?= $totalOct. " hr(s) ".$oct_total." min(s) "; ?></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -855,7 +1022,7 @@ use yii\helpers\Url;
             <?php if($nov_total){ ?>
             <tr>
                 <td>NOVEMBER</td>
-                <td><?= $totalNov. " hr/s ".$nov_total." min/s "; ?></td>
+                <td><?= $totalNov. " hr(s) ".$nov_total." min(s) "; ?></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -865,7 +1032,7 @@ use yii\helpers\Url;
             <?php if($dec_total){ ?>
             <tr>
                 <td>DECEMBER</td>
-                <td><?= $totalDec. " hr/s ".$dec_total." min/s "; ?></td>
+                <td><?= $totalDec. " hr(s) ".$dec_total." min(s) "; ?></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -873,21 +1040,30 @@ use yii\helpers\Url;
             <?php } ?>
 
             <tr>
+                <td>TOTAL DAYS PRESENT FOR THIS MONTH</td>
+                <td style="font-weight:bold;"><?= $countPresent." day(s) " ?></td>
+            </tr>
+            <tr>
+                <td>TOTAL DAYS ABSENT FOR THIS MONTH</td>
+                <td style="font-weight:bold;"><?= $countAbsent." day(s) " ?></td>
+            </tr>
+
+            <tr>
                 <td>TOTAL HOURS REQUIRED</td>
-                <td style="font-weight:bold;"><?= $model->user->program->required_hours." hrs " ?></td>
+                <td style="font-weight:bold;"><?= $model->user->program->required_hours." hr(s) " ?></td>
             </tr>
             
 
             <tr>
                 <td>TOTAL HOURS RENDERED</td>
-                <td style="font-weight:bold;"><?= $totalOverall. " hr/s " ?> </td> 
-                <!-- .$overAllTotal." min/s " -->
+                <td style="font-weight:bold;"><?= $totalOverall. " hr(s) " ?> </td> 
+                <!-- .$overAllTotal." min(s) " -->
             </tr>
             <tr>
                 <td>TOTAL HOURS REMAINED</td>
                 <td style="font-weight:bold;"><?php 
                 $totalWithDecimal = $model->user->program->required_hours - $totalOverall;
-                echo $totalWithDecimal." hr/s ";
+                echo $totalWithDecimal." hr(s) ";
                 ?></td>
             </tr>
         </tbody>
