@@ -45,6 +45,7 @@ class Module extends \yii\base\Module
         // custom initialization code goes here
     }
 
+
     public static function calculateAge($birthdate)
     {
         if(!empty($birthdate))
