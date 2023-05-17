@@ -514,7 +514,7 @@ class UserManagementController extends Controller
 
                 if($model->save())
                 {
-                    // Yii::$app->getModule('admin')->sendMail($email,$fullName,$username,$password);
+                    Yii::$app->getModule('admin')->sendMail($email,$fullName,$username,$password);
                     \Yii::$app->getSession()->setFlash('success', 'Successfully registered! Login credentials has been sent to their email.');
                 }
                 else
