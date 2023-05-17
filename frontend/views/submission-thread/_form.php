@@ -42,7 +42,7 @@ use common\models\EvaluationForm;
                 ->andWhere(['NOT',['evaluation_form.points_scored' => NULL]])
                 ->andFilterWhere(['user.id' => $trainee_user_id])
                 ->groupBy(['user.id'])
-                ->all(),'id','fname'), ['prompt' => 'Select Trainee..', 'class' => 'form-control'])->label("Trainee") ?>
+                ->all(),'id','fname'), ['prompt' => 'Select Trainee..', 'class' => 'form-control'])->label("Trainee(s) with Evaluation <i style='color:red;'>(not yet submitted)</i>") ?>
                 <?php } ?>
 
             <?php } ?>
@@ -82,7 +82,7 @@ use common\models\EvaluationForm;
                 <?php 
                     if(Yii::$app->controller->action->id == 'create')
                     {
-                        echo Html::submitButton($from_eval_form == 'yes' ? 'Submit <i class="fas fa-paper-plane"></i>' : Yii::$app->controller->action->id, ['class' => 'btn btn-warning']); 
+                        echo Html::submitButton($from_eval_form == 'yes' || $model->ref_document_type_id == 1 ? 'Submit <i class="fas fa-paper-plane"></i>' : Yii::$app->controller->action->id, ['class' => 'btn btn-warning']); 
                     }
                     else
                     {

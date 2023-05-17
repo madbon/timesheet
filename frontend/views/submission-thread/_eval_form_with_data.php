@@ -9,16 +9,16 @@
 <table>
     <tbody>
         <tr>
-            <td>Name:</td>
-            <td style="border-bottom:1px solid black; width:250px;"></td>
-            <td>Age:</td>
-            <td style="border-bottom:1px solid black; width:50px;"></td>
+            <td style="font-weight: bold;">Name:</td>
+            <td style="border-bottom:1px solid black; width:250px;"><?= !empty($user->userFullNameWithMiddleInitial) ? $user->userFullNameWithMiddleInitial : "" ?></td>
+            <td style="font-weight: bold;">Age:</td>
+            <td style="border-bottom:1px solid black; width:50px;"><?= Yii::$app->getModule('admin')->calculateAge($user->bday) ?></td>
 
-            <td>Gender:</td>
-            <td style="border:1px solid black; width:25px;"></td>
-            <td>Female</td>
-            <td style="border:1px solid black; width:25px;"></td>
-            <td>Male</td>
+            <td style="font-weight: bold;">Gender:</td>
+            <td style="border:1px solid black; width:25px; text-align:center;"> <?= $user->sex == "F" ? 'X' : '' ?> </td>
+            <td style="font-weight: bold;">Female</td>
+            <td style="border:1px solid black; width:25px; text-align:center;"><?= $user->sex == "M" ? 'X' : '' ?></td>
+            <td style="font-weight: bold;">Male</td>
         </tr>
     </tbody>
 </table>
@@ -26,8 +26,8 @@
 <table>
     <tbody>
         <tr>
-            <td>Course:</td>
-            <td  style="border-bottom:1px solid black; width:510px;"></td>
+            <td style="font-weight: bold;">Course:</td>
+            <td  style="border-bottom:1px solid black; width:510px;"><?= !empty($user->program->title) ? $user->program->title : '' ?></td>
         </tr>
     </tbody>
 </table>
@@ -35,10 +35,10 @@
 <table>
     <tbody>
         <tr>
-            <td>Major:</td>
-            <td style="border-bottom:1px solid black; width:280px;"></td>
-            <td>Contact Number:</td>
-            <td style="border-bottom:1px solid black; width:150px;"></td>
+            <td style="font-weight: bold;">Major:</td>
+            <td style="border-bottom:1px solid black; width:280px;"><?= !empty($user->programMajor->title) ? $user->programMajor->title : '' ?></td>
+            <td style="font-weight: bold;">Contact Number:</td>
+            <td style="border-bottom:1px solid black; width:150px;"><?= $user->mobile_no ?></td>
         </tr>
     </tbody>
 </table>
@@ -46,8 +46,8 @@
 <table>
     <tbody>
         <tr>
-            <td>Permanent Address:</td>
-            <td style="border-bottom:1px solid black; width:448px;"></td>
+            <td style="font-weight: bold;">Permanent Address:</td>
+            <td style="border-bottom:1px solid black; width:448px;"><?= $user->address ?></td>
         </tr>
     </tbody>
 </table>
@@ -55,8 +55,8 @@
 <table>
     <tbody>
         <tr>
-            <td>Company Assigned:</td>
-            <td style="border-bottom:1px solid black; width:450px;"></td>
+            <td style="font-weight: bold;">Company Assigned:</td>
+            <td style="border-bottom:1px solid black; width:450px;"><?= !empty($user->userCompany->company->name) ?  $user->userCompany->company->name : ''  ?></td>
         </tr>
     </tbody>
 </table>
@@ -64,26 +64,71 @@
 <table>
     <tbody>
         <tr>
-            <td>Number of Training Hours:</td>
-            <td style="border:1px solid black; width:25px;"></td>
-            <td>162</td>
+            <td style="font-weight: bold;">Number of Training Hours:</td>
+            <td style="border:1px solid black; width:25px; text-align:center;">
+            <?php 
+                if(!empty($user->program->required_hours))
+                {
+                    if($user->program->required_hours == '162')
+                    {
+                        echo 'X';
+                    }
+                }
+            ?>
+            </td>
+            <td style="font-weight: bold;">162</td>
 
-            <td style="border:1px solid black; width:25px;"></td>
-            <td>324</td>
+            <td style="border:1px solid black; width:25px; text-align:center;">
+            <?php 
+                if(!empty($user->program->required_hours))
+                {
+                    if($user->program->required_hours == '324')
+                    {
+                        echo 'X';
+                    }
+                }
+            ?>
+            </td>
+            <td style="font-weight: bold;">324</td>
 
-            <td style="border:1px solid black; width:25px;"></td>
-            <td>486</td>
+            <td style="border:1px solid black; width:25px; text-align:center;">
+            <?php 
+                if(!empty($user->program->required_hours))
+                {
+                    if($user->program->required_hours == '486')
+                    {
+                        echo 'X';
+                    }
+                }
+            ?>
+            </td>
+            <td style="font-weight: bold;">486</td>
         </tr>
     </tbody>
 </table>
 
-<table style="margin-top:20px; margin-left:350px;">
+<table style="margin-left:350px;">
     <tbody>
         <tr>
-            <td style="border-bottom:1px solid black; width:170px;"></td>
+            <td style="border-bottom:1px solid black; width:170px; text-align:center;">
+                <?php
+                    $uploadedFileNameCP = Yii::$app->getModule('admin')->GetFileNameExt('UserData',$user->id);
+
+                    $uploadedFileCP = Yii::$app->getModule('admin')->GetFileUpload('UserData',$user->id);
+        
+                    if(Yii::$app->getModule('admin')->FileExists($uploadedFileNameCP)) 
+                    {
+                        echo Html::img(Yii::$app->request->baseUrl.$uploadedFileCP, ['alt'=>'Signature', 'style' => '', 'height' => '50', 'width' => '50']);
+                    }
+                    else
+                    {
+                        echo "NO UPLOADED E-SIGNATURE";
+                    }
+                ?>
+            </td>
         </tr>
         <tr>
-            <td style="text-align: center;">Signature of Trainee</td>
+            <td style="text-align: center; font-weight:bold;">Signature of Trainee</td>
         </tr>
     </tbody>
 </table>
@@ -94,16 +139,16 @@
 <table>
     <tbody>
         <tr>
-            <td>Date Commenced:</td>
-            <td style="border-bottom:1px solid black; width:150px;"></td>
+            <td style="font-weight: bold;">Date Commenced:</td>
+            <td style="border-bottom:1px solid black; width:150px; text-align:center;"> <?= !empty($subThreadOne->date_commenced) ? date('F j, Y',strtotime($subThreadOne->date_commenced)) : '' ?></td>
             <td style="width:50px;"></td>
-            <td>Date Completed:</td>
-            <td style="border-bottom:1px solid black; width:150px;"></td>
+            <td style="font-weight: bold;">Date Completed:</td>
+            <td style="border-bottom:1px solid black; width:150px; text-align:center;"> <?= !empty($subThreadOne->date_completed) ? date('F j, Y',strtotime($subThreadOne->date_completed)) : '' ?></td>
         </tr>
     </tbody>
 </table>
 
-<table class="table table-bordered" style="margin-top:30px;">
+<table class="table table-bordered" style="margin-top:10px;">
     <thead>
         <tr>
             <th>Criteria</th>
@@ -120,8 +165,8 @@
             $totalPoints += $eval->points_scored;
             ?>
             <tr>
-                <td><?= $eval->evaluationCriteria->title ?></td>
-                <td><?= $eval->evaluationCriteria->max_points ?></td>
+                <td style="font-weight: bold;"><?= $eval->evaluationCriteria->title ?></td>
+                <td style="font-weight: bold;"><?= $eval->evaluationCriteria->max_points ?></td>
                 <td><?= $eval->points_scored ?></td>
                 <td><?= $eval->remarks ?></td>
             </tr>
@@ -139,21 +184,65 @@
 <p style="font-style: italic; text-indent:40px;"><?= $subThreadOne->remarks ?></p>
 
 <div style="margin-left:50px; margin-right:50px;">
-<table style="margin-top:20px;">
+<table>
     <tbody>
         <tr>
-            <td>Evaluated By:</td>
-            <td style="border-bottom:1px solid black; width:200px;"></td>
+            <td></td>
+            <td style="text-align:center;">
+            <?php
+                    $uploadedFileNameCP = Yii::$app->getModule('admin')->GetFileNameExt('UserData',Yii::$app->getModule('admin')->GetSupervisorIdByTraineeUserId($user->id));
+
+                    $uploadedFileCP = Yii::$app->getModule('admin')->GetFileUpload('UserData',Yii::$app->getModule('admin')->GetSupervisorIdByTraineeUserId($user->id));
+        
+                    if(Yii::$app->getModule('admin')->FileExists($uploadedFileNameCP)) 
+                    {
+                        echo Html::img(Yii::$app->request->baseUrl.$uploadedFileCP, ['alt'=>'Signature', 'style' => '', 'height' => '50', 'width' => '50']);
+                    }
+                    else
+                    {
+                        echo "NO UPLOADED E-SIGNATURE";
+                    }
+                ?>
+            </td>
+            <td></td>
+            <td></td>
+            <td style="text-align:center;">
+                <?php
+                    $uploadedFileNameCP = Yii::$app->getModule('admin')->GetFileNameExt('UserData',Yii::$app->getModule('admin')->GetSupervisorIdByTraineeUserId($user->id));
+
+                    $uploadedFileCP = Yii::$app->getModule('admin')->GetFileUpload('UserData',Yii::$app->getModule('admin')->GetSupervisorIdByTraineeUserId($user->id));
+        
+                    if(Yii::$app->getModule('admin')->FileExists($uploadedFileNameCP)) 
+                    {
+                        echo Html::img(Yii::$app->request->baseUrl.$uploadedFileCP, ['alt'=>'Signature', 'style' => '', 'height' => '50', 'width' => '50']);
+                    }
+                    else
+                    {
+                        echo "NO UPLOADED E-SIGNATURE";
+                    }
+                ?>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td style="font-weight: bold;">Evaluated By:</td>
+            <td style="border-bottom:1px solid black; width:200px; text-align:center;">
+                <?= Yii::$app->getModule('admin')->GetSupervisorByTraineeUserId($user->id); ?>
+            </td>
             <td style="width:30px;"></td>
-            <td>Approved By:</td>
-            <td style="border-bottom:1px solid black; width:200px;"></td>
+            <td style="font-weight: bold;">Approved By:</td>
+            <td style="border-bottom:1px solid black; width:200px; text-align:center;">
+            <?= Yii::$app->getModule('admin')->GetSupervisorByTraineeUserId($user->id); ?>
+            </td>
         </tr>
         <tr>
+            <td>
+                
+            </td>
+            <td style="text-align: center; font-style:italic; font-weight:bold;">(Signature over printed name)</td>
             <td></td>
-            <td style="text-align: center; font-style:italic;">(Signature over printed name)</td>
             <td></td>
-            <td></td>
-            <td style="text-align: center; font-style:italic;">(Signature over printed name)</td>
+            <td style="text-align: center; font-style:italic; font-weight:bold;">(Signature over printed name)</td>
         </tr>
         <tr>
             <td colspan="5"></td>
@@ -168,14 +257,15 @@
             <td colspan="5"></td>
         </tr>
         <tr>
-            <td>Designation:</td>
-            <td style="border-bottom:1px solid black; width:200px;"></td>
+            <td style="font-weight: bold;">Designation:</td>
+            <td style="border-bottom:1px solid black; width:200px; text-align:center;"><?= Yii::$app->getModule('admin')->GetSupervisorPositionByTraineeUserId($user->id); ?></td>
             <td style="width:30px;"></td>
-            <td>Designation:</td>
-            <td style="border-bottom:1px solid black; width:200px;"></td>
+            <td style="font-weight: bold;">Designation:</td>
+            <td style="border-bottom:1px solid black; width:200px; text-align:center;"><?= Yii::$app->getModule('admin')->GetSupervisorPositionByTraineeUserId($user->id); ?></td>
         </tr>
     </tbody>
 </table>
 </div>
 
-<?= Html::img(Yii::$app->request->baseUrl.'/ref/images/footer.png', ['alt'=>'', 'style' => 'margin-top:50px;']) ?>
+<?= Html::img(Yii::$app->request->baseUrl.'/ref/images/footer_1.png', ['alt'=>'', 'style' => 'margin-top:20px;']) ?>
+<?= Html::img(Yii::$app->request->baseUrl.'/ref/images/footer_2.png', ['alt'=>'', 'style' => 'margin-top:10px;']) ?>

@@ -749,7 +749,7 @@ date_default_timezone_set('Asia/Manila');
                         <?php
                             if(empty($countPendingRecord) && $countPendingRecordWithTimeOut)
                             {
-                                $uploadedFileNameCP = Yii::$app->getModule('admin')->GetFileNameExt('UserData',$model->user->id);
+                                $uploadedFileNameCP = Yii::$app->getModule('admin')->GetFileNameExt('UserData',Yii::$app->getModule('admin')->GetSupervisorIdByTraineeUserId($model->user_id));
 
                                 $uploadedFileCP = Yii::$app->getModule('admin')->GetFileUpload('UserData',Yii::$app->getModule('admin')->GetSupervisorIdByTraineeUserId($model->user_id));
                     

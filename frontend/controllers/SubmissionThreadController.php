@@ -49,13 +49,13 @@ class SubmissionThreadController extends Controller
         );
     }
 
-    public function actionPreviewPdf($trainee_id,$submission_thread_id = null)
+    public function actionPreviewPdf($trainee_id,$submission_thread_id = null,$pdf_type)
     {
        
         $query = EvaluationForm::find()->where(['trainee_user_id' => $trainee_id])->all();
         $user = UserData::find()->where(['id' => $trainee_id])->one();
         $subThreadOne = SubmissionThread::find()->where(['id' => $submission_thread_id])->one();
-        $content = $this->renderPartial('_eval_form_pdf',['query' => $query, 'user' => $user,'subThreadOne' => $subThreadOne]);
+        $content = $this->renderPartial($pdf_type,['query' => $query, 'user' => $user,'subThreadOne' => $subThreadOne]);
     
         // setup kartik\mpdf\Pdf component
         $pdf = new Pdf([

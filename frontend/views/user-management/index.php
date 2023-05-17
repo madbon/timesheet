@@ -407,7 +407,31 @@ ul.archive-details li
                             'evalform' => function ($url, $model) {
                                 if(!empty($model->evaluationForm))
                                 {
-                                    return Yii::$app->user->can('submit_trainees_evaluation') ? Html::a('VIEW EVAL',['/evaluation-form/index','trainee_user_id' => $model->id],['class' => 'btn btn-primary btn-sm']) : false;
+                                    $countNullPoints = 0;
+                                    foreach ($model->evaluationFormAll as $eval) {
+                                        if(empty($eval->points_scored))
+                                        {
+                                            $countNullPoints +=1;
+                                        }
+                                    }
+
+                                    if($countNullPoints)
+                                    {
+                                        return Yii::$app->user->can('submit_trainees_evaluation') ? Html::a('EDIT EVAL',['/evaluation-form/index','trainee_user_id' => $model->id],['class' => 'btn btn-primary btn-sm']) : false;
+                                    }
+                                    else
+                                    {
+                                        if(!empty($model->evaluationForm->submissionThread))
+                                        {
+                                            return Yii::$app->user->can('submit_trainees_evaluation') ? Html::a('VIEW EVAL',['/evaluation-form/index','trainee_user_id' => $model->id],['class' => 'btn btn-primary btn-sm']) : false;
+                                        }
+                                        else
+                                        {
+                                            return Yii::$app->user->can('submit_trainees_evaluation') ? Html::a('SUBMIT EVAL',['/evaluation-form/index','trainee_user_id' => $model->id],['class' => 'btn btn-primary btn-sm']) : false;
+                                        }
+                                    }
+                                    
+                                    
                                 }
                                 else
                                 {

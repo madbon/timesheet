@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="evaluation-form-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h1><?= Html::encode($this->title) ?>  <?= !empty($model->submissionThread->id) ? Html::a('<i class="fas fa-file-pdf"></i> Preview Form',['/submission-thread/preview-pdf','trainee_id' => $model->traineeUser->id,'submission_thread_id' => $model->submissionThread->id,'pdf_type' => '_eval_form_with_data'],['class' => 'btn btn-outline-danger btn-sm', 'target' => '_blank']) : '' ?></h1>
 
     <p>
         <?php // Html::a('Create Evaluation Form', ['create'], ['class' => 'btn btn-success']) ?>
@@ -72,7 +72,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'label' => 'Remarks',
                         'value' => function($model)
                         {
-                            return !empty($model->remarks) ? $model->remarks : NULL;
+                            return !empty($model->remarks) ? $model->remarks : '';
                         }
                     ],
                     [

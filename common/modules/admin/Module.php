@@ -45,6 +45,22 @@ class Module extends \yii\base\Module
         // custom initialization code goes here
     }
 
+    public static function calculateAge($birthdate)
+    {
+        if(!empty($birthdate))
+        {
+            $today = new \DateTime();
+            $birthdate = new \DateTime($birthdate);
+            $age = $birthdate->diff($today)->y;
+            return $age;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+
     public static function isEvalNotSubmitted($trainee_user_id)
     {
         if(EvaluationForm::find()->where(['trainee_user_id' => $trainee_user_id, 'submission_thread_id' => NULL])->exists())
@@ -532,16 +548,50 @@ This email and its contents are confidential and intended solely for the individ
         return $roles;
     }
 
-    public static function GetSupervisorByTraineeUserId($trainee_user_id)
+    public static function GetSupervisorPositionByTraineeUserId($trainee_user_id)
     {
         $getCompany = UserCompany::findOne(['user_id' => $trainee_user_id]);
         $company = !empty($getCompany->ref_company_id) ? $getCompany->ref_company_id : NULL;
+        $user = UserData::find()->where(['id' => $trainee_user_id])->one();
+        $department = !empty($user->ref_department_id) ? $user->ref_department_id : null;
 
         $getUserIdsInCompany = UserCompany::find()
         ->joinWith('users')
         ->where(['user_company.ref_company_id' => $company])
         ->andWhere(['user.status' => 10])
         ->andWhere(['NOT',['.user_company.user_id' => NULL]])
+        ->andFilterWhere(['user.ref_department_id' => $department])
+        ->all();
+
+        $userIds = [];
+
+        foreach ($getUserIdsInCompany as $key => $row) {
+            $userIds[] = $row['user_id'];
+        }
+
+        $query = AuthAssignment::find()->where(['user_id' => $userIds, 'item_name' => 'CompanySupervisor'])->one();
+
+        $getSupervisorId = !empty($query->user_id) ? $query->user_id : null;
+
+        $user = UserData::findOne(['id' => $getSupervisorId]);
+
+        return !empty($user->position->position) ? $user->position->position : "-NO SELECTED POSITION-";
+        
+    }
+
+    public static function GetSupervisorByTraineeUserId($trainee_user_id)
+    {
+        $getCompany = UserCompany::findOne(['user_id' => $trainee_user_id]);
+        $company = !empty($getCompany->ref_company_id) ? $getCompany->ref_company_id : NULL;
+        $user = UserData::find()->where(['id' => $trainee_user_id])->one();
+        $department = !empty($user->ref_department_id) ? $user->ref_department_id : null;
+
+        $getUserIdsInCompany = UserCompany::find()
+        ->joinWith('users')
+        ->where(['user_company.ref_company_id' => $company])
+        ->andWhere(['user.status' => 10])
+        ->andWhere(['NOT',['.user_company.user_id' => NULL]])
+        ->andFilterWhere(['user.ref_department_id' => $department])
         ->all();
 
         $userIds = [];
@@ -565,8 +615,16 @@ This email and its contents are confidential and intended solely for the individ
         // print_r($trainee_user_id); exit;
         $getCompany = UserCompany::findOne(['user_id' => $trainee_user_id]);
         $company = !empty($getCompany->ref_company_id) ? $getCompany->ref_company_id : NULL;
+        $user = UserData::find()->where(['id' => $trainee_user_id])->one();
+        $department = !empty($user->ref_department_id) ? $user->ref_department_id : null;
 
-        $getUserIdsInCompany = UserCompany::find()->where(['ref_company_id' => $company])->all();
+        $getUserIdsInCompany = UserCompany::find()
+        ->joinWith('users')
+        ->where(['user_company.ref_company_id' => $company])
+        ->andWhere(['user.status' => 10])
+        ->andWhere(['NOT',['.user_company.user_id' => NULL]])
+        ->andFilterWhere(['user.ref_department_id' => $department])
+        ->all();
 
         $userIds = [];
 
