@@ -39,7 +39,7 @@ class EvaluationForm extends \yii\db\ActiveRecord
     {
         return [
             [['submission_thread_id', 'trainee_user_id', 'user_id', 'evaluation_criteria_id'], 'integer'],
-            [['date_commenced', 'date_complete'], 'safe'],
+            // [['date_commenced', 'date_complete'], 'safe'],
             [['points_scored'], 'number'],
             [['points_scored'],'required'],
             [['remarks'], 'string', 'max' => 255],
@@ -60,8 +60,8 @@ class EvaluationForm extends \yii\db\ActiveRecord
             'submission_thread_id' => 'Submission Thread ID',
             'trainee_user_id' => 'Trainee User ID',
             'user_id' => 'User ID',
-            'date_commenced' => 'Date Commenced',
-            'date_complete' => 'Date Complete',
+            // 'date_commenced' => 'Date Commenced',
+            // 'date_complete' => 'Date Complete',
             'evaluation_criteria_id' => 'Evaluation Criteria ID',
             'points_scored' => 'Points Scored',
             'remarks' => 'Remarks',

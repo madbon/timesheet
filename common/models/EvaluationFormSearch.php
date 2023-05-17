@@ -18,7 +18,7 @@ class EvaluationFormSearch extends EvaluationForm
     {
         return [
             [['id', 'submission_thread_id', 'trainee_user_id', 'user_id', 'evaluation_criteria_id'], 'integer'],
-            [['date_commenced', 'date_complete', 'remarks'], 'safe'],
+            [['remarks'], 'safe'],
             [['points_scored'], 'number'],
         ];
     }
@@ -63,8 +63,8 @@ class EvaluationFormSearch extends EvaluationForm
             'submission_thread_id' => $this->submission_thread_id,
             'trainee_user_id' => $this->trainee_user_id,
             'user_id' => $this->user_id,
-            'date_commenced' => $this->date_commenced,
-            'date_complete' => $this->date_complete,
+            // 'date_commenced' => $this->date_commenced,
+            // 'date_complete' => $this->date_complete,
             'evaluation_criteria_id' => $this->evaluation_criteria_id,
             'points_scored' => $this->points_scored,
         ]);
