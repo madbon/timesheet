@@ -18,9 +18,9 @@ use yii\widgets\ActiveForm;
 
     <?=  $form->field($model, 'user_id')->hiddenInput()->label(false) ?>
 
-    <?=  $form->field($model, 'date_commenced')->hiddenInput()->label(false) ?>
+    <?php //  $form->field($model, 'date_commenced')->hiddenInput()->label(false) ?>
 
-    <?=  $form->field($model, 'date_complete')->hiddenInput()->label(false) ?>
+    <?php //  $form->field($model, 'date_complete')->hiddenInput()->label(false) ?>
 
     <?= $form->field($model, 'evaluation_criteria_id')->hiddenInput()->label(false) ?>
 
