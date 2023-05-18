@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 08, 2023 at 02:51 PM
+-- Generation Time: May 18, 2023 at 01:59 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -169,6 +169,7 @@ INSERT INTO `auth_item` (`name`, `type`, `description`, `rule_name`, `data`, `cr
 ('record-time-in-out', 2, '', NULL, NULL, NULL, NULL),
 ('SETTINGS', 2, 'SETTINGS MODULE', NULL, NULL, NULL, NULL),
 ('settings-coordinator-assigned-programs-container', 2, '', NULL, NULL, NULL, NULL),
+('settings-evaluation-criteria', 2, '', NULL, NULL, NULL, NULL),
 ('settings-index', 2, '', NULL, NULL, NULL, NULL),
 ('settings-list-companies', 2, '', NULL, NULL, NULL, NULL),
 ('settings-list-coordinator-programs', 2, '', NULL, NULL, NULL, NULL),
@@ -241,6 +242,7 @@ INSERT INTO `auth_item_child` (`parent`, `child`) VALUES
 ('Administrator', 'menu-user-management'),
 ('Administrator', 'SETTINGS'),
 ('Administrator', 'settings-coordinator-assigned-programs-container'),
+('Administrator', 'settings-evaluation-criteria'),
 ('Administrator', 'settings-index'),
 ('Administrator', 'settings-list-companies'),
 ('Administrator', 'settings-list-coordinator-programs'),
@@ -270,6 +272,7 @@ INSERT INTO `auth_item_child` (`parent`, `child`) VALUES
 ('CompanySupervisor', 'menu-user-management'),
 ('CompanySupervisor', 'SETTINGS'),
 ('CompanySupervisor', 'settings-index'),
+('CompanySupervisor', 'submit_trainees_evaluation'),
 ('CompanySupervisor', 'timesheet-remarks'),
 ('CompanySupervisor', 'upload-signature'),
 ('CompanySupervisor', 'user-management-index'),
@@ -366,6 +369,47 @@ INSERT INTO `coordinator_programs` (`id`, `user_id`, `ref_program_id`, `ref_prog
 (2, 85, 1, NULL),
 (3, 85, 2, NULL),
 (4, 85, 4, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `evaluation_criteria`
+--
+
+CREATE TABLE `evaluation_criteria` (
+  `id` int(11) NOT NULL,
+  `title` varchar(250) DEFAULT NULL,
+  `max_points` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data for table `evaluation_criteria`
+--
+
+INSERT INTO `evaluation_criteria` (`id`, `title`, `max_points`) VALUES
+(1, '1. Knowledge of Work', 20),
+(2, '2. Productivity', 20),
+(3, '3. Initiative', 15),
+(4, '4. Dedication to Duty', 15),
+(5, '5. Cooperation', 10),
+(6, '6. Safety of Housekeeping', 10),
+(7, '7. Attendance and Punctuality', 10);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `evaluation_form`
+--
+
+CREATE TABLE `evaluation_form` (
+  `id` int(11) NOT NULL,
+  `submission_thread_id` int(11) DEFAULT NULL,
+  `trainee_user_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `evaluation_criteria_id` int(11) DEFAULT NULL,
+  `points_scored` int(11) DEFAULT NULL,
+  `remarks` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- --------------------------------------------------------
 
@@ -504,7 +548,8 @@ INSERT INTO `migration` (`version`, `apply_time`) VALUES
 ('m230402_125314_add_permission_assignment', 1680440013),
 ('m230502_084102_update_mobile_no', 1683548187),
 ('m230503_000856_add_column_ref_document_type_required_remarks', 1683548187),
-('m230503_004527_update_required_uploading', 1683548187);
+('m230503_004527_update_required_uploading', 1683548187),
+('m230515_073556_add_col_submission_thread', 1684410540);
 
 -- --------------------------------------------------------
 
@@ -771,18 +816,19 @@ CREATE TABLE `submission_thread` (
   `remarks` text DEFAULT NULL COMMENT 'remarks or message details regarding the submitted document or created activity reminder',
   `ref_document_type_id` int(11) DEFAULT NULL COMMENT 'foreign key id of ref_document_type table (identifier if AR, Evaluation Form, or Activity Reminder)',
   `created_at` int(11) DEFAULT NULL COMMENT 'disregard this column',
-  `date_time` datetime DEFAULT NULL COMMENT 'date time created/submitted'
+  `date_time` datetime DEFAULT NULL COMMENT 'date time created/submitted',
+  `date_commenced` date DEFAULT NULL,
+  `date_completed` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='transactional table: here you can store all transaction regarding the tasks or submission of Accomplishment Report, Evaluation Form, and Activity Reminder.';
 
 --
 -- Dumping data for table `submission_thread`
 --
 
-INSERT INTO `submission_thread` (`id`, `user_id`, `tagged_user_id`, `subject`, `remarks`, `ref_document_type_id`, `created_at`, `date_time`) VALUES
-(2, 86, 80, NULL, '', 1, 1682587270, '2023-04-27 17:21:10'),
-(3, 86, NULL, NULL, 'checking of system', 5, 1682587378, '2023-04-27 17:22:58'),
-(4, 86, NULL, NULL, 'eat your breaky', 5, 1682596891, '2023-04-27 20:01:31'),
-(5, 86, NULL, NULL, '', 5, 1682687683, '2023-04-28 21:14:43');
+INSERT INTO `submission_thread` (`id`, `user_id`, `tagged_user_id`, `subject`, `remarks`, `ref_document_type_id`, `created_at`, `date_time`, `date_commenced`, `date_completed`) VALUES
+(3, 86, NULL, NULL, 'checking of system', 5, 1682587378, '2023-04-27 17:22:58', NULL, NULL),
+(4, 86, NULL, NULL, 'eat your breaky', 5, 1682596891, '2023-04-27 20:01:31', NULL, NULL),
+(5, 86, NULL, NULL, '', 5, 1682687683, '2023-04-28 21:14:43', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -796,17 +842,6 @@ CREATE TABLE `submission_thread_seen` (
   `user_id` int(11) DEFAULT NULL COMMENT 'forein key id of user table (who viewed the created tasks or submitted document)',
   `date_time` datetime DEFAULT NULL COMMENT 'date time seen'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Transactional table: serves as basis if the user seen the submitted document or viewed the created activity reminder';
-
---
--- Dumping data for table `submission_thread_seen`
---
-
-INSERT INTO `submission_thread_seen` (`id`, `submission_thread_id`, `user_id`, `date_time`) VALUES
-(1, 1, 85, '2023-04-27 17:15:34'),
-(2, 2, 85, '2023-04-27 17:21:46'),
-(3, 3, 80, '2023-04-27 17:24:25'),
-(4, 4, 80, '2023-04-27 20:04:07'),
-(5, 5, 80, '2023-04-28 21:19:10');
 
 -- --------------------------------------------------------
 
@@ -1056,6 +1091,22 @@ ALTER TABLE `coordinator_programs`
   ADD KEY `ref_program_id` (`ref_program_id`);
 
 --
+-- Indexes for table `evaluation_criteria`
+--
+ALTER TABLE `evaluation_criteria`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `evaluation_form`
+--
+ALTER TABLE `evaluation_form`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `trainee_user_id` (`trainee_user_id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `evaluation_criteria_id` (`evaluation_criteria_id`),
+  ADD KEY `submission_thread_id` (`submission_thread_id`);
+
+--
 -- Indexes for table `files`
 --
 ALTER TABLE `files`
@@ -1281,6 +1332,18 @@ ALTER TABLE `coordinator_programs`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique ID', AUTO_INCREMENT=5;
 
 --
+-- AUTO_INCREMENT for table `evaluation_criteria`
+--
+ALTER TABLE `evaluation_criteria`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `evaluation_form`
+--
+ALTER TABLE `evaluation_form`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `files`
 --
 ALTER TABLE `files`
@@ -1439,6 +1502,15 @@ ALTER TABLE `coordinator_programs`
   ADD CONSTRAINT `coordinator_programs_ibfk_2` FOREIGN KEY (`ref_program_id`) REFERENCES `ref_program` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION;
 
 --
+-- Constraints for table `evaluation_form`
+--
+ALTER TABLE `evaluation_form`
+  ADD CONSTRAINT `evaluation_form_ibfk_1` FOREIGN KEY (`evaluation_criteria_id`) REFERENCES `evaluation_criteria` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION,
+  ADD CONSTRAINT `evaluation_form_ibfk_2` FOREIGN KEY (`trainee_user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  ADD CONSTRAINT `evaluation_form_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  ADD CONSTRAINT `evaluation_form_ibfk_4` FOREIGN KEY (`submission_thread_id`) REFERENCES `submission_thread` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
+
+--
 -- Constraints for table `files`
 --
 ALTER TABLE `files`
@@ -1477,6 +1549,12 @@ ALTER TABLE `submission_reply_seen`
 ALTER TABLE `submission_thread`
   ADD CONSTRAINT `submission_thread_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   ADD CONSTRAINT `submission_thread_ibfk_2` FOREIGN KEY (`ref_document_type_id`) REFERENCES `ref_document_type` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Constraints for table `submission_thread_seen`
+--
+ALTER TABLE `submission_thread_seen`
+  ADD CONSTRAINT `submission_thread_seen_ibfk_1` FOREIGN KEY (`submission_thread_id`) REFERENCES `submission_thread` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `user_company`
