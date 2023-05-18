@@ -379,6 +379,7 @@ $this->title = "BPSU OJT Timesheet Monitoring System for CICT Trainees";
                 'document-assignment',
                 'coordinator-programs',
                 'system-other-feature',
+                'evaluation-criteria',
                 ]) ? true : false,
                 'visible' => Yii::$app->user->can('menu-settings'),
             ],
