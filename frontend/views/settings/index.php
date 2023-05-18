@@ -120,4 +120,19 @@ ul li a:hover
             </div>
         </div>
     <?php } ?>
+
+    <?php  if(Yii::$app->user->can('settings-evaluation-criteria')){ ?>
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Evaluation Form</h5>
+                    <p class="card-text">
+                        <ul>
+                            <?=  "<li>".Html::a('Criteria',['/evaluation-criteria/index']) ."</li>"  ?>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+        </div>
+    <?php } ?>
 </div>
