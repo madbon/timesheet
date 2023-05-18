@@ -21,7 +21,7 @@ class UploadMultipleForm extends Model
     {
         return [
             // Yii::$app->controller->action->id == "update" ? true : false
-            [['imageFiles'], 'file', 'skipOnEmpty' => Yii::$app->controller->action->id == "update" || Yii::$app->request->get('required_uploading') != "1" ? true : false, 'extensions' => 'png, jpg, jpeg, gif, pdf, docx, xlsx, xls', 'maxFiles' => 10,'maxSize' => 5 * 1024 * 1024, 'tooBig' => 'Maximum file size is less than 5MB'],
+            [['imageFiles'], 'file', 'skipOnEmpty' => Yii::$app->controller->action->id == "update" || Yii::$app->request->get('required_uploading') != "1" ? true : false, 'extensions' => 'png, jpg, jpeg, gif, pdf, docx, xlsx, xls, pptx, txt, csv', 'maxFiles' => 10,'maxSize' => 5 * 1024 * 1024, 'tooBig' => 'Maximum file size is less than 5MB'],
             // ['imageFiles','validateImageFiles'],
             [['model_name','model_id','file_name','extension','file_hash','remarks','created_at'],'safe'],
             [['model_name','file_name','extension','file_hash','remarks'],'safe'],

@@ -584,7 +584,7 @@ use yii\helpers\Url;
         <tr>
             <td style="display: flex; justify-content: center; align-items: center; text-align:center; height:50px;">
                 <?php
-                    if(empty($countPendingRecord) && $countPendingRecordWithTimeOut)
+                    if(empty($countPendingRecord))
                     {
                         $uploadedFileNameCP = Yii::$app->getModule('admin')->GetFileNameExt('UserData',Yii::$app->getModule('admin')->GetSupervisorIdByTraineeUserId($model->user_id));
 
