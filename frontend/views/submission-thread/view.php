@@ -310,6 +310,7 @@ card {
 
 </div>
 
+<?php if($model->ref_document_type_id == 1){ ?>
 <div class="container" style="margin-top:20px;">
 <div class="card">
         <div class="card-body">
@@ -345,6 +346,8 @@ card {
         </div>
     </div>
 </div>
+
+<?php } ?>
 
 <?php if($replyQuery){ ?>
 <div style="width:80%; margin-left:10%; margin-right:auto;  background:#ffe9a7;  margin-top:20px; border:1px solid #ffc107;">
