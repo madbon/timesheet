@@ -372,22 +372,37 @@ class SubmissionThreadController extends Controller
         }
 
         if ($this->request->isPost) {
+            
             if ($model->load($this->request->post()) && $modelUpload->load($this->request->post())) {
                 date_default_timezone_set('Asia/Manila');
                 $time = time();
                 $model->created_at = $time;
                 $model->date_time = date('Y-m-d H:i:s');
+                
 
-                if(EvaluationForm::find()->where(['trainee_user_id' => $model->tagged_user_id, 'submission_thread_id' => NULL])->exists())
-                {
-                    $evalForm = EvaluationForm::find()->where(['trainee_user_id' => $model->tagged_user_id, 'submission_thread_id' => NULL])->all();
+                // if(!$model->save())
+                // {
+                //     print_r(); exit;
+                // }
 
+                // if(EvaluationForm::find()->where(['trainee_user_id' => $model->tagged_user_id, 'submission_thread_id' => NULL])->exists())
+                // {
+                //     $evalForm = EvaluationForm::find()->where(['trainee_user_id' => $model->tagged_user_id, 'submission_thread_id' => NULL])->all();
+
+                    
                     $model->save();
+                    
                     $sub_thread_id = $model->id;
 
-                    foreach ($evalForm as $eval) {
-                        $eval->submission_thread_id = $sub_thread_id;
-                        $eval->update();
+                    if(EvaluationForm::find()->where(['trainee_user_id' => $model->tagged_user_id, 'submission_thread_id' => NULL])->exists())
+                    {
+                        $evalForm = EvaluationForm::find()->where(['trainee_user_id' => $model->tagged_user_id, 'submission_thread_id' => NULL])->all();
+
+                        foreach ($evalForm as $eval) {
+                            $eval->submission_thread_id = $sub_thread_id;
+                            $eval->update();
+                        }
+
                     }
 
                     $model_id = $sub_thread_id;
@@ -411,12 +426,12 @@ class SubmissionThreadController extends Controller
                     
 
                     return $this->redirect(['view', 'id' => $model->id]);
-                }
-                else
-                {
-                    return $this->redirect(Yii::$app->request->referrer);
-                    $model->loadDefaultValues();
-                }
+                // }
+                // else
+                // {
+                //     return $this->redirect(Yii::$app->request->referrer);
+                //     $model->loadDefaultValues();
+                // }
                 
             }
         } else {
